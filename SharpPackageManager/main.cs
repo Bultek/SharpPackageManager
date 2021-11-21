@@ -15,8 +15,24 @@ public class SharpPackageManager
         DataUpdate("C:\\Users\\yemas\\sources.txt", "repos");
         DataUpdate("C:\\Users\\yemas\\apps.txt", "apps");
         Console.WriteLine("Please choose your action!");
-        Console.WriteLine(appnames[1]+" "+appurls[1]+" "+reponames[1]+" "+repourls[1]);
+        InstallPkg("steam");
+    }
+    public static void InstallPkg(string Package)
+    {
+        //if (Package == null) Console.WriteLine("Please specify the package!");
+        if (appnames.Contains(Package) == true)
+        {
+            int pkgnumber = appnames.IndexOf(Package);
+            using (WebClient pkgdl = new WebClient())
+            {
 
+
+                pkgdl.DownloadFile(appurls[pkgnumber], "C:\\temp\\"+Package+".exe");
+
+                // Param1 = Link of file
+                // Param2 = Path to save
+            }
+        }
     }
     public static void DataUpdate(string File, string Type)
     {
