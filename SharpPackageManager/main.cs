@@ -18,6 +18,7 @@ public class SharpPackageManager
         Console.WriteLine("Please choose your action!");
         Console.WriteLine("Install a package (i or install \n \n");
         Console.WriteLine("Update database (up or update)");
+        Console.WriteLine(repourls[0]+" "+reponames[0]);
         string action = Console.ReadLine();
         if (action == "i") // | action == "install")
         {
@@ -47,13 +48,14 @@ public class SharpPackageManager
     }
     public static void DataUpdate(string File, string Type)
     {
-        
+
         {
             using (WebClient srcdl = new WebClient())
             {
                 int i = 0;
                 do
                 {
+                    
                     Console.WriteLine("Updating "+reponames[i]);
                     srcdl.DownloadFile(repourls[i] + "/apps.txt", InstallDir+"apps.txt");
                     i++;
@@ -61,7 +63,8 @@ public class SharpPackageManager
                     // Param2 = Path to save
                 } while (i != repourls.Count());
             }
-            DataLoad(File, "apps");
+
+            DataLoad(InstallDir+"apps.txt", "apps");
         }
         }
     public static void DataLoad(string File, string Type)
@@ -84,8 +87,8 @@ public class SharpPackageManager
                 }
                 else if (Type == "repos")
                 {
-                repourls.Add(keyValue.Key);
-                reponames.Add(keyValue.Value);
+                repourls.Add(keyValue.Value);
+                reponames.Add(keyValue.Key);
                 }
                 file.Close();
                 }
