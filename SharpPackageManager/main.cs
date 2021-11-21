@@ -8,21 +8,23 @@ public class SharpPackageManager
     public static List<String> repourls = new List<String>();
     public static List<String> appnames = new List<String>();
     public static List<String> appurls = new List<String>();
+    public static string InstallDir = "C:\\";
 
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
-        DataUpdate("C:\\Users\\yemas\\sources.txt", "repos");
-        DataUpdate("C:\\Users\\yemas\\apps.txt", "apps");
+        DataUpdate(InstallDir + "sources.txt", "repos");
+        DataUpdate(InstallDir + "apps.txt", "apps");
         Console.WriteLine("Please choose your action!");
         InstallPkg("steam");
     }
     public static void InstallPkg(string Package)
     {
         //if (Package == null) Console.WriteLine("Please specify the package!");
-        if (appnames.Contains(Package) == true)
+        if (appnames.Contains(Package)) //DONT WRITE "==true", YOU STUPID SHIT
         {
             int pkgnumber = appnames.IndexOf(Package);
+            Console.WriteLine(pkgnumber);
             using (WebClient pkgdl = new WebClient())
             {
 
@@ -43,20 +45,20 @@ public class SharpPackageManager
             string[] ln3;
             while ((ln2 = file.ReadLine()) != null)
                {
-                ln3 = ln2.Split(",");
+                ln3 = ln2.Split(", ");
                 repos.Add(ln3[0], ln3[1]);
                }
             foreach (KeyValuePair<string, string> keyValue in repos)
             {
                 if (Type == "apps")
                 {
-                    appnames.Add(keyValue.Value);
-                    appurls.Add(keyValue.Key);
+                    appurls.Add(keyValue.Value);
+                    appnames.Add(keyValue.Key);
                 }
                 else if (Type == "repos")
                 {
-                reponames.Add(keyValue.Key);
-                repourls.Add(keyValue.Value);
+                repourls.Add(keyValue.Key);
+                reponames.Add(keyValue.Value);
                 }
                 file.Close();
                 }
