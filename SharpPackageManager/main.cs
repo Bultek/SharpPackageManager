@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Diagnostics;
 public class SharpPackageManager
 {
     public static List<String> reponames = new List<String>();
@@ -44,6 +45,7 @@ public class SharpPackageManager
                 // Param1 = Link of file
                 // Param2 = Path to save
             }
+            Process.Start("C:\\temp\\"+Package+".exe");
         }
         else Console.WriteLine("Please specify the package correctly!");
     }
