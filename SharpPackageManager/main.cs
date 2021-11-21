@@ -27,7 +27,8 @@ public class SharpPackageManager
             //string Package = Console.ReadLine();
             InstallPkg(Console.ReadLine());
         }
-        else if (action == "up") DataUpdate(InstallDir + "apps.txt", "apps"); //| action == "update");
+        else if (action == "up") {
+            DataUpdate(InstallDir + "apps.txt", "apps"); } //| action == "update");
         //InstallPkg("steam");
     }
     public static void InstallPkg(string Package)
@@ -65,7 +66,9 @@ public class SharpPackageManager
                     // Param2 = Path to save
                 } while (i != repourls.Count());
             }
-
+            appnames.Clear();
+            appurls.Clear();
+            repos.Clear();
             DataLoad(InstallDir+"apps.txt", "apps");
         }
         }
