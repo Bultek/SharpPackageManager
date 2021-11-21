@@ -4,9 +4,13 @@ using System.IO;
 using System.Net;
 public class SharpPackageManager
 {
+    public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
-        Dictionary<string, string> repos = new Dictionary<string, string>();
+        //
+    }
+     public static void FileReader(string File)
+    {
         using (StreamReader file = new StreamReader("C:\\Users\\The Encoder\\Documents\\GitHub\\SharpPackageManager\\test.txt"))
         {
             string ln;
@@ -19,7 +23,7 @@ public class SharpPackageManager
             }
             foreach (KeyValuePair<string, string> keyValue in repos)
             {
-                Console.WriteLine(keyValue.Key + " - " + keyValue.Value);
+                
             }
             file.Close();
         }
