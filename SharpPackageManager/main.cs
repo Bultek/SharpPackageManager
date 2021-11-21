@@ -8,11 +8,12 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
-        //
+        DataUpdate("C:\\Users\\yemas\\sources.txt", "repos");
+        DataUpdate("C:\\Users\\yemas\\apps.txt", "apps");
     }
-    public static void FileReader(string File)
+    public static void DataUpdate(string File, string Type)
     {
-        using (StreamReader file = new StreamReader("C:\\Users\\The Encoder\\Documents\\GitHub\\SharpPackageManager\\test.txt"))
+        using (StreamReader file = new StreamReader(File))
         {
             List<String> reponames = new List<String>();
             List<String> repourls = new List<String>();
@@ -50,16 +51,23 @@ public class SharpPackageManager
                 }
                 foreach (KeyValuePair<string, string> keyValue in repos)
                 {
-                    appnames.Add(keyValue.Value);
-                    appurls.Add(keyValue.Key);
+                    if (Type == "apps")
+                    {
+                        appnames.Add(keyValue.Value);
+                        appurls.Add(keyValue.Key);
+                    }
+                    else if (Type == "repos")
+                    {
+                        reponames.Add(keyValue.Key);
+                        repourls.Add(keyValue.Value);
+
+                    }
+                    file.Close();
+
+
 
 
                 }
-                file.Close();
-
-
-
-
             }
         }
     }
