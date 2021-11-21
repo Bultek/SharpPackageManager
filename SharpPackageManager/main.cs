@@ -8,7 +8,7 @@ public class SharpPackageManager
     public static List<String> repourls = new List<String>();
     public static List<String> appnames = new List<String>();
     public static List<String> appurls = new List<String>();
-    public static string InstallDir = "C:\\temp\\";
+    public static string InstallDir = "C:\\SPM\\config\\";
 
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
