@@ -10,7 +10,7 @@ public class SharpPackageManager
     {
         //
     }
-     public static void FileReader(string File)
+    public static void FileReader(string File)
     {
         using (StreamReader file = new StreamReader("C:\\Users\\The Encoder\\Documents\\GitHub\\SharpPackageManager\\test.txt"))
         {
@@ -33,7 +33,7 @@ public class SharpPackageManager
                 repourls.Add(keyValue.Key);
             }
             file.Close();
-            using (StreamReader file = new StreamReader("C:\\Users\\yemas\\sources" + ".txt"))
+            using (StreamReader rfile = new StreamReader(File))
             {
                 List<String> appnames = new List<String>();
                 List<String> appurls = new List<String>();
@@ -52,16 +52,15 @@ public class SharpPackageManager
                 {
                     appnames.Add(keyValue.Value);
                     appurls.Add(keyValue.Key);
-                    
+
 
                 }
                 file.Close();
-                Console.WriteLine("Welcome to SPM");
-            Console.WriteLine("Please select your action! \n");
 
 
 
 
+            }
         }
     }
 }
