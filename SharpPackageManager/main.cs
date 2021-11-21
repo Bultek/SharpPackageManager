@@ -4,13 +4,15 @@ using System.IO;
 using System.Net;
 public class SharpPackageManager
 {
-    //public string[] repourls = new string[99999];
-    //public string[] reponames = new string[99999];
-    
+
+    public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
-        Dictionary<string, string> repos = new Dictionary<string, string>();
-        using (StreamReader file = new StreamReader("C:\\Users\\yemas\\sources"+".txt"))
+        //
+    }
+     public static void FileReader(string File)
+    {
+        using (StreamReader file = new StreamReader("C:\\Users\\The Encoder\\Documents\\GitHub\\SharpPackageManager\\test.txt"))
         {
             List<String> reponames = new List<String>();
             List<String> repourls = new List<String>();
@@ -29,8 +31,6 @@ public class SharpPackageManager
             {
                 reponames.Add(keyValue.Value);
                 repourls.Add(keyValue.Key);
-                
-
             }
             file.Close();
             using (StreamReader file = new StreamReader("C:\\Users\\yemas\\sources" + ".txt"))
