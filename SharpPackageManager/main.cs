@@ -19,7 +19,7 @@ public class SharpPackageManager
         Console.WriteLine("Please choose your action!");
         Console.WriteLine("Install a package (i or install \n \n");
         Console.WriteLine("Update database (up or update)");
-        Console.WriteLine(repourls[0]+" "+reponames[0]);
+        Console.WriteLine(repourls[0] + " " + reponames[0]);
         string action = Console.ReadLine();
         if (action == "i") // | action == "install")
         {
@@ -27,25 +27,63 @@ public class SharpPackageManager
             //string Package = Console.ReadLine();
             InstallPkg(Console.ReadLine());
         }
-        else if (action == "up") {
-            DataUpdate(InstallDir + "apps.txt", "apps"); } //| action == "update");
+        else if (action == "up")
+        {
+            DataUpdate(InstallDir + "apps.txt", "apps");
+        } //| action == "update");
+        else if (action == "ak")
+        {
+            Console.WriteLine("Please write the appkit txt file path (also please enter path with double \\ (example C:\\\\example\\\\appkit.txt)");
+            string kitpath = (Console.ReadLine());
+            if (kitpath != null) AppKits(kitpath);
+            else Console.WriteLine("Kit path has to be something another (not null)");
+        }
         //InstallPkg("steam");
+    }
+    public static void AppKits(string AppKitFile)
+    {
+        List<String> kitappnames = new List<String>();
+        using (StreamReader file = new StreamReader(AppKitFile))
+        {
+            string[] temp;
+            int i = 0;
+            string ln2;
+            Console.WriteLine("You wil install: ");
+            while ((ln2 = file.ReadLine()) != null)
+            {
+                temp = ln2.Split("/n");
+                Console.WriteLine(temp[i]);
+                kitappnames.Add(temp[i]);
+            }
+        }
+        int finappcount = 0;
+        do
+        {
+            InstallPkg(kitappnames[finappcount]);
+            finappcount++;
+        }while (finappcount < kitappnames.Count);
     }
     public static void InstallPkg(string Package)
     {
         //if (Package == null) Console.WriteLine("Please specify the package!");
         if (appnames.Contains(Package))
         {
+            string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".exe";
             int pkgnumber = appnames.IndexOf(Package);
-            Console.WriteLine(pkgnumber);
+            //Console.WriteLine(pkgnumber);
             Console.WriteLine("Downloading the package...");
             using (WebClient pkgdl = new WebClient())
             {
-                pkgdl.DownloadFile(appurls[pkgnumber], "C:\\temp\\"+Package+".exe");
+                pkgdl.DownloadFile(appurls[pkgnumber], pkgdir);
                 // Param1 = Link of file
                 // Param2 = Path to save
             }
-            Process.Start("C:\\temp\\"+Package+".exe");
+            Process PackageStartInfo = new Process();
+            PackageStartInfo.StartInfo.FileName = pkgdir;
+            PackageStartInfo.StartInfo.UseShellExecute = true;
+            PackageStartInfo.StartInfo.Verb = "runas";
+            PackageStartInfo.Start();
+
         }
         else Console.WriteLine("Please specify the package correctly!");
     }
