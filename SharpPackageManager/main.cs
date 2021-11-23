@@ -7,7 +7,7 @@ using System.Diagnostics;
 public class SharpPackageManager
 {
     public static int latestversion;
-    public static int currentversion = 2;
+    public static int currentversion = 3;
     public static string curbranch = "ptb";
     public static string tag;
     public static List<String> reponames = new List<String>();
