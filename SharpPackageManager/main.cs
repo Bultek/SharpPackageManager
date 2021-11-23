@@ -30,7 +30,7 @@ public class SharpPackageManager
             PackageStartInfo.StartInfo.Verb = "runas";
             PackageStartInfo.Start();
         }
-        else if (System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && System.IO.Directory.Exists("C:\\SPM\\futureversion"))
+        else if (System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.Directory.Exists("C:\\SPM\\clean.txt"))
         {
             Console.WriteLine("Update is unlocked, starting the main upgrade script...");
             System.IO.File.Delete("C:\\SPM\\futureversion\\unlock.txt");
