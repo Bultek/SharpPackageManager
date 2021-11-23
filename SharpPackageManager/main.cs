@@ -161,10 +161,12 @@ public class SharpPackageManager
             InstallPkg(kitappnames[finappcount]);
             finappcount++;
         }while (finappcount < kitappnames.Count);
+        PressAnyKey();
     }
     public static void InstallPkg(string Package)
     {
         //if (Package == null) Console.WriteLine("Please specify the package!");
+        //Console.WriteLine(appnames[2]);
         if (appnames.Contains(Package))
         {
             if (System.IO.File.Exists(InstallPath+"Downloads\\"+Package+".exe")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
@@ -184,29 +186,43 @@ public class SharpPackageManager
             PackageStartInfo.StartInfo.UseShellExecute = true;
             PackageStartInfo.StartInfo.Verb = "runas";
             PackageStartInfo.Start();
-
+            PressAnyKey();
+            
         }
         else Console.WriteLine("Please specify the package correctly!");
     }
-    public static void DataUpdate(bool Out=true)
+    public static void PressAnyKey()
     {
+        Console.WriteLine("Press Any key to exit...");
+        Console.ReadKey();
+    }
+        public static void DataUpdate(bool Out=true)
+    {
+
             appnames.Clear();
             appurls.Clear();
-            repos.Clear();
+            //repos.Clear();
             using (WebClient srcdl = new WebClient())
             {
                 int i = 0;
-                do
-                {
-                    string currepopath = InstallDir + "apps" + reponames[i] + ".txt";
-                    //Console.WriteLine(repourls[i]);
-                    if (Out==true) Console.WriteLine("Updating "+reponames[i]);
-                    srcdl.DownloadFile(repourls[i] + "/apps.txt", InstallDir+"apps"+reponames[i]+".txt");
-                    i++;
-                    DataLoad(currepopath, "apps");
-                    // Param1 = Link of file
-                    // Param2 = Path to save
-                } while (i != repourls.Count());
+            do
+            {
+
+                string currepopath = InstallDir + "apps" + reponames[i] + ".txt";
+                if (System.IO.File.Exists(currepopath)) System.IO.File.Delete(currepopath);
+                //Console.WriteLine(repourls[i]);
+                if (Out == true) Console.WriteLine("Updating " + reponames[i]);
+                srcdl.DownloadFile(repourls[i] + "/apps.txt", currepopath);
+                
+                i++;
+                DataLoad(currepopath, "apps");
+
+                //Console.WriteLine(appnames[i]);
+                // Param1 = Link of file
+                // Param2 = Path to save
+            } while (i != repourls.Count());
+            i = 0;
+
             }
             MainApp();
         }
@@ -233,6 +249,7 @@ public class SharpPackageManager
                 repourls.Add(keyValue.Value);
                 reponames.Add(keyValue.Key);
                 }
+                repos.Clear();
                 file.Close();
                 }
             }
