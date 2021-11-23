@@ -70,8 +70,9 @@ public class SharpPackageManager
         }
 
         DataLoad(InstallDir + "sources.txt", "repos");
+        //DataUpdate(false);
         //DataLoad(InstallDir + "apps.txt", "apps");
-        Console.WriteLine("Please choose your action! \n \n");
+        Console.WriteLine("Please choose your action! And Before installing something update database please \n \n");
         Console.WriteLine("Install a package (Command: i) \n \n");
         Console.WriteLine("Install an AppKit (Command: ak) \n \n");
         Console.WriteLine("Update database (Command: up) \n \n");
@@ -167,6 +168,7 @@ public class SharpPackageManager
         //if (Package == null) Console.WriteLine("Please specify the package!");
         if (appnames.Contains(Package))
         {
+            if (System.IO.File.Exists(InstallPath+"Downloads\\"+Package+".exe")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
             string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".exe";
             int pkgnumber = appnames.IndexOf(Package);
             //Console.WriteLine(pkgnumber);
@@ -187,7 +189,7 @@ public class SharpPackageManager
         }
         else Console.WriteLine("Please specify the package correctly!");
     }
-    public static void DataUpdate()
+    public static void DataUpdate(bool Out=true)
     {
             appnames.Clear();
             appurls.Clear();
@@ -198,8 +200,8 @@ public class SharpPackageManager
                 do
                 {
                     string currepopath = InstallDir + "apps" + reponames[i] + ".txt";
-                    Console.WriteLine(currepopath);
-                    Console.WriteLine("Updating "+reponames[i]);
+                    //Console.WriteLine(repourls[i]);
+                    if (Out==true) Console.WriteLine("Updating "+reponames[i]);
                     srcdl.DownloadFile(repourls[i] + "/apps.txt", InstallDir+"apps"+reponames[i]+".txt");
                     i++;
                     DataLoad(currepopath, "apps");
