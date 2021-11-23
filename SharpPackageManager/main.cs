@@ -123,6 +123,7 @@ public class SharpPackageManager
     }
     public static void AppKits(string AppKitFile)
     {
+
         List<String> kitappnames = new List<String>();
         using (StreamReader file = new StreamReader(AppKitFile))
         {
@@ -153,7 +154,8 @@ public class SharpPackageManager
             string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".exe";
             int pkgnumber = appnames.IndexOf(Package);
             //Console.WriteLine(pkgnumber);
-            Console.WriteLine("Downloading the package...");
+            if (!Directory.Exists("C:\\SPM\\Downloads\\")) Directory.CreateDirectory("C:\\SPM\\Downloads\\");
+                Console.WriteLine("Downloading the package...");
             using (WebClient pkgdl = new WebClient())
             {
                 pkgdl.DownloadFile(appurls[pkgnumber], pkgdir);
