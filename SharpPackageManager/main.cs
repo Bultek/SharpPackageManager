@@ -20,7 +20,7 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
-        if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt"))
+        if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
         {
             Console.WriteLine("Unlocking update on app start and executing the app...");
             System.IO.File.Create("C:\\SPM\\futureversion\\unlock.txt");
@@ -46,7 +46,7 @@ public class SharpPackageManager
             System.IO.File.Create(InstallDir + "clean.txt");
             Console.WriteLine("Please restart the app!");
         }
-        else if (System.IO.File.Exists("C:\\SPM\\clean.txt"))
+        else if (System.IO.File.Exists("C:\\SPM\\config\\clean.txt"))
         {
             Console.WriteLine("Cleaning Up...");
             System.IO.Directory.Delete(InstallPath + "futureversion", true);
@@ -110,14 +110,14 @@ public class SharpPackageManager
         }
         using (StreamReader file = new StreamReader("C:\\temp\\latestversioninfo.bpmsvi"))
         {
-            latestversion = int.Parse(file.ReadLine());   
+            latestversion = int.Parse(file.ReadLine());
         }
         using (StreamReader file = new StreamReader("C:\\temp\\latestversiontag.bpmsvi"))
         {
             tag = file.ReadLine();
         }
 
-        if (branch == "ptb" || latestversion > currentversion)
+        if (branch == "ptb" && latestversion > currentversion)
         {
             Console.WriteLine("Downloading update...");
             using (WebClient tagdl = new WebClient())
@@ -134,7 +134,6 @@ public class SharpPackageManager
                 System.IO.Directory.CreateDirectory("C:\\SPM\\futureversion");
                 ZipFile.ExtractToDirectory("C:\\SPM.zip", "C:\\SPM\\futureversion");
             }
-            System.IO.File.Create("C:\\SPM\\futureversion\\unlock.txt");
             Console.WriteLine("Please, restart the app to continue!");
         }
     }
