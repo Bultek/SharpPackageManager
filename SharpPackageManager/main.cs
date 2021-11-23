@@ -20,7 +20,7 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
-        if (System.IO.Directory.Exists("C:\\SPM\\futureversion") & System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") == false)
+        if (!System.IO.Directory.Exists("C:\\SPM\\futureversion") & System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt")) 
         {
             Console.WriteLine("Unlocking update on app start and executing the app...");
             System.IO.File.Create("C:\\SPM\\futureversion\\unlock.txt");
@@ -112,11 +112,12 @@ public class SharpPackageManager
             }
             Console.WriteLine("Pre-Configuring update...");
             if (System.IO.Directory.Exists("C:\\SPM\\futureversion")) System.IO.Directory.Delete("C:\\SPM\\futureversion", true);
-            if (System.IO.Directory.Exists("C:\\SPM\\futureversion") == false)
+            if (!System.IO.Directory.Exists("C:\\SPM\\futureversion"))
             {
                 System.IO.Directory.CreateDirectory("C:\\SPM\\futureversion");
                 ZipFile.ExtractToDirectory("C:\\SPM.zip", "C:\\SPM\\futureversion");
             }
+            System.IO.File.Create("C:\\SPM\\futureversion\\unlock.txt");
             Console.WriteLine("Please, restart the app to continue!");
         }
     }
