@@ -20,6 +20,7 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
+
         if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
         {
             Console.WriteLine("Unlocking update on app start and executing the app...");
@@ -62,12 +63,9 @@ public class SharpPackageManager
     }
     public static void MainApp()
     {
-        if (!System.IO.Directory.Exists("C:\\SPM\\Downloads")) System.IO.Directory.CreateDirectory("C:\\SPM\\Downloads");
-        if (!System.IO.Directory.Exists("C:\\SPM\\config"))
-        {
-            System.IO.Directory.CreateDirectory("C:\\SPM\\config");
 
-        }
+        if (!System.IO.Directory.Exists("C:\\SPM\\Downloads")) System.IO.Directory.CreateDirectory("C:\\SPM\\Downloads");
+        if (!System.IO.Directory.Exists("C:\\SPM\\config")) System.IO.Directory.CreateDirectory("C:\\SPM\\config");
 
         DataLoad(InstallDir + "sources.txt", "repos");
         //DataUpdate(false);
@@ -81,6 +79,11 @@ public class SharpPackageManager
         if (action == "i") // | action == "install")
         {
             Console.WriteLine("Which Package do you want to install?");
+            Console.WriteLine("Here are packeges that availible for you\n");
+            foreach (string i in appnames)
+            {
+                Console.WriteLine(i);
+            }
             //string Package = Console.ReadLine();
             InstallPkg(Console.ReadLine());
         }
@@ -237,7 +240,8 @@ public class SharpPackageManager
                 ln3 = ln2.Split(", ");
                 repos.Add(ln3[0], ln3[1]);
                }
-            foreach (KeyValuePair<string, string> keyValue in repos)
+
+                foreach (KeyValuePair<string, string> keyValue in repos)
             {
                 if (Type == "apps")
                 {
@@ -249,9 +253,10 @@ public class SharpPackageManager
                 repourls.Add(keyValue.Value);
                 reponames.Add(keyValue.Key);
                 }
-                repos.Clear();
-                file.Close();
+                
                 }
-            }
+            repos.Clear();
+            file.Close();
+        }
         }
     }
