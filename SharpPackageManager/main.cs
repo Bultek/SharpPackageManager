@@ -20,6 +20,7 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
+
         if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
         {
             Console.WriteLine("Unlocking update on app start and executing the app...");
@@ -62,12 +63,9 @@ public class SharpPackageManager
     }
     public static void MainApp()
     {
-        if (!System.IO.Directory.Exists("C:\\SPM\\Downloads")) System.IO.Directory.CreateDirectory("C:\\SPM\\Downloads");
-        if (!System.IO.Directory.Exists("C:\\SPM\\config"))
-        {
-            System.IO.Directory.CreateDirectory("C:\\SPM\\config");
 
-        }
+        if (!System.IO.Directory.Exists("C:\\SPM\\Downloads")) System.IO.Directory.CreateDirectory("C:\\SPM\\Downloads");
+        if (!System.IO.Directory.Exists("C:\\SPM\\config")) System.IO.Directory.CreateDirectory("C:\\SPM\\config");
 
         DataLoad(InstallDir + "sources.txt", "repos");
         //DataUpdate(false);
@@ -100,9 +98,10 @@ public class SharpPackageManager
         public static void VersionUpdate(string branch)
     {
         Console.WriteLine("Loading latest versions info...");
+        if (File.Exists("C:\\temp\\latestversioninfo.bpmsvi")) File.Delete("C:\\temp\\latestversioninfo.bpmsvi");
+        if (File.Exists("C:\\temp\\latestversiontag.bpmsvi")) File.Delete("C:\\temp\\latestversiontag.bpmsvi");
         using (WebClient tagdl = new WebClient())
         {
-            
             tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/raw/versioncontrol/" + branch + ".spmvi", "C:\\temp\\latestversioninfo.bpmsvi");
             tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/raw/versioncontrol/" + branch + "tag.spmvi", "C:\\temp\\latestversiontag.bpmsvi");
             // Param1 = Link of file
@@ -123,7 +122,7 @@ public class SharpPackageManager
             using (WebClient tagdl = new WebClient())
             {
                 Console.WriteLine("Loading latest versions info...");
-                tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/releases/download/"+tag+"/SPM.zip", "C:\\SPM.zip");
+                tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/releases/download/" + tag + "/SPM.zip", "C:\\SPM.zip");
                 // Param1 = Link of file
                 // Param2 = Path to save
             }
@@ -136,6 +135,8 @@ public class SharpPackageManager
             }
             Console.WriteLine("Please, restart the app to continue!");
         }
+        else Console.WriteLine("You have the latest version");
+        MainApp();
     }
     public static void AppKits(string AppKitFile)
     {
@@ -161,10 +162,12 @@ public class SharpPackageManager
             InstallPkg(kitappnames[finappcount]);
             finappcount++;
         }while (finappcount < kitappnames.Count);
+        PressAnyKey();
     }
     public static void InstallPkg(string Package)
     {
         //if (Package == null) Console.WriteLine("Please specify the package!");
+        //Console.WriteLine(appnames[2]);
         if (appnames.Contains(Package))
         {
             if (System.IO.File.Exists(InstallPath+"Downloads\\"+Package+".exe")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
@@ -184,29 +187,43 @@ public class SharpPackageManager
             PackageStartInfo.StartInfo.UseShellExecute = true;
             PackageStartInfo.StartInfo.Verb = "runas";
             PackageStartInfo.Start();
-
+            PressAnyKey();
+            
         }
         else Console.WriteLine("Please specify the package correctly!");
     }
-    public static void DataUpdate(bool Out=true)
+    public static void PressAnyKey()
     {
+        Console.WriteLine("Press Any key to exit...");
+        Console.ReadKey();
+    }
+        public static void DataUpdate(bool Out=true)
+    {
+
             appnames.Clear();
             appurls.Clear();
-            repos.Clear();
+            //repos.Clear();
             using (WebClient srcdl = new WebClient())
             {
                 int i = 0;
-                do
-                {
-                    string currepopath = InstallDir + "apps" + reponames[i] + ".txt";
-                    //Console.WriteLine(repourls[i]);
-                    if (Out==true) Console.WriteLine("Updating "+reponames[i]);
-                    srcdl.DownloadFile(repourls[i] + "/apps.txt", InstallDir+"apps"+reponames[i]+".txt");
-                    i++;
-                    DataLoad(currepopath, "apps");
-                    // Param1 = Link of file
-                    // Param2 = Path to save
-                } while (i != repourls.Count());
+            do
+            {
+
+                string currepopath = InstallDir + "apps" + reponames[i] + ".txt";
+                if (System.IO.File.Exists(currepopath)) System.IO.File.Delete(currepopath);
+                //Console.WriteLine(repourls[i]);
+                if (Out == true) Console.WriteLine("Updating " + reponames[i]);
+                srcdl.DownloadFile(repourls[i] + "/apps.txt", currepopath);
+                
+                i++;
+                DataLoad(currepopath, "apps");
+
+                //Console.WriteLine(appnames[i]);
+                // Param1 = Link of file
+                // Param2 = Path to save
+            } while (i != repourls.Count());
+            i = 0;
+
             }
             MainApp();
         }
@@ -221,7 +238,8 @@ public class SharpPackageManager
                 ln3 = ln2.Split(", ");
                 repos.Add(ln3[0], ln3[1]);
                }
-            foreach (KeyValuePair<string, string> keyValue in repos)
+
+                foreach (KeyValuePair<string, string> keyValue in repos)
             {
                 if (Type == "apps")
                 {
@@ -233,8 +251,10 @@ public class SharpPackageManager
                 repourls.Add(keyValue.Value);
                 reponames.Add(keyValue.Key);
                 }
-                file.Close();
+                
                 }
-            }
+            repos.Clear();
+            file.Close();
+        }
         }
     }
