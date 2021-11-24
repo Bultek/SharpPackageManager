@@ -98,9 +98,10 @@ public class SharpPackageManager
         public static void VersionUpdate(string branch)
     {
         Console.WriteLine("Loading latest versions info...");
+        if (File.Exists("C:\\temp\\latestversioninfo.bpmsvi")) File.Delete("C:\\temp\\latestversioninfo.bpmsvi");
+        if (File.Exists("C:\\temp\\latestversiontag.bpmsvi")) File.Delete("C:\\temp\\latestversiontag.bpmsvi");
         using (WebClient tagdl = new WebClient())
         {
-            
             tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/raw/versioncontrol/" + branch + ".spmvi", "C:\\temp\\latestversioninfo.bpmsvi");
             tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/raw/versioncontrol/" + branch + "tag.spmvi", "C:\\temp\\latestversiontag.bpmsvi");
             // Param1 = Link of file
@@ -121,7 +122,7 @@ public class SharpPackageManager
             using (WebClient tagdl = new WebClient())
             {
                 Console.WriteLine("Loading latest versions info...");
-                tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/releases/download/"+tag+"/SPM.zip", "C:\\SPM.zip");
+                tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/releases/download/" + tag + "/SPM.zip", "C:\\SPM.zip");
                 // Param1 = Link of file
                 // Param2 = Path to save
             }
@@ -134,6 +135,8 @@ public class SharpPackageManager
             }
             Console.WriteLine("Please, restart the app to continue!");
         }
+        else Console.WriteLine("You have the latest version");
+        MainApp();
     }
     public static void AppKits(string AppKitFile)
     {
