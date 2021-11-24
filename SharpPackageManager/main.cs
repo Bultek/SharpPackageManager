@@ -79,11 +79,6 @@ public class SharpPackageManager
         if (action == "i") // | action == "install")
         {
             Console.WriteLine("Which Package do you want to install?");
-            Console.WriteLine("Here are packeges that availible for you\n");
-            foreach (string i in appnames)
-            {
-                Console.WriteLine(i);
-            }
             //string Package = Console.ReadLine();
             InstallPkg(Console.ReadLine());
         }
