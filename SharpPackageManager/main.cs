@@ -7,7 +7,11 @@ using System.Diagnostics;
 public class SharpPackageManager
 {
     public static int latestversion;
+<<<<<<< Updated upstream
     public static int currentversion = 3;
+=======
+    public static int currentversion =  5;
+>>>>>>> Stashed changes
     public static string curbranch = "ptb";
     public static string tag;
     public static List<String> reponames = new List<String>();
@@ -78,9 +82,29 @@ public class SharpPackageManager
         string action = Console.ReadLine();
         if (action == "i") // | action == "install")
         {
+            //char curchar;
+            char space = ' ';
+            int pkgspacecounter = 0;
             Console.WriteLine("Which Package do you want to install?");
-            //string Package = Console.ReadLine();
-            InstallPkg(Console.ReadLine());
+            string Package = Console.ReadLine();
+            string[] pkgs;
+            foreach (char curchar in Package)
+            {
+                if (space == curchar)
+                {
+                    pkgspacecounter++;
+                }
+            }
+            pkgs = Package.Split(' ');
+            if (Package.Contains(" "))
+            {
+                int i=0;
+                while (i > pkgspacecounter++) 
+                {
+                 InstallPkg(pkgs[i]);
+                }
+            }
+            
         }
         else if (action == "up")
         {
