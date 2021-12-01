@@ -7,11 +7,7 @@ using System.Diagnostics;
 public class SharpPackageManager
 {
     public static int latestversion;
-<<<<<<< Updated upstream
-    public static int currentversion = 3;
-=======
     public static int currentversion =  5;
->>>>>>> Stashed changes
     public static string curbranch = "ptb";
     public static string tag;
     public static List<String> reponames = new List<String>();
@@ -72,6 +68,7 @@ public class SharpPackageManager
         if (!System.IO.Directory.Exists("C:\\SPM\\config")) System.IO.Directory.CreateDirectory("C:\\SPM\\config");
 
         DataLoad(InstallDir + "sources.txt", "repos");
+        if (System.IO.File.Exists(InstallDir + "appsbultek.txt")) DataLoad(InstallDir + "appsbultek.txt", "apps");
         //DataUpdate(false);
         //DataLoad(InstallDir + "apps.txt", "apps");
         Console.WriteLine("Please choose your action! And Before installing something update database please \n \n");
@@ -82,29 +79,38 @@ public class SharpPackageManager
         string action = Console.ReadLine();
         if (action == "i") // | action == "install")
         {
+
+            Console.WriteLine("Which Package do you want to install?");
+            string Package = Console.ReadLine();
             //char curchar;
             char space = ' ';
             int pkgspacecounter = 0;
-            Console.WriteLine("Which Package do you want to install?");
-            string Package = Console.ReadLine();
-            string[] pkgs;
-            foreach (char curchar in Package)
+            if (Package.Contains(' '))
             {
-                if (space == curchar)
+                 string[] pkgs;
+                //Console.WriteLine("Pered Furichem");
+                 foreach (char curchar in Package)
+                 {
+                     if (space == curchar)
+                     {
+                        pkgspacecounter++;
+                        //Console.WriteLine("+ pkgspacecounter");
+                    }
+                }
+                
+                pkgs = Package.Split(' ');
+                //Console.WriteLine("Pkgs splitted");
+                if (pkgspacecounter>0)
                 {
-                    pkgspacecounter++;
+                    int i = 0;
+                    while (i < pkgspacecounter++)
+                    {
+                        InstallPkg(pkgs[i], true);
+                        i++;
+                    }
                 }
             }
-            pkgs = Package.Split(' ');
-            if (Package.Contains(" "))
-            {
-                int i=0;
-                while (i > pkgspacecounter++) 
-                {
-                 InstallPkg(pkgs[i]);
-                }
-            }
-            
+            else InstallPkg(Package);
         }
         else if (action == "up")
         {
@@ -183,12 +189,12 @@ public class SharpPackageManager
         int finappcount = 0;
         do
         {
-            InstallPkg(kitappnames[finappcount]);
+            InstallPkg(kitappnames[finappcount], true);
             finappcount++;
         }while (finappcount < kitappnames.Count);
         PressAnyKey();
     }
-    public static void InstallPkg(string Package)
+    public static void InstallPkg(string Package, bool Multi=false)
     {
         //if (Package == null) Console.WriteLine("Please specify the package!");
         //Console.WriteLine(appnames[2]);
@@ -211,14 +217,15 @@ public class SharpPackageManager
             PackageStartInfo.StartInfo.UseShellExecute = true;
             PackageStartInfo.StartInfo.Verb = "runas";
             PackageStartInfo.Start();
-            PressAnyKey();
+            if (Multi) PressAnyKey("continue");
+            else PressAnyKey();
             
         }
         else Console.WriteLine("Please specify the package correctly!");
     }
-    public static void PressAnyKey()
+    public static void PressAnyKey(string what="exit")
     {
-        Console.WriteLine("Press Any key to exit...");
+        Console.WriteLine("Press Any key to "+what+"...");
         Console.ReadKey();
     }
         public static void DataUpdate(bool Out=true)
