@@ -14,6 +14,10 @@ public class SharpPackageManager
     public static List<String> repourls = new List<String>();
     public static List<String> appnames = new List<String>();
     public static List<String> appurls = new List<String>();
+    public static List<String> updateappnames = new List<String>();
+    public static List<String> updateversions = new List<String>();
+    public static List<String> currentappnames = new List<String>();
+    public static List<String> currentappversions = new List<String>();
     public static string InstallDir = "C:\\SPM\\config\\";
     public static string InstallPath = "C:\\SPM\\";
 
@@ -66,8 +70,12 @@ public class SharpPackageManager
 
         if (!System.IO.Directory.Exists("C:\\SPM\\Downloads")) System.IO.Directory.CreateDirectory("C:\\SPM\\Downloads");
         if (!System.IO.Directory.Exists("C:\\SPM\\config")) System.IO.Directory.CreateDirectory("C:\\SPM\\config");
+        if (!System.IO.File.Exists(InstallDir+"currentversions.txt")) System.IO.File.Create(InstallDir+"currentversions.txt");
+        if (!System.IO.File.Exists(InstallDir + "latestversions.txt")) System.IO.File.Create(InstallDir + "latestversions.txt");
 
         DataLoad(InstallDir + "sources.txt", "repos");
+        DataLoad(InstallDir + "currentversions.txt", "repos");
+
         if (System.IO.File.Exists(InstallDir + "appsbultek.txt")) DataLoad(InstallDir + "appsbultek.txt", "apps");
         //DataUpdate(false);
         //DataLoad(InstallDir + "apps.txt", "apps");
@@ -146,12 +154,12 @@ public class SharpPackageManager
             tag = file.ReadLine();
         }
 
-        if (branch == "ptb" && latestversion > currentversion)
+        if (latestversion > currentversion)
         {
             Console.WriteLine("Downloading update...");
             using (WebClient tagdl = new WebClient())
             {
-                Console.WriteLine("Loading latest versions info...");
+                Console.WriteLine("Downloading versions info...");
                 tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/releases/download/" + tag + "/SPM.zip", "C:\\SPM.zip");
                 // Param1 = Link of file
                 // Param2 = Path to save
@@ -200,6 +208,7 @@ public class SharpPackageManager
         //Console.WriteLine(appnames[2]);
         if (appnames.Contains(Package))
         {
+            
             if (System.IO.File.Exists(InstallPath+"Downloads\\"+Package+".exe")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
             string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".exe";
             int pkgnumber = appnames.IndexOf(Package);
@@ -212,16 +221,27 @@ public class SharpPackageManager
                 // Param1 = Link of file
                 // Param2 = Path to save
             }
+            string pkgver = updateversions[pkgnumber];
             Process PackageStartInfo = new Process();
             PackageStartInfo.StartInfo.FileName = pkgdir;
             PackageStartInfo.StartInfo.UseShellExecute = true;
             PackageStartInfo.StartInfo.Verb = "runas";
             PackageStartInfo.Start();
+            if (System.IO.File.Exists(InstallDir + "currentversions.txt")) System.IO.File.Delete(InstallDir + "currentversions.txt");
+            currentappnames.Add(Package);
+            currentappnames.Add(pkgver);
+            foreach (string pkg in currentappnames)
+            {
+                WriteData(InstallDir + "currentversions.txt", "currentversions", pkg + ", " + currentappversions);
+            }
             if (Multi) PressAnyKey("continue");
             else PressAnyKey();
-            
         }
         else Console.WriteLine("Please specify the package correctly!");
+    }
+    public static void CheckForAppUpdates()
+    {
+        
     }
     public static void PressAnyKey(string what="exit")
     {
@@ -258,6 +278,14 @@ public class SharpPackageManager
             }
             MainApp();
         }
+    public static void WriteData(string File, string Type, string data)
+    {
+        if (System.IO.File.Exists(InstallDir + "currentversions.txt")) System.IO.File.Delete(InstallDir + "currentversions.txt");
+        using (StreamWriter sw = new StreamWriter(File))
+        {
+            sw.WriteLine(data);
+        }
+    }
     public static void DataLoad(string File, string Type)
     {
         using (StreamReader file = new StreamReader(File))
@@ -282,8 +310,17 @@ public class SharpPackageManager
                 repourls.Add(keyValue.Value);
                 reponames.Add(keyValue.Key);
                 }
-                
+                else if (Type == "updates")
+                {
+                    updateversions.Add(keyValue.Value);
+                    updateappnames.Add(keyValue.Key);
                 }
+                else if (Type == "currentversions")
+                {
+                    currentappversions.Add(keyValue.Value);
+                    currentappnames.Add(keyValue.Key);
+                }
+            }
             repos.Clear();
             file.Close();
         }
