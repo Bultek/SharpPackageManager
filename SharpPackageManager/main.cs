@@ -213,7 +213,34 @@ public class SharpPackageManager
     }
     public static void CheckForAppUpdates(bool Out = true)
     {
-        
+        int appcount = currentappnames.Count();
+        int finappcount = 0;
+        int allappcount = appnames.Count();
+        List<string> apps = new List<string>();
+        List<int> appindex = new List<int>();
+        List<string> napps = new List<string>();
+        foreach (string appname in appnames)
+        {
+            if (currentappnames.Contains(appname))
+            {
+                apps.Add(appname);
+                appindex.Add(updateappnames.IndexOf(appname));
+            }
+        }
+        int i = 0;
+        foreach (int numba in appindex)
+        {
+            if (currentappversions[numba] < updateversions[numba])
+            {
+                napps.Add(currentappnames[i]);
+                i++;
+            };
+        }
+        while (finappcount <= appcount)
+        {
+            if (updateappnames.Contains(apps[finappcount])) InstallPkg(apps[finappcount]);
+            finappcount++;
+        }
     }
     public static void PressAnyKey(string what="exit")
     {
@@ -233,15 +260,17 @@ public class SharpPackageManager
             {
 
                 string currepopath = InstallDir + "apps" + reponames[i] + ".txt";
+                string currepopath2 = InstallDir + "versions" + reponames[i] + ".txt";
                 if (System.IO.File.Exists(currepopath)) System.IO.File.Delete(currepopath);
+                if (System.IO.File.Exists(currepopath2)) System.IO.File.Delete(currepopath2);
                 //Console.WriteLine(repourls[i]);
                 if (Out == true) Console.WriteLine("Updating " + reponames[i]);
                 srcdl.DownloadFile(repourls[i] + "/apps.txt", currepopath);
-                srcdl.DownloadFile(repourls[i] + "/versions.txt", currepopath);
+                srcdl.DownloadFile(repourls[i] + "/versions.txt", currepopath2);
 
                 i++;
                 DataLoad(currepopath, "apps");
-                DataLoad(currepopath, "updates");
+                DataLoad(currepopath2, "updates");
 
                 //Console.WriteLine(appnames[i]);
                 // Param1 = Link of file
@@ -306,31 +335,30 @@ public class SharpPackageManager
                 repos.Add(ln3[0], ln3[1]);
                }
 
-                foreach (KeyValuePair<string, string> keyValue in repos)
+            foreach (KeyValuePair<string, string> keyValue in repos)
             {
-                if (Type == "apps")
+                switch (Type)
                 {
-                    appurls.Add(keyValue.Value);
-                    appnames.Add(keyValue.Key);
+                    case "apps":
+                        appurls.Add(keyValue.Value);
+                        appnames.Add(keyValue.Key);
+                        break;
+                    case "repos":
+                        repourls.Add(keyValue.Value);
+                        reponames.Add(keyValue.Key);
+                        break;
+                    case "updates":
+                        updateversions.Add(int.Parse(keyValue.Value));
+                        updateappnames.Add(keyValue.Key);
+                        break;
+                    case "currentversions":
+                        currentappversions.Add(int.Parse(keyValue.Value));
+                        currentappnames.Add(keyValue.Key);
+                        break;
                 }
-                else if (Type == "repos")
-                {
-                repourls.Add(keyValue.Value);
-                reponames.Add(keyValue.Key);
-                }
-                else if (Type == "updates")
-                {
-                    updateversions.Add(int.Parse(keyValue.Value));
-                    updateappnames.Add(keyValue.Key);
-                }
-                else if (Type == "currentversions")
-                {
-                    currentappversions.Add(int.Parse(keyValue.Value));
-                    currentappnames.Add(keyValue.Key);
-                }
-            }
+            }   
             repos.Clear();
             file.Close();
         }
-        }
     }
+}
