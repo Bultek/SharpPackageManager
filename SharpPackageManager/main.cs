@@ -24,7 +24,6 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
-
         if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
         {
             Console.WriteLine("Unlocking update on app start and executing the app...");
@@ -59,10 +58,7 @@ public class SharpPackageManager
             System.IO.File.Delete(InstallDir + "clean.txt");
             Console.WriteLine("Update Finished!");
         }
-        else
-        {
-            MainApp();
-        }
+        else MainApp();
        
     }
     public static void MainApp()
@@ -70,11 +66,11 @@ public class SharpPackageManager
 
         if (!System.IO.Directory.Exists("C:\\SPM\\Downloads")) System.IO.Directory.CreateDirectory("C:\\SPM\\Downloads");
         if (!System.IO.Directory.Exists("C:\\SPM\\config")) System.IO.Directory.CreateDirectory("C:\\SPM\\config");
-        if (!System.IO.File.Exists(InstallDir+"currentversions.txt")) System.IO.File.Create(InstallDir+"currentversions.txt");
+        if (!System.IO.File.Exists(InstallDir + "currentversions.txt")) System.IO.File.Create(InstallDir+"currentversions.txt");
         if (!System.IO.File.Exists(InstallDir + "latestversions.txt")) System.IO.File.Create(InstallDir + "latestversions.txt");
 
         DataLoad(InstallDir + "sources.txt", "repos");
-        DataLoad(InstallDir + "currentversions.txt", "repos");
+        DataLoad(InstallDir + "currentversions.txt", "currentversions");
         if(System.IO.File.Exists(InstallDir+"latestversions.txt")) DataLoad(InstallDir + "latestversions.txt", "updates");
 
         if (System.IO.File.Exists(InstallDir + "appsbultek.txt")) DataLoad(InstallDir + "appsbultek.txt", "apps");
@@ -88,7 +84,7 @@ public class SharpPackageManager
         string action = Console.ReadLine();
         if (action == "i") // | action == "install")
         {
-            SmartPkgInstall(Console.ReadLine());
+            SmartPkgInstall();
         }
         else if (action == "up") DataUpdate();
         else if (action == "aup") CheckForAppUpdates();
@@ -211,35 +207,35 @@ public class SharpPackageManager
         }
         else Console.WriteLine("Please specify the package correctly!");
     }
-    public static void CheckForAppUpdates(bool Out = true)
+    public static void CheckForAppUpdates()
     {
-        int appcount = currentappnames.Count();
-        int finappcount = 0;
-        int allappcount = appnames.Count();
-        List<string> apps = new List<string>();
-        List<int> appindex = new List<int>();
-        List<string> napps = new List<string>();
-        foreach (string appname in appnames)
-        {
-            if (currentappnames.Contains(appname))
-            {
-                apps.Add(appname);
-                appindex.Add(updateappnames.IndexOf(appname));
-            }
-        }
-        int i = 0;
-        foreach (int numba in appindex)
-        {
-            if (currentappversions[numba] < updateversions[numba])
-            {
-                napps.Add(currentappnames[i]);
+        // Download the latest versions info 
+        using (WebClient datadl = new WebClient()) {
+            int i = 0;
+            while (i < reponames.Count) {
+                Console.WriteLine("Updating " + reponames[i]); // Show which repo is being updated now.
+                // Download latest versions info
+                string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
+                datadl.DownloadFile(repourls[i], currepopath);
+                // Load latest versions info
+                DataLoad(currepopath, "updates");
                 i++;
-            };
-        }
-        while (finappcount <= appcount)
-        {
-            if (updateappnames.Contains(apps[finappcount])) InstallPkg(apps[finappcount]);
-            finappcount++;
+            }
+            // Check if any packages are installed
+            if (currentappversions.Count==0) Console.WriteLine("You don't have any packages!");
+            else {
+                int a = 0;
+                int b = appnames.Count;
+                int x;
+                while (a < b) {
+                    x = currentappnames.IndexOf(updateappnames[a]);
+                    if (currentappversions[a]<updateversions[x]) {
+                        // Update needed app
+                        Console.WriteLine("Updating " + currentappnames[a]);
+                        InstallPkg(currentappnames[a], false);
+                    }
+                }
+            }
         }
     }
     public static void PressAnyKey(string what="exit")
@@ -260,17 +256,14 @@ public class SharpPackageManager
             {
 
                 string currepopath = InstallDir + "apps" + reponames[i] + ".txt";
-                string currepopath2 = InstallDir + "versions" + reponames[i] + ".txt";
                 if (System.IO.File.Exists(currepopath)) System.IO.File.Delete(currepopath);
-                if (System.IO.File.Exists(currepopath2)) System.IO.File.Delete(currepopath2);
+
                 //Console.WriteLine(repourls[i]);
                 if (Out == true) Console.WriteLine("Updating " + reponames[i]);
                 srcdl.DownloadFile(repourls[i] + "/apps.txt", currepopath);
-                srcdl.DownloadFile(repourls[i] + "/versions.txt", currepopath2);
 
                 i++;
                 DataLoad(currepopath, "apps");
-                DataLoad(currepopath2, "updates");
 
                 //Console.WriteLine(appnames[i]);
                 // Param1 = Link of file
@@ -281,10 +274,10 @@ public class SharpPackageManager
             }
             MainApp();
         }
-    public static void SmartPkgInstall(string Package)
+    public static void SmartPkgInstall()
     {
         Console.WriteLine("Which Package do you want to install?");
- 
+        string Package = Console.ReadLine();
         //char curchar;
         char space = ' ';
         int pkgspacecounter = 0;
