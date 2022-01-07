@@ -9,7 +9,7 @@ public class SharpPackageManager
     public static int latestversion;
     public static int currentversion =  5;
     public static string curbranch = "ptb";
-    public static string tag;
+    public static string?    tag;
     public static List<String> reponames = new List<String>();
     public static List<String> repourls = new List<String>();
     public static List<String> appnames = new List<String>();
@@ -172,7 +172,7 @@ public class SharpPackageManager
     {
         if (appnames.Contains(Package))
         {
-            //CheckForAppUpdates(false);
+            CheckForAppUpdates(false, true);
             if (System.IO.File.Exists(InstallPath + "Downloads\\" + Package + ".exe")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
             string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".exe";
             int pkgnumber = appnames.IndexOf(Package);
@@ -198,7 +198,7 @@ public class SharpPackageManager
             if (currentappnames != null)
             {
                 foreach (string pkg in currentappnames) {
-                    if (pkg == currentappnames[0]) WriteData(InstallDir + "currentversions.txt", "AppendToFile", pkg + ", " + pkgver);
+                    if (pkg == currentappnames[0]) WriteData(InstallDir + "currentversions.txt", "AppendToFile", currentappnames[0] + ", " + currentappversions[0]);
                     else WriteData(InstallDir + "currentversions.txt", "AppendToFile", "\n"+ pkg + ", " + pkgver);
                 }
             }
@@ -242,6 +242,7 @@ public class SharpPackageManager
                     while (a < b) {
                         x = currentappnames.IndexOf(updateappnames[a]);
                         if (currentappversions[a]<updateversions[x]) {
+                            DataLoad(InstallDir + "currentversions.txt", "currentversions");
                             // Update needed app
                             Console.WriteLine("Updating " + currentappnames[a]);
                             InstallPkg(currentappnames[a], true);
