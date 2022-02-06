@@ -33,6 +33,7 @@ public class SharpPackageManager
             PackageStartInfo.StartInfo.UseShellExecute = true;
             PackageStartInfo.StartInfo.Verb = "runas";
             PackageStartInfo.Start();
+            PressAnyKey();
         }
         else if (System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.Directory.Exists("C:\\SPM\\clean.txt"))
         {
@@ -49,6 +50,7 @@ public class SharpPackageManager
             }
             System.IO.File.Create(InstallDir + "clean.txt");
             Console.WriteLine("Please restart the app!");
+            PressAnyKey();
         }
         else if (System.IO.File.Exists("C:\\SPM\\config\\clean.txt"))
         {
@@ -57,6 +59,7 @@ public class SharpPackageManager
             System.IO.File.Delete("C:\\SPM.zip");
             System.IO.File.Delete(InstallDir + "clean.txt");
             Console.WriteLine("Update Finished!");
+            PressAnyKey();
         }
         else MainApp();
        
@@ -173,36 +176,17 @@ public class SharpPackageManager
         if (appnames.Contains(Package))
         {
             CheckForAppUpdates(false, true);
-            if (System.IO.File.Exists(InstallPath + "Downloads\\" + Package + ".exe")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
-            string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".exe";
-            int pkgnumber = appnames.IndexOf(Package);
-            //Console.WriteLine(pkgnumber);
-            if (!Directory.Exists("C:\\SPM\\Downloads\\")) Directory.CreateDirectory("C:\\SPM\\Downloads\\");
-            Console.WriteLine("Downloading the package...");
-            using (WebClient pkgdl = new WebClient())
-            {
-                pkgdl.DownloadFile(appurls[pkgnumber], pkgdir);
-                // Param1 = Link of file
-                // Param2 = Path to save
-            }
-            int pkgver = updateversions[pkgnumber];
-            Process PackageStartInfo = new Process();
-            PackageStartInfo.StartInfo.FileName = pkgdir;
-            PackageStartInfo.StartInfo.UseShellExecute = true;
-            PackageStartInfo.StartInfo.Verb = "runas";
-            PackageStartInfo.Start();
+            //CheckForAppUpdates(false);
+            //if (System.IO.File.Exists(InstallDir + "currentversions.txt")) System.IO.File.Delete(InstallDir + "currentversions.txt");
+            DataUpdate();
             DataLoad(InstallDir + "currentversions.txt", "currentversions");
-            if (System.IO.File.Exists(InstallDir + "currentversions.txt")) System.IO.File.Delete(InstallDir + "currentversions.txt");
+            //DataLoad(InstallDir + reponames[1], "a");
             currentappnames.Add(Package);
             currentappversions.Add(pkgver);
-            if (currentappnames != null)
-            {
-                foreach (string pkg in currentappnames) {
-                    if (pkg == currentappnames[0]) WriteData(InstallDir + "currentversions.txt", "AppendToFile", currentappnames[0] + ", " + currentappversions[0]);
-                    else WriteData(InstallDir + "currentversions.txt", "AppendToFile", "\n"+ pkg + ", " + pkgver);
-                }
-            }
-            else WriteData(InstallDir + "currentversions.txt", "WriteFile", Package + ", " + pkgver);
+            int ver = updateappnames.IndexOf(Package);
+            int appverindex = updateversions[ver];
+            string wrdata = Package + ", " + appverindex;
+            WriteData(InstallDir + "currentversions.txt", wrdata);
             if (Multi) PressAnyKey("continue");
             else PressAnyKey("exit", true);
         }
@@ -326,7 +310,7 @@ public class SharpPackageManager
         }
         else InstallPkg(Package);
     }
-    public static void WriteData(string File, string Type, string data)
+    public static void WriteData(string File, string data, string Type)
     {
         switch (Type) {
             case "WriteFile":
