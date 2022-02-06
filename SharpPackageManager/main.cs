@@ -95,8 +95,8 @@ public class SharpPackageManager
         else if (action == "upd") CheckForAppUpdates(false, true); 
         else if (action == "ak")
         {
-            Console.WriteLine("Please write the appkit txt file path (also please enter path with double \\ (example C:\\\\example\\\\appkit.txt)");
-            string kitpath = (Console.ReadLine());
+            Console.WriteLine("Please write the appkit txt file path");
+            string kitpath = @Console.ReadLine();
             if (kitpath != null) AppKits(kitpath);
             else Console.WriteLine("Kit path has to be something another (not null)");
         }
@@ -176,17 +176,40 @@ public class SharpPackageManager
         if (appnames.Contains(Package))
         {
             CheckForAppUpdates(false, true);
+            if (System.IO.File.Exists(InstallPath + "Downloads\\" + Package + ".exe")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
+            string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".exe";
+            int pkgnumber = appnames.IndexOf(Package);
+            //Console.WriteLine(pkgnumber);
+            if (!Directory.Exists("C:\\SPM\\Downloads\\")) Directory.CreateDirectory("C:\\SPM\\Downloads\\");
+            Console.WriteLine("Downloading the package...");
+            using (WebClient pkgdl = new WebClient())
+            {
+                pkgdl.DownloadFile(appurls[pkgnumber], pkgdir);
+                // Param1 = Link of file
+                // Param2 = Path to save
+            }
+            Process PackageStartInfo = new Process();
+            PackageStartInfo.StartInfo.FileName = pkgdir;
+            PackageStartInfo.StartInfo.UseShellExecute = true;
+            PackageStartInfo.StartInfo.Verb = "runas";
+            PackageStartInfo.Start();
+            PackageStartInfo.WaitForExit();
             //CheckForAppUpdates(false);
             //if (System.IO.File.Exists(InstallDir + "currentversions.txt")) System.IO.File.Delete(InstallDir + "currentversions.txt");
-            DataUpdate();
+            Console.WriteLine("Not Loaded currentversions.txt");
+            DataUpdate(false);
+            Console.WriteLine("Not Loaded currentversions.txt");
             DataLoad(InstallDir + "currentversions.txt", "currentversions");
+            Console.WriteLine("Loaded currentversions.txt");
             //DataLoad(InstallDir + reponames[1], "a");
-            currentappnames.Add(Package);
-            currentappversions.Add(pkgver);
+
             int ver = updateappnames.IndexOf(Package);
             int appverindex = updateversions[ver];
-            string wrdata = Package + ", " + appverindex;
-            WriteData(InstallDir + "currentversions.txt", wrdata);
+            currentappnames.Add(Package);
+            currentappversions.Add(appverindex);
+            string wrdata = "\n"+Package + ", " + appverindex;
+            Console.WriteLine(wrdata);
+            WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
             if (Multi) PressAnyKey("continue");
             else PressAnyKey("exit", true);
         }
@@ -217,8 +240,15 @@ public class SharpPackageManager
         }
             if (autoUpdate) {
                 // Check if any packages are installed and if user has updates
+                bool updates = false;
+                foreach (string app in currentappnames)
+                {
+                    int appindex = updateappnames.IndexOf(app);
+                    int currentappindex = currentappnames.IndexOf(app);
+                    if (updateversions[appindex]>currentappversions[appindex] && updateversions !=null) updates = true;
+                }
                 if (currentappversions.Count == 0) Console.WriteLine("You don't have any packages!");
-                else if (updateappnames.Count == 0) Console.WriteLine("No Updates available!"); 
+                else if (updateappnames.Count == 0 && !updates) Console.WriteLine("No Updates available!"); 
                 else {
                     int a = 0;
                     int b = appnames.Count;
@@ -274,7 +304,7 @@ public class SharpPackageManager
             i = 0;
 
             }
-            MainApp();
+            if (Out) MainApp();
         }
     public static void SmartPkgInstall()
     {
