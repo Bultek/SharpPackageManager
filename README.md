@@ -32,8 +32,8 @@ Package Manager written on C#
       5. The base of the syntax is ```name, value```
       6. If syntax is broken the app WILL crash!
    * AppKits
-      2. Just arrange the apps in a txt file (e.g magic.txt)
-      3. All apps have to be in their own line
+      1. Just arrange the apps in a txt file (e.g magic.txt)
+      2. All apps have to be in their own line
       
 ## How to setup a repo
  1. Use a web hosting (or github pages)
