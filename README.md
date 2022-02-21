@@ -10,12 +10,11 @@ Package Manager written on C#
   3. Build the app
   4.1 Run ```dotnet build```
   4.1.1 Copy the output to C:\SPM
-  ##### Alternatively
+  Alternatively
   4.2 Use ```dotnetpublisher-win.ps1``` from the project path
   4.2.1 Run it with two arguments, 1) Output folder 2) Solution or SharpPackageManager.csproj (we recommend the second option!)
   4.2.2 Copy .exe file to ```C:\SPM```
-  ##### Set up config files
-  Setup the config files
+  Set up config files
   5 Create ```sources.txt``` file in ```C:\SPM\config```
   5.1 (optional) Fill the default repo ```bultek, http://bpmr.bultek.com.ua```
   6. Create ```currentversions.txt``` file in ```C:\SPM\config```
