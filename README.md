@@ -20,9 +20,9 @@ Package Manager written on C#
   Usage is pretty obvious, everything is explained when you start the app!
 ## Contributing
   To contribute to our project you need to
-    1. Fork the project
-    2. Make some changes in the dev branch
-    3. Create a pull request
+  1. Fork the project
+  2. Make some changes in the dev branch
+  3. Create a pull request
 ## Syntax of config files and appkits
    * Config files
       1. apps<reponame>.txt and versions<reponame>.txt are highly connected
