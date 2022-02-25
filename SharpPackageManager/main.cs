@@ -3,16 +3,19 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 public class SharpPackageManager
 {
     public static int latestversion;
     public static int currentversion =  5;
     public static string curbranch = "ptb";
-    public static string?    tag;
+    public static string? tag;
     public static List<String> reponames = new List<String>();
     public static List<String> repourls = new List<String>();
     public static List<String> appnames = new List<String>();
+    public static List<char> spacecharacters = new List<char>();
     public static List<String> appurls = new List<String>();
     public static List<String> updateappnames = new List<String>();
     public static List<int> updateversions = new List<int>();
@@ -24,6 +27,7 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
+        spacecharacters.Add(' ');
         if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
         {
             Console.WriteLine("Unlocking update on app start and executing the app...");
@@ -87,12 +91,15 @@ public class SharpPackageManager
         string action = Console.ReadLine();
         if (action == "i") // | action == "install")
         {
-            SmartPkgInstall();
+            Console.WriteLine("Package to install (note: you can install only one package)");
+            string Package=Console.ReadLine();
+            if (Package != null) {
+                InstallPkg(Package);
+            }
+            else { Console.WriteLine("ERROR: Package can't be null"); PressAnyKey("exit", true); }
         }
         else if (action == "up") DataUpdate();
-        else if (action == "upg") CheckForAppUpdates();
-        else if (action == "upgo") CheckForAppUpdates(true, false);
-        else if (action == "upd") CheckForAppUpdates(false, true); 
+        else if (action == "upg") CheckForAppUpdates(true, true);
         else if (action == "ak")
         {
             Console.WriteLine("Please write the appkit txt file path");
@@ -154,7 +161,7 @@ public class SharpPackageManager
             string[] temp;
             int i = 0;
             string ln2;
-            Console.WriteLine("You wil install: ");
+            Console.WriteLine("You will install: ");
             while ((ln2 = file.ReadLine()) != null)
             {
                 temp = ln2.Split("/n");
@@ -164,18 +171,22 @@ public class SharpPackageManager
         }
         Console.WriteLine("Installing Packages...");
         int finappcount = 0;
-        do
+        while (finappcount < kitappnames.Count);
         {
             InstallPkg(kitappnames[finappcount], true);
             finappcount++;
-        }while (finappcount < kitappnames.Count);
+        }
         PressAnyKey();
     }
     public static void InstallPkg(string Package, bool Multi=false, bool upgrade=false)
     {
         if (appnames.Contains(Package))
         {
-            CheckForAppUpdates(false, true);
+            if (!upgrade) CheckForAppUpdates(false, true);
+            DataLoad(InstallDir + "currentversions.txt", "currentversions");
+            if (currentappnames.Contains(Package) && !upgrade) {
+                Console.WriteLine("This Package is already installed. If you want to install it again remove it from the currentversions.txt file. \n WARNING: It may break something!");
+            }
             if (System.IO.File.Exists(InstallPath + "Downloads\\" + Package + ".exe")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
             string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".exe";
             int pkgnumber = appnames.IndexOf(Package);
@@ -197,7 +208,6 @@ public class SharpPackageManager
             //CheckForAppUpdates(false);
             //if (System.IO.File.Exists(InstallDir + "currentversions.txt")) System.IO.File.Delete(InstallDir + "currentversions.txt");
             DataUpdate(false);
-            DataLoad(InstallDir + "currentversions.txt", "currentversions");
             //DataLoad(InstallDir + reponames[1], "a");
 
 
@@ -211,29 +221,6 @@ public class SharpPackageManager
                 Console.WriteLine(wrdata);
                 WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
             }
-            else
-            {
-                System.IO.File.Delete(InstallDir + "currentversions.txt");
-                System.IO.File.Create(InstallDir + "currentversions.txt");
-                WriteData(InstallDir + "currentversions.txt", "placeholder, 1", "AppendToFile");
-                foreach (string WPackage in updateappnames)
-                {
-
-                    int wver = updateappnames.IndexOf(WPackage);
-                    int wappverindex = updateversions[wver];
-
-                    string Wwrdata = "\n" + WPackage + ", " + wappverindex;
-                    
-                    
-                    if (currentappnames.Contains(WPackage))
-                    {
-                        int ver = currentappnames.IndexOf(WPackage);
-                        int appverindex = currentappversions[wver];
-                        currentappversions[ver] = wappverindex;
-                        WriteData(InstallDir + "currentversions.txt", Wwrdata, "AppendToFile");
-                    }
-                }
-            }
             if (Multi) PressAnyKey("continue");
             else PressAnyKey("exit", true);
         }
@@ -242,12 +229,12 @@ public class SharpPackageManager
     public static void CheckForAppUpdates(bool autoUpdate=true, bool download=true)
     {
         // Clear updates cache
-        if (download) {
+        if (download && !autoUpdate) {
             if (updateversions!=null && updateappnames!=null) {
                 updateversions.Clear();
                 updateappnames.Clear();
             }
-            // Download the latest versions info 
+            Console.WriteLine("Downloading the latest versions info");
             using (WebClient datadl = new WebClient()) {
                 int i = 0;
                 while (i < reponames.Count) {
@@ -262,7 +249,10 @@ public class SharpPackageManager
                 }
             }
         }
+            
+            Console.WriteLine("Checking For Updates...");
             if (autoUpdate) {
+            CheckForAppUpdates(false, true);
             using (WebClient datadl = new WebClient())
             {
                 int i = 0;
@@ -276,44 +266,64 @@ public class SharpPackageManager
                     i++;
                 }
             }
+            Console.WriteLine("Loading Data");
+            DataLoad(InstallDir + "currentversions.txt", "currentversions");
             // Check if any packages are installed and if user has updates
             bool updates = false;
+                List<String> updatecount = new List<String>();
                 foreach (string app in currentappnames)
                 {
-                    int appindex = updateappnames.IndexOf(app);
-                    int currentappindex = currentappnames.IndexOf(app);
-                    if (updateversions[appindex]>currentappversions[appindex] && updateversions !=null) updates = true;
+                    if (app!="placeholder"){
+                        int appindex = updateappnames.IndexOf(app);
+                        int currentappindex = currentappnames.IndexOf(app);
+                        Console.WriteLine(appindex + "\n"+currentappindex+"\n"+app);
+                        if (currentappversions[currentappindex]<updateversions[appindex]) {
+                            updatecount.Add(app);
+                            updates = true;
+                        }
+                        foreach (string update in updatecount) {
+                            Console.WriteLine(update);
+                        }
+                    }
                 }
-                if (currentappversions.Count == 0) Console.WriteLine("You don't have any packages!");
-                else if (updateappnames.Count == 0 && !updates) Console.WriteLine("No Updates available!"); 
+                
+                if (currentappversions.Count == 0) {
+                    Console.WriteLine("You don't have any packages!");
+                    PressAnyKey();
+                }
+                else if (!updates && updatecount.Count == 0) {
+                    Console.WriteLine("No Updates available!"); 
+                    PressAnyKey();
+                }
                 else {
-                    int a = 0;
-                    int b = appnames.Count;
-                    int x = -1;
-                    int prex = -1;
-                    while (a < b) {
-
-                        while (x == prex) {
-                            try {
-                            prex = x;
-                            x = currentappnames.IndexOf(updateappnames[a]); 
-
-                        }
-                            catch (ArgumentOutOfRangeException) { a++; }
+                    bool multiple = true;
+                    if (updatecount.Count==1) {
+                        multiple=false;
+                    }  
+                            // Clear currentversions.txt
+                            System.IO.File.WriteAllText(InstallDir+"currentversions.txt", string.Empty);
+                            WriteData(InstallDir + "currentversions.txt", "placeholder, 1", "AppendToFile");
+                            foreach (string app in currentappnames) {
+                            if (updatecount.Contains(app)) {
+                                InstallPkg(app, multiple, true);
+                                int ver = updateappnames.IndexOf(app);
+                                int appverindex = updateversions[ver];
+                                currentappversions[ver] = appverindex;
+                            }
                     }
-                    if (currentappversions[a]<updateversions[x]) {
-                            DataLoad(InstallDir + "currentversions.txt", "currentversions");
-                            // Update needed app
-                            Console.WriteLine("Updating " + currentappnames[a]);
-                            InstallPkg(currentappnames[a], true, true);
-                            // Reload currentappversions
-                            DataLoad(InstallDir+"currentversions.txt", "currentversions");
-                            a++;
-                        }
-                    }
+                            foreach (string package in currentappnames)
+                            {
+                                // Write current versions to currentappversions.txt
+                                int writeappverindex=updateappnames.IndexOf(package);
+                                int writeappver=updateversions[writeappverindex];
+                                string wrdata = "\n" + package + ", " + writeappver;
+                                WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
+                            }
+                
                 }
             }
     }
+    
     public static void PressAnyKey(string what="exit", bool exit=false)
     {
         Console.WriteLine("Press Any key to "+what+"...");
@@ -352,50 +362,23 @@ public class SharpPackageManager
             }
             if (Out) MainApp();
         }
-    public static void SmartPkgInstall()
-    {
-        Console.WriteLine("Which Package do you want to install?");
-        string Package = Console.ReadLine();
-        //char curchar;
-        char space = ' ';
-        int pkgspacecounter = 0;
-        if (Package.Contains(' '))
-        {
-            string[] pkgs;
-            //Console.WriteLine("Pered Furichem");
-            foreach (char curchar in Package)
-            {
-                if (space == curchar)
-                {
-                    pkgspacecounter++;
-                    //Console.WriteLine("+ pkgspacecounter");
-                }
-            }
-
-            pkgs = Package.Split(' ');
-            //Console.WriteLine("Pkgs splitted");
-            if (pkgspacecounter > 0)
-            {
-                int i = 0;
-                while (i < pkgspacecounter++)
-                {
-                    InstallPkg(pkgs[i], true);
-                    i++;
-                }
-            }
-        }
-        else InstallPkg(Package);
-    }
     public static void WriteData(string File, string data, string Type)
     {
-        switch (Type) {
-            case "WriteFile":
-                using (StreamWriter sw = new StreamWriter(File)) sw.Write(data); 
-                break;
-            case "AppendToFile":
-                System.IO.File.AppendAllText(File, data);
-                break;
-        }
+            if (Type == "AppendToFile") {
+                for (int i=1; i <= 3; ++i) {
+                    try {
+                        System.IO.File.AppendAllTextAsync(File, data);
+                        break; // When done we can break loop
+                    }
+                    catch (IOException e) when (i <= 3) {
+                    // You may check error code to filter some exceptions, not every error
+                    // can be recovered.
+                    Thread.Sleep(1000);
+                    Console.WriteLine("Error: Failed to acsess file");
+                    }
+                    break;
+                }
+            }       
     }
     public static void DataLoad(string File, string Type)
     {
@@ -417,10 +400,6 @@ public class SharpPackageManager
                     case "repos":
                         repourls.Clear();
                         reponames.Clear();
-                        break;
-                    case "updates":
-                        updateappnames.Clear();
-                        updateversions.Clear();
                         break;
                     case "currentversions":
                         currentappversions.Clear();
@@ -454,5 +433,14 @@ public class SharpPackageManager
             repos.Clear();
             file.Close();
         }
+    }
+}
+public static class Extensions
+{
+    public static string Filter(this string str, List<char> charsToRemove)
+    {
+        // return String.Join(String.Empty, str.Split(charsToRemove.ToArray()));
+ 
+        return String.Concat(str.Split(charsToRemove.ToArray()));
     }
 }
