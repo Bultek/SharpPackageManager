@@ -11,7 +11,7 @@ using System.Threading;
 public class SharpPackageManager
 {
     public static int latestversion;
-    public static int currentversion =  5;
+    public static int currentversion =  6;
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
