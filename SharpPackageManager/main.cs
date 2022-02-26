@@ -227,6 +227,17 @@ public class SharpPackageManager
             else PressAnyKey("exit", true);
         }
         else Console.WriteLine("Please specify the package correctly!");
+        
+    }
+    public static void UpgradePKG(string pkg, bool multiple) {
+        int latestappverindex = updateappnames.IndexOf(pkg);
+        int currentappverindex = currentappnames.IndexOf(pkg);
+        int currentappver = currentappversions[currentappverindex];
+        int latestappverversion = updateversions[latestappverindex];
+        if (latestappverversion>currentappver){
+            InstallPkg(pkg, multiple, true);
+            currentappversions[currentappverindex]=latestappverversion;
+        }
     }
     public static void CheckForAppUpdates(bool autoUpdate=true, bool download=true, bool output=true)
     {
@@ -281,6 +292,7 @@ public class SharpPackageManager
                         if (currentappversions[currentappindex]<updateversions[appindex]) {
                             updatecount.Add(app);
                             updates = true;
+                            Debug.WriteLine("App added to updatecount! ("+app+")");
                         }
                     }
                 }
@@ -303,12 +315,11 @@ public class SharpPackageManager
                             DataLoad(InstallDir + "currentversions.txt", "currentversions");
                             System.IO.File.WriteAllText(InstallDir+"currentversions.txt", string.Empty);
                             WriteData(InstallDir+"currentversions.txt", "placeholder, 1", "AppendToFile");
-                            int updatecountint = updatecount.Count;
-                            int finappcount = 0;
+/*                            int finappcount = 0;
                             int ver = 0;
                             int appverindex = 0;
                             int apppos = 0;
-                            while(finappcount <= updatecountint) {
+                            foreach (string update in updatecount) {
                                     string app = updatecount[finappcount];
                                     InstallPkg(app, multiple, true);
                                     ver = updateappnames.IndexOf(app);
@@ -318,8 +329,10 @@ public class SharpPackageManager
                                     ver = 0;
                                     appverindex = 0;
                                     apppos = 0;
-
-                                    finappcount++;
+                            } 
+*/
+                            foreach (string update in updatecount){
+                                UpgradePKG(update, multiple);
                             }
                             foreach (string pack in currentappnames)
                             {
@@ -334,6 +347,7 @@ public class SharpPackageManager
                             PressAnyKey();
                 }
             }
+
     }
     
     public static void PressAnyKey(string what="exit", bool exit=false)

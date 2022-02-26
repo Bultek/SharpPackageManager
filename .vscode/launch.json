@@ -1,6 +1,17 @@
 {
     "version": "0.2.0",
     "configurations": [
+    {
+        "name": ".NET Core Launch (console)",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        "program": "${workspaceFolder}/SharpPackageManager/bin/Debug/net6.0/SharpPackageManager.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "stopAtEntry": false,
+        "console": "integratedTerminal"
+    },
     
         {
             // Use IntelliSense to find out which attributes exist for C# debugging
