@@ -5,13 +5,14 @@ using System.IO.Compression;
 using System.Net;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 #pragma warning disable
 
 public class SharpPackageManager
 {
+    public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  6;
+    public static int currentversion =  7;
+    public static string appversion = "v1.1 PTB-2";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -52,7 +53,10 @@ public class SharpPackageManager
             {
                 string fileName = System.IO.Path.GetFileName(upfile);
                 string destFile = System.IO.Path.Combine(InstallPath + fileName);
+                System.IO.Directory.Move(InstallDir, "C:\\SPM\\oldconfig");
                 System.IO.File.Copy(upfile, destFile, true);
+                System.IO.File.Copy("C:\\SPM\\oldconfig", InstallDir, true);
+                System.IO.Directory.Delete("C:\\SPM\\oldconfig");
 
             }
             System.IO.File.Create(InstallDir + "clean.txt");
@@ -73,6 +77,26 @@ public class SharpPackageManager
     }
     public static void MainApp()
     {
+        Debug.WriteLine("Loading Modules");
+        if (File.Exists(@"C:\SPM\libspm.py") && Directory.Exists(@"C:\SPM\pythonlibspmruntime") && Directory.Exists(@"C:\SPM\modules") && !AreModulesLoaded) {
+            modules = Directory.GetDirectories(@"C:\SPM\modules");
+            foreach (string module in modules) {
+            if (File.Exists(module+"\\libspm.py")) {
+                File.Delete(module+"\\libspm.py");
+            }
+            System.IO.File.Copy("C:\\SPM\\libspm.py", module+"\\libspm.py");
+            Process PackageStartInfo = new Process();
+            PackageStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+            PackageStartInfo.StartInfo.Arguments = module+"\\init.py";
+            PackageStartInfo.StartInfo.UseShellExecute = true;
+            PackageStartInfo.Start();
+            PackageStartInfo.WaitForExit();
+            Debug.WriteLine(module+" Should be loaded");
+            Console.Clear();
+            AreModulesLoaded=true;
+            }
+        }
+        else Debug.WriteLine("No module loaded");
 
         if (!System.IO.Directory.Exists("C:\\SPM\\Downloads")) System.IO.Directory.CreateDirectory("C:\\SPM\\Downloads");
         if (!System.IO.Directory.Exists("C:\\SPM\\config")) System.IO.Directory.CreateDirectory("C:\\SPM\\config");
@@ -86,6 +110,7 @@ public class SharpPackageManager
         if (System.IO.File.Exists(InstallDir + "appsbultek.txt")) DataLoad(InstallDir + "appsbultek.txt", "apps");
         //DataUpdate(false);
         //DataLoad(InstallDir + "apps.txt", "apps");
+        Console.WriteLine("Sharp Package Manager by Bultek. "+appversion);
         Console.WriteLine("Please choose your action! And Before installing something update database please \n \n");
         Console.WriteLine("Install a package (Command: i) \n \n");
         Console.WriteLine("Install an AppKit (Command: ak) \n \n");
@@ -190,6 +215,19 @@ public class SharpPackageManager
             if (currentappnames.Contains(Package) && !upgrade) {
                 Console.WriteLine("This Package is already installed. If you want to install it again remove it from the currentversions.txt file. \n WARNING: It may break something!");
             }
+            if (!upgrade && AreModulesLoaded) {
+                foreach (string module in modules) {
+                if (File.Exists(module+"\\preinstallationhooks.py")){
+                    Process HookStartInfo = new Process();
+                    HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                    HookStartInfo.StartInfo.UseShellExecute = true;
+                    Console.WriteLine("Running pre-installation hook...");
+                    HookStartInfo.StartInfo.Arguments = module+"\\preinstallationhooks.py "+Package;
+                    HookStartInfo.Start();
+                    HookStartInfo.WaitForExit();
+                }
+            }
+        }
             if (System.IO.File.Exists(InstallPath + "Downloads\\" + Package + ".exe")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
             string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".exe";
             int pkgnumber = appnames.IndexOf(Package);
@@ -223,6 +261,19 @@ public class SharpPackageManager
                 string wrdata = "\n" + Package + ", " + appverindex;
                 Console.WriteLine(wrdata);
                 WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
+                if (AreModulesLoaded) {
+                foreach (string module in modules) {
+                    if (File.Exists(module+"\\postinstallationhooks.py")){
+                        Process HookStartInfo = new Process();  
+                        HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                        HookStartInfo.StartInfo.UseShellExecute = true;
+                        Console.WriteLine("Running post-installation hook...");
+                        HookStartInfo.StartInfo.Arguments = module+"\\postinstallationhooks.py "+Package;
+                        HookStartInfo.Start();
+                        HookStartInfo.WaitForExit();
+                    }
+                }
+                }
             }
             if (Multi || upgrade) PressAnyKey("continue");
             else PressAnyKey("exit", true);
@@ -231,6 +282,19 @@ public class SharpPackageManager
         
     }
     public static void UpgradePKG(string pkg, bool multiple) {
+        if (AreModulesLoaded) {
+        foreach (string module in modules) {
+            if (File.Exists(module+"\\preupgradehooks.py")){
+                Process HookStartInfo = new Process();  
+                HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                HookStartInfo.StartInfo.UseShellExecute = true;
+                Console.WriteLine("Running pre-upgrade hook...");
+                HookStartInfo.StartInfo.Arguments = module+"\\preupgradehooks.py "+pkg;
+                HookStartInfo.Start();
+                HookStartInfo.WaitForExit();
+                }
+            }
+        }
         int latestappverindex = updateappnames.IndexOf(pkg);
         int currentappverindex = currentappnames.IndexOf(pkg);
         int currentappver = currentappversions[currentappverindex];
@@ -238,6 +302,19 @@ public class SharpPackageManager
         if (latestappverversion>currentappver){
             InstallPkg(pkg, multiple, true);
             currentappversions[currentappverindex]=latestappverversion;
+        }
+        if (AreModulesLoaded) {
+        foreach (string module in modules) {
+            if (File.Exists(module+"\\postupgradehooks.py")){
+                Process HookStartInfo = new Process();  
+                HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                HookStartInfo.StartInfo.UseShellExecute = true;
+                Console.WriteLine("Running post-upgrade hook...");
+                HookStartInfo.StartInfo.Arguments = module+"\\postupgradehooks.py "+pkg;
+                HookStartInfo.Start();
+                HookStartInfo.WaitForExit();
+                }
+            }
         }
     }
     public static void CheckForAppUpdates(bool autoUpdate=true, bool download=true, bool output=true)
@@ -467,6 +544,8 @@ public class SharpPackageManager
             file.Close();
         }
     }
+
+    public static string[] modules;
 }
 public static class Extensions
 {
