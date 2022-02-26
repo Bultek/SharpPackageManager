@@ -42,4 +42,8 @@ Package Manager written on C#
  4. Set up both files using the SPM config syntax
  5. Add the repo to ```C:\SPM\sources.txt``` file
  6. You're done!
-      
+ 
+ # Modules
+ ## How to create a module?
+  We recommend using this ![example](https://github.com/mrquantumoff/supersimplebackups-spm-module)
+ 
