@@ -90,9 +90,10 @@ public class SharpPackageManager
         Console.WriteLine("Install a package (Command: i) \n \n");
         Console.WriteLine("Install an AppKit (Command: ak) \n \n");
         Console.WriteLine("Update database (Command: up) \n \n");
-        Console.WriteLine("Check for SPM updates (Command: spmup)");
+        Console.WriteLine("Check for SPM updates (Command: spmup) \n \n");
+        Console.WriteLine("Check for app updates and upgrade packages (Command: upg)");
         string action = Console.ReadLine();
-        if (action == "i") // | action == "install")
+        if (action == "i")
         {
             Console.WriteLine("Package to install (note: you can install only one package)");
             string Package=Console.ReadLine();
