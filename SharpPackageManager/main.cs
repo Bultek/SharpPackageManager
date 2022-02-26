@@ -11,7 +11,7 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  6;
+    public static int currentversion =  7;
     public static string appversion = "v1.1 PTB-2";
     public static string curbranch = "ptb";
     public static string? tag;
