@@ -91,7 +91,7 @@ public class SharpPackageManager
         Console.WriteLine("Install an AppKit (Command: ak) \n \n");
         Console.WriteLine("Update database (Command: up) \n \n");
         Console.WriteLine("Check for SPM updates (Command: spmup) \n \n");
-        Console.WriteLine("Check for app updates and upgrade packages (Command: upg))");
+        Console.WriteLine("Check for app updates and upgrade packages (Command: upg)");
         string action = Console.ReadLine();
         if (action == "i")
         {
