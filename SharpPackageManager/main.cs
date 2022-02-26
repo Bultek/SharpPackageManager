@@ -215,7 +215,7 @@ public class SharpPackageManager
             if (currentappnames.Contains(Package) && !upgrade) {
                 Console.WriteLine("This Package is already installed. If you want to install it again remove it from the currentversions.txt file. \n WARNING: It may break something!");
             }
-            if (!upgrade) {
+            if (!upgrade && AreModulesLoaded) {
                 foreach (string module in modules) {
                 if (File.Exists(module+"\\preinstallationhooks.py")){
                     Process HookStartInfo = new Process();
@@ -261,6 +261,7 @@ public class SharpPackageManager
                 string wrdata = "\n" + Package + ", " + appverindex;
                 Console.WriteLine(wrdata);
                 WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
+                if (AreModulesLoaded) {
                 foreach (string module in modules) {
                     if (File.Exists(module+"\\postinstallationhooks.py")){
                         Process HookStartInfo = new Process();  
@@ -272,6 +273,7 @@ public class SharpPackageManager
                         HookStartInfo.WaitForExit();
                     }
                 }
+                }
             }
             if (Multi || upgrade) PressAnyKey("continue");
             else PressAnyKey("exit", true);
@@ -280,6 +282,7 @@ public class SharpPackageManager
         
     }
     public static void UpgradePKG(string pkg, bool multiple) {
+        if (AreModulesLoaded) {
         foreach (string module in modules) {
             if (File.Exists(module+"\\preupgradehooks.py")){
                 Process HookStartInfo = new Process();  
@@ -291,6 +294,7 @@ public class SharpPackageManager
                 HookStartInfo.WaitForExit();
                 }
             }
+        }
         int latestappverindex = updateappnames.IndexOf(pkg);
         int currentappverindex = currentappnames.IndexOf(pkg);
         int currentappver = currentappversions[currentappverindex];
@@ -299,6 +303,7 @@ public class SharpPackageManager
             InstallPkg(pkg, multiple, true);
             currentappversions[currentappverindex]=latestappverversion;
         }
+        if (AreModulesLoaded) {
         foreach (string module in modules) {
             if (File.Exists(module+"\\postupgradehooks.py")){
                 Process HookStartInfo = new Process();  
@@ -310,6 +315,7 @@ public class SharpPackageManager
                 HookStartInfo.WaitForExit();
                 }
             }
+        }
     }
     public static void CheckForAppUpdates(bool autoUpdate=true, bool download=true, bool output=true)
     {
@@ -540,8 +546,6 @@ public class SharpPackageManager
     }
 
     public static string[] modules;
-
-
 }
 public static class Extensions
 {
