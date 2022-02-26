@@ -11,8 +11,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  9;
-    public static string appversion = "v1.1 PTB-4";
+    public static int currentversion =  10;
+    public static string appversion = "v1.1 PTB-5";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -28,10 +28,9 @@ public class SharpPackageManager
     public static string InstallPath = "C:\\SPM\\";
 
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
-    public static void Main(string[] args)
+   public static void Main(string[] args)
     {
-        Console.Title = "SharpPackageManager";
-        spacecharacters.Add(' ');
+
         if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
         {
             Console.WriteLine("Unlocking update on app start and executing the app...");
@@ -41,11 +40,25 @@ public class SharpPackageManager
             PackageStartInfo.StartInfo.UseShellExecute = true;
             PackageStartInfo.StartInfo.Verb = "runas";
             PackageStartInfo.Start();
-            PressAnyKey();
         }
         else if (System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.Directory.Exists("C:\\SPM\\clean.txt"))
         {
-            InstallPkg("SPMUPDATER", false, true);        
+            
+            Console.WriteLine("Update is unlocked, starting the main upgrade script...");
+            System.IO.File.Delete("C:\\SPM\\futureversion\\unlock.txt");
+            Console.WriteLine("Copying Files...");
+            string[] upfiles = System.IO.Directory.GetFiles("C:\\SPM\\futureversion\\SPM");
+            foreach (string upfile in upfiles)
+            {
+                string fileName = System.IO.Path.GetFileName(upfile);
+                string destFile = System.IO.Path.Combine(InstallPath + fileName);
+                if (!upfile.Contains("currentversions") || !upfile.Contains("sources")) {
+                    System.IO.File.Copy(upfile, destFile, true);
+                }
+
+            }
+            System.IO.File.Create(InstallDir + "clean.txt");
+            Console.WriteLine("Please restart the app!");
         }
         else if (System.IO.File.Exists("C:\\SPM\\config\\clean.txt"))
         {
@@ -54,9 +67,11 @@ public class SharpPackageManager
             System.IO.File.Delete("C:\\SPM.zip");
             System.IO.File.Delete(InstallDir + "clean.txt");
             Console.WriteLine("Update Finished!");
-            PressAnyKey();
         }
-        else MainApp();
+        else
+        {
+            MainApp();
+        }
        
     }
     public static void MainApp()
