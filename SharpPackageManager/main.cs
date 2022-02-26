@@ -5,7 +5,6 @@ using System.IO.Compression;
 using System.Net;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 #pragma warning disable
 
 public class SharpPackageManager
@@ -30,6 +29,8 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
+        Debug.WriteLine("Loading Modules");
+        LoadModules();
         Console.Title = "SharpPackageManager";
         spacecharacters.Add(' ');
         if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
@@ -467,6 +468,38 @@ public class SharpPackageManager
             }
             repos.Clear();
             file.Close();
+        }
+    }
+
+    public static string[] modules;
+    public static void LoadModules()
+    {
+        if (File.Exists(@"C:\SPM\libspm.py") && Directory.Exists(@"C:\SPM\pythonlibspmruntime") && Directory.Exists(@"C:\SPM\modules")) {
+            modules = Directory.GetDirectories(@"C:\SPM\modules");
+            foreach (string module in modules) {
+            Debug.WriteLine(module);
+            System.IO.File.Copy("C:\\SPM\\libspm.py", module+"\\libspm.py");
+            Process PackageStartInfo = new Process();
+            PackageStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+            PackageStartInfo.StartInfo.Arguments = module+"\\init.py";
+            PackageStartInfo.StartInfo.UseShellExecute = true;
+            PackageStartInfo.Start();
+            PackageStartInfo.WaitForExit();
+            Console.Clear();
+            }
+        }
+    }
+    public static void PreInstallHooks(string package) {
+        LoadModules();
+        foreach (string module in modules) {
+        Process PackageStartInfo = new Process();
+        PackageStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";            PackageStartInfo.StartInfo.Arguments = module+"\\init.py";
+        PackageStartInfo.StartInfo.UseShellExecute = true;
+        Console.WriteLine("Running pre-install hook...");
+        PackageStartInfo.StartInfo.Arguments = module+"\\preinstallhooks.py "+package;
+        PackageStartInfo.Start();
+        PackageStartInfo.WaitForExit();
+        Console.Clear();
         }
     }
 }
