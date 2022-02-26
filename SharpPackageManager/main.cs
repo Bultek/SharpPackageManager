@@ -46,19 +46,18 @@ public class SharpPackageManager
         else if (System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.Directory.Exists("C:\\SPM\\clean.txt"))
         {
             Console.WriteLine("Update is unlocked, starting the main upgrade script...");
-            System.IO.File.Delete("C:\\SPM\\futureversion\\unlock.txt");
             Console.WriteLine("Copying Files...");
             string[] upfiles = System.IO.Directory.GetFiles("C:\\SPM\\futureversion\\SPM");
             foreach (string upfile in upfiles)
             {
                 string fileName = System.IO.Path.GetFileName(upfile);
                 string destFile = System.IO.Path.Combine(InstallPath + fileName);
-                System.IO.Directory.Move(InstallDir, "C:\\SPM\\oldconfig");
                 System.IO.File.Copy(upfile, destFile, true);
-                System.IO.File.Copy("C:\\SPM\\oldconfig", InstallDir, true);
-                System.IO.Directory.Delete("C:\\SPM\\oldconfig");
-
             }
+            System.IO.Directory.Move(InstallDir, "C:\\SPM\\oldconfig");
+            System.IO.File.Copy("C:\\SPM\\oldconfig", InstallDir, true);
+            System.IO.Directory.Delete("C:\\SPM\\oldconfig");
+            System.IO.File.Delete("C:\\SPM\\futureversion\\unlock.txt");
             System.IO.File.Create(InstallDir + "clean.txt");
             Console.WriteLine("Please restart the app!");
             PressAnyKey();
