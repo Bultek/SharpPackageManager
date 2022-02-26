@@ -45,7 +45,7 @@ Package Manager written on C#
  
  # Modules
  
- ## Warning: WE DON'T RECOMMEND USING MODULES, they may cause crashes, compatibility issues (that's why it's not so easy to install them)
+ ## WARNING: WE DON'T RECOMMEND USING MODULES, they may cause crashes, compatibility issues (that's why it's not so easy to install them)
  ## How to create a module?
     SPM module is a collection of python scripts
   * Note: we recommend using ```libspm.py``` for os modules
@@ -53,8 +53,8 @@ Package Manager written on C#
   * We recommend using this ![example](https://github.com/mrquantumoff/supersimplebackups-spm-module)
   * Note: Just ```init.py``` file is essential!
  ## How to enable and use modules?
-  * Download ![libspm Python runtime](http://repo.bultek.com.ua/spmpythonruntime/python310.zip)
-  * Extract contents of the runtime to ```C:\SPM\libspmpythonruntime```
+  * Download libspm Python runtime - http://repo.bultek.com.ua/spmpythonruntime/python310.zip
+  * Extract contents of the runtime to ```C:\SPM\libspmpythonruntime``` folder (you'll have to create it)
   * Download libspm.py from the releases tab
   * Create ```C:\SPM\modules``` folder
   * Install modules, it should look like this ```C:\SPM\modules\<module-name>``` folder
