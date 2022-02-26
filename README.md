@@ -57,5 +57,5 @@ Package Manager written on C#
   * Extract contents of the runtime to ```C:\SPM\libspmpythonruntime``` folder (you'll have to create it)
   * Download libspm.py from the releases tab
   * Create ```C:\SPM\modules``` folder
-  * Install modules, it should look like this ```C:\SPM\modules\<module-name>``` folder
+  * Install modules, it should look like this ```C:\SPM\modules\<module-name>``` 
  
