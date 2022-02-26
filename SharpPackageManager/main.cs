@@ -12,6 +12,7 @@ public class SharpPackageManager
 {
     public static int latestversion;
     public static int currentversion =  6;
+    public static string appversion = "v1.1 PTB-2";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -86,6 +87,7 @@ public class SharpPackageManager
         if (System.IO.File.Exists(InstallDir + "appsbultek.txt")) DataLoad(InstallDir + "appsbultek.txt", "apps");
         //DataUpdate(false);
         //DataLoad(InstallDir + "apps.txt", "apps");
+        Console.WriteLine("Sharp Package Manager by Bultek. "+appversion);
         Console.WriteLine("Please choose your action! And Before installing something update database please \n \n");
         Console.WriteLine("Install a package (Command: i) \n \n");
         Console.WriteLine("Install an AppKit (Command: ak) \n \n");
