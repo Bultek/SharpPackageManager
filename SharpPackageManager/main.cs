@@ -11,8 +11,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  8;
-    public static string appversion = "v1.1 PTB-3";
+    public static int currentversion =  9;
+    public static string appversion = "v1.1 PTB-4";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -45,22 +45,7 @@ public class SharpPackageManager
         }
         else if (System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.Directory.Exists("C:\\SPM\\clean.txt"))
         {
-            Console.WriteLine("Update is unlocked, starting the main upgrade script...");
-            Console.WriteLine("Copying Files...");
-            string[] upfiles = System.IO.Directory.GetFiles("C:\\SPM\\futureversion\\SPM");
-            foreach (string upfile in upfiles)
-            {
-                string fileName = System.IO.Path.GetFileName(upfile);
-                string destFile = System.IO.Path.Combine(InstallPath + fileName);
-                System.IO.File.Copy(upfile, destFile, true);
-            }
-            System.IO.Directory.Move(InstallDir, "C:\\SPM\\oldconfig");
-            System.IO.File.Copy("C:\\SPM\\oldconfig", InstallDir, true);
-            System.IO.Directory.Delete("C:\\SPM\\oldconfig");
-            System.IO.File.Delete("C:\\SPM\\futureversion\\unlock.txt");
-            System.IO.File.Create(InstallDir + "clean.txt");
-            Console.WriteLine("Please restart the app!");
-            PressAnyKey();
+            InstallPkg("SPMUPDATER", false, true);        
         }
         else if (System.IO.File.Exists("C:\\SPM\\config\\clean.txt"))
         {
