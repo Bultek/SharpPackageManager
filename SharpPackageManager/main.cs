@@ -25,6 +25,11 @@ public class SharpPackageManager
     public static List<int> currentappversions = new List<int>();
     public static string InstallDir = "C:\\SPM\\config\\";
     public static string InstallPath = "C:\\SPM\\";
+    public static List<String> dependencies = new List<String>();
+    public static List<String> exectuable = new List<String>();
+
+    public static List<String> shortcuts = new List<String>();
+    public static List<String> type = new List<String>();
 
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
@@ -284,8 +289,8 @@ public class SharpPackageManager
                 }
             }
         }
-            if (System.IO.File.Exists(InstallPath + "Downloads\\" + Package + ".exe")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
-            string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".exe";
+            if (System.IO.File.Exists(InstallPath + "Downloads\\" + Package + ".zip")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
+            string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".zip";
             int pkgnumber = appnames.IndexOf(Package);
             //Console.WriteLine(pkgnumber);
             if (!Directory.Exists("C:\\SPM\\Downloads\\")) Directory.CreateDirectory("C:\\SPM\\Downloads\\");
@@ -296,16 +301,34 @@ public class SharpPackageManager
                 // Param1 = Link of file
                 // Param2 = Path to save
             }
-            Process PackageStartInfo = new Process();
-            PackageStartInfo.StartInfo.FileName = pkgdir;
-            PackageStartInfo.StartInfo.UseShellExecute = true;
-            PackageStartInfo.StartInfo.Verb = "runas";
-            PackageStartInfo.Start();
-            PackageStartInfo.WaitForExit();
-            //CheckForAppUpdates(false);
-            //if (System.IO.File.Exists(InstallDir + "currentversions.txt")) System.IO.File.Delete(InstallDir + "currentversions.txt");
-            DataUpdate(false);
-            //DataLoad(InstallDir + reponames[1], "a");
+            if (!Directory.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS")) {
+                System.IO.Directory.CreateDirectory(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS");
+            }
+            if (System.IO.Directory.Exists(@"C:\SPM-APPS\"+ Package)) {
+                System.IO.Directory.Delete(@"C:\SPM-APPS\"+ Package);
+                System.IO.Directory.CreateDirectory(@"C:\SPM-\APPS\"+ Package);
+            }
+            Console.WriteLine("Extracting the package...");
+            ZipFile.ExtractToDirectory(pkgdir, @"C:\SPM\Apps\"+ Package);
+            DataLoad(@"C:\SPM-APPS\"+Package+@"\AppData.spmdata", "AppData");
+            if (type[0]=="exe") {
+                foreach (string exe in exectuable) {
+                Process HookStartInfo = new Process();  
+                HookStartInfo.StartInfo.FileName = @exe;
+                HookStartInfo.StartInfo.UseShellExecute = true;
+                HookStartInfo.Start();
+                HookStartInfo.WaitForExit();
+                }
+            }
+            foreach (string shortcut in shortcuts) {
+                File.Copy(shortcut, @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS\");
+            }
+            foreach (string dependency in dependencies) {
+                InstallPkg(dependency);
+            }
+            exectuable.Clear();
+            shortcuts.Clear();
+            
 
 
             if (!upgrade)
@@ -591,6 +614,20 @@ public class SharpPackageManager
                             if (keyValue.Key!="placeholder") {
                             currentappversions.Add(int.Parse(keyValue.Value));
                             currentappnames.Add(keyValue.Key);
+                            }
+                            break;
+                        case "AppData":
+                            if (keyValue.Key=="dep") {
+                                dependencies.Add(keyValue.Value);
+                            }
+                            else if (keyValue.Key=="exe"){
+                                exectuable.Add(keyValue.Value);
+                            }
+                            else if (keyValue.Key=="type") {
+                                type.Add(keyValue.Value);
+                            }
+                            else if (keyValue.Key=="shortuct") {
+                                shortcuts.Add(keyValue.Value);
                             }
                             break;
                     }
