@@ -11,8 +11,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  10;
-    public static string appversion = "v1.1 PTB-5";
+    public static int currentversion =  11;
+    public static string appversion = "v1.2 PTB-1";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -89,13 +89,12 @@ public class SharpPackageManager
             PackageStartInfo.StartInfo.Arguments = module+"\\init.py";
             PackageStartInfo.StartInfo.UseShellExecute = true;
             PackageStartInfo.Start();
-            PackageStartInfo.WaitForExit();
             Debug.WriteLine(module+" Should be loaded");
             Console.Clear();
             AreModulesLoaded=true;
             }
         }
-        else Debug.WriteLine("No module loaded");
+        else Debug.WriteLine("No modules are loaded");
 
         if (!System.IO.Directory.Exists("C:\\SPM\\Downloads")) System.IO.Directory.CreateDirectory("C:\\SPM\\Downloads");
         if (!System.IO.Directory.Exists("C:\\SPM\\config")) System.IO.Directory.CreateDirectory("C:\\SPM\\config");
@@ -115,7 +114,8 @@ public class SharpPackageManager
         Console.WriteLine("Install an AppKit (Command: ak) \n \n");
         Console.WriteLine("Update database (Command: up) \n \n");
         Console.WriteLine("Check for SPM updates (Command: spmup) \n \n");
-        Console.WriteLine("Check for app updates and upgrade packages (Command: upg)");
+        Console.WriteLine("Check for app updates and upgrade packages (Command: upg) \n \n");
+        Console.WriteLine("Search for packages (Command: se)");
         string action = Console.ReadLine();
         if (action == "i")
         {
@@ -136,6 +136,16 @@ public class SharpPackageManager
             else Console.WriteLine("Kit path has to be something another (not null)");
         }
         else if (action == "spmup") VersionUpdate(curbranch);
+        else if (action == "se")
+        {
+            Console.WriteLine("Keyword: ");
+            string Package=Console.ReadLine();
+            if (Package != null) {
+                SearchPackages(Package);
+            }
+            else { Console.WriteLine("ERROR: Keyword can't be null"); PressAnyKey("exit", true); }
+        }
+        else PressAnyKey("exit", true);
     }
         public static void VersionUpdate(string branch)
         {
@@ -162,7 +172,7 @@ public class SharpPackageManager
                 Console.WriteLine("Downloading update...");
                 using (WebClient tagdl = new WebClient())
                 {
-                    Console.WriteLine("Downloading versions info...");
+                    //Console.WriteLine("Downloading versions info...");
                     tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/releases/download/" + tag + "/SPM.zip", "C:\\SPM.zip");
                     // Param1 = Link of file
                     // Param2 = Path to save
@@ -202,6 +212,19 @@ public class SharpPackageManager
         {
             InstallPkg(kitappnames[finappcount], true);
             finappcount++;
+        }
+        PressAnyKey();
+    }
+    
+    public static void SearchPackages(string keyword){
+        CheckForAppUpdates(false, true, false);
+        DataUpdate(false);
+        foreach (string package in appnames) {
+            if (package.Contains(keyword)) {
+                int appverindex = updateappnames.IndexOf(package);
+                int ver = updateversions[appverindex];
+                Console.WriteLine("PKG: "+package+" \n VERSION: "+ver+"\n\n");
+            }
         }
         PressAnyKey();
     }
@@ -340,7 +363,7 @@ public class SharpPackageManager
             }
         }
             
-            Console.WriteLine("Checking For Updates...");
+            if (output) Console.WriteLine("Checking For Updates...");
             if (autoUpdate) {
             CheckForAppUpdates(false, true, false);
             using (WebClient datadl = new WebClient())
@@ -348,7 +371,7 @@ public class SharpPackageManager
                 int i = 0;
                 while (i < reponames.Count)
                 {
-                    Console.WriteLine("Updating " + reponames[i]); // Show which repo is being updated now.
+                    if (output) Console.WriteLine("Updating " + reponames[i]); // Show which repo is being updated now.
                     // Download latest versions info
                     string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
                     // Load latest versions info
@@ -356,7 +379,7 @@ public class SharpPackageManager
                     i++;
                 }
             }
-            Console.WriteLine("Loading Data");
+            if (output) Console.WriteLine("Loading Data");
             DataLoad(InstallDir + "currentversions.txt", "currentversions");
             // Check if any packages are installed and if user has updates
             bool updates = false;
