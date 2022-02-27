@@ -1,5 +1,4 @@
-
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -11,8 +10,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  11;
-    public static string appversion = "v1.2 PTB-1";
+    public static int currentversion =  12;
+    public static string appversion = "v2.0 - dev build";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -28,7 +27,7 @@ public class SharpPackageManager
     public static string InstallPath = "C:\\SPM\\";
 
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
-   public static void Main(string[] args)
+    public static void Main(string[] args)
     {
 
         if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
@@ -70,12 +69,14 @@ public class SharpPackageManager
         }
         else
         {
-            MainApp();
+            MainApp(args);
         }
        
     }
-    public static void MainApp()
+    public static void MainApp(string[] args)
     {
+        string action = "null";
+        bool argav = false;
         Debug.WriteLine("Loading Modules");
         if (File.Exists(@"C:\SPM\libspm.py") && Directory.Exists(@"C:\SPM\pythonlibspmruntime") && Directory.Exists(@"C:\SPM\modules") && !AreModulesLoaded) {
             modules = Directory.GetDirectories(@"C:\SPM\modules");
@@ -108,6 +109,7 @@ public class SharpPackageManager
         if (System.IO.File.Exists(InstallDir + "appsbultek.txt")) DataLoad(InstallDir + "appsbultek.txt", "apps");
         //DataUpdate(false);
         //DataLoad(InstallDir + "apps.txt", "apps");
+        if (args.Length == 0) {
         Console.WriteLine("Sharp Package Manager by Bultek. "+appversion);
         Console.WriteLine("Please choose your action! And Before installing something update database please \n \n");
         Console.WriteLine("Install a package (Command: i) \n \n");
@@ -117,15 +119,27 @@ public class SharpPackageManager
         Console.WriteLine("Check for app updates and upgrade packages (Command: upg) \n \n");
         Console.WriteLine("Search for packages (Command: se) \n \n");
         Console.WriteLine("Switch branch (this is kinda risky! Command: swbr)");
-        string action = Console.ReadLine();
+        action = Console.ReadLine();
+        }
+        else if (args.Length>0) {
+            action = args[0];
+            argav = true;
+        }
         if (action == "i")
         {
+            if (!argav) {
             Console.WriteLine("Package to install (note: you can install only one package)");
             string Package=Console.ReadLine();
             if (Package != null) {
                 InstallPkg(Package);
             }
             else { Console.WriteLine("ERROR: Package can't be null"); PressAnyKey("exit", true); }
+            }
+            else {
+                if (args.Length==2) {
+                    InstallPkg(args[1]);
+                }
+            }
         }
         else if (action == "up") DataUpdate();
         else if (action == "upg") CheckForAppUpdates(true, true);
@@ -139,18 +153,28 @@ public class SharpPackageManager
         else if (action == "spmup") VersionUpdate(curbranch);
         else if (action == "se")
         {
+            if (!argav) {
             Console.WriteLine("Keyword: ");
             string Package=Console.ReadLine();
             if (Package != null) {
                 SearchPackages(Package);
             }
             else { Console.WriteLine("ERROR: Keyword can't be null"); PressAnyKey("exit", true); }
+            }
+            else {
+                if (args.Length==2) {
+                    SearchPackages(args[1]);
+                }
+            }
         }
         else if (action == "swbr") {
             if (curbranch == "ptb") {
                 SwitchBranch("ptb");
             }
             else SwitchBranch("master");
+        }
+        else if (action == "help") {
+            Console.WriteLine("To get help just open the app without any options!");
         }
         else PressAnyKey("exit", true);
     }
@@ -197,7 +221,7 @@ public class SharpPackageManager
                 Console.WriteLine("Please, restart the app to continue!");
         }
         else Console.WriteLine("You have the latest version");
-        MainApp();
+        PressAnyKey();
     }
     public static void AppKits(string AppKitFile)
     {
@@ -496,7 +520,7 @@ public class SharpPackageManager
             i = 0;
 
             }
-            if (Out) MainApp();
+            if (Out) PressAnyKey();
         }
     public static void WriteData(string File, string data, string Type)
     {
