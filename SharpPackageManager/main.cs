@@ -115,7 +115,8 @@ public class SharpPackageManager
         Console.WriteLine("Update database (Command: up) \n \n");
         Console.WriteLine("Check for SPM updates (Command: spmup) \n \n");
         Console.WriteLine("Check for app updates and upgrade packages (Command: upg) \n \n");
-        Console.WriteLine("Search for packages (Command: se)");
+        Console.WriteLine("Search for packages (Command: se) \n \n");
+        Console.WriteLine("Switch branch (this is kinda risky! Command: swbr");
         string action = Console.ReadLine();
         if (action == "i")
         {
@@ -145,9 +146,18 @@ public class SharpPackageManager
             }
             else { Console.WriteLine("ERROR: Keyword can't be null"); PressAnyKey("exit", true); }
         }
+        else if (action == "swbr") {
+            if (curbranch == "ptb") {
+                SwitchBranch("ptb");
+            }
+            else SwitchBranch("master");
+        }
         else PressAnyKey("exit", true);
     }
-        public static void VersionUpdate(string branch)
+        public static void SwitchBranch(string Branch) {
+            VersionUpdate(Branch, true);
+        }
+        public static void VersionUpdate(string branch, bool IsSwitch = false)
         {
             Console.WriteLine("Loading latest versions info...");
             if (File.Exists("C:\\temp\\latestversioninfo.bpmsvi")) File.Delete("C:\\temp\\latestversioninfo.bpmsvi");
@@ -167,7 +177,7 @@ public class SharpPackageManager
             {
                 tag = file.ReadLine();
             }
-            if (latestversion > currentversion)
+            if (latestversion > currentversion || IsSwitch)
             {
                 Console.WriteLine("Downloading update...");
                 using (WebClient tagdl = new WebClient())
