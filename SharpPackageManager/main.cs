@@ -116,7 +116,7 @@ public class SharpPackageManager
         Console.WriteLine("Check for SPM updates (Command: spmup) \n \n");
         Console.WriteLine("Check for app updates and upgrade packages (Command: upg) \n \n");
         Console.WriteLine("Search for packages (Command: se) \n \n");
-        Console.WriteLine("Switch branch (this is kinda risky! Command: swbr");
+        Console.WriteLine("Switch branch (this is kinda risky! Command: swbr)");
         string action = Console.ReadLine();
         if (action == "i")
         {
