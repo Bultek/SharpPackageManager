@@ -472,22 +472,7 @@ public class SharpPackageManager
                             DataLoad(InstallDir + "currentversions.txt", "currentversions");
                             System.IO.File.WriteAllText(InstallDir+"currentversions.txt", string.Empty);
                             WriteData(InstallDir+"currentversions.txt", "placeholder, 1", "AppendToFile");
-/*                            int finappcount = 0;
-                            int ver = 0;
-                            int appverindex = 0;
-                            int apppos = 0;
-                            foreach (string update in updatecount) {
-                                    string app = updatecount[finappcount];
-                                    InstallPkg(app, multiple, true);
-                                    ver = updateappnames.IndexOf(app);
-                                    appverindex = updateversions[ver];
-                                    apppos = currentappnames.IndexOf(app);
-                                    currentappversions[apppos] = appverindex;
-                                    ver = 0;
-                                    appverindex = 0;
-                                    apppos = 0;
-                            } 
-*/
+
                             foreach (string update in updatecount){
                                 UpgradePKG(update, multiple);
                             }
@@ -543,7 +528,7 @@ public class SharpPackageManager
             i = 0;
 
             }
-            if (Out) PressAnyKey();
+            //
         }
     public static void WriteData(string File, string data, string Type)
     {
