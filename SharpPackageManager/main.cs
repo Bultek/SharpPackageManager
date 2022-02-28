@@ -10,8 +10,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  14;
-    public static string appversion = "v2.0 - PTB/ALPHA 3";
+    public static int currentversion =  15;
+    public static string appversion = "v2.0 - PTB/BETA 1";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -99,12 +99,17 @@ public class SharpPackageManager
             Console.Clear();
             AreModulesLoaded=true;
             }
+            Debug.WriteLine("Are Modules Loaded: "+AreModulesLoaded);
         }
         else Debug.WriteLine("No modules are loaded");
 
         if (!System.IO.Directory.Exists("C:\\SPM\\Downloads")) System.IO.Directory.CreateDirectory("C:\\SPM\\Downloads");
         if (!System.IO.Directory.Exists("C:\\SPM\\config")) System.IO.Directory.CreateDirectory("C:\\SPM\\config");
-        if (!System.IO.File.Exists(InstallDir + "currentversions.txt")) System.IO.File.Create(InstallDir+"currentversions.txt");
+
+        if (!System.IO.File.Exists(InstallDir + "currentversions.txt")) {
+            Console.WriteLine("ERROR: Can't find currentversions.txt, please create it and set it up!");
+            PressAnyKey("exit", true);
+        }
         //if (!System.IO.File.Exists(InstallDir + "latestversions.txt")) System.IO.File.Create(InstallDir + "latestversions.txt");
 
         DataLoad(InstallDir + "sources.txt", "repos");
@@ -119,7 +124,8 @@ public class SharpPackageManager
         //DataLoad(InstallDir + "apps.txt", "apps");
         if (args.Length == 0) {
         Console.WriteLine("Sharp Package Manager by Bultek. "+appversion);
-        Console.WriteLine("Please choose your action! And Before installing something update database please \n \n");
+        Console.WriteLine("Note: We recommend updating database!");
+        Console.WriteLine("Please choose your action!\n \n");
         Console.WriteLine("Install a package (Command: i) \n \n");
         Console.WriteLine("Install an AppKit (Command: ak) \n \n");
         Console.WriteLine("Update database (Command: up) \n \n");
@@ -331,7 +337,7 @@ public class SharpPackageManager
             //Console.WriteLine(pkgnumber);
             if (!Directory.Exists("C:\\SPM\\Downloads\\")) Directory.CreateDirectory("C:\\SPM\\Downloads\\");
             if (appurls[pkgnumber].EndsWith(".exe")) {
-                Console.WriteLine("ERROR: You're downloading a legacy package! \nSPM v2.X.X DOES NOT SUPPORT legacy packages.");
+                Console.WriteLine("ERROR: You're downloading a legacy package! \nSPM v2.X.X DOES NOT SUPPORT legacy v1.X.X packages. \nIf your 'bultek' repo is http://bpmr.bultek.com.ua, change it to http://repo.bultek.com.ua/spm !");
                 PressAnyKey("exit", true);
             }
             Console.WriteLine("Downloading the package...");
@@ -366,17 +372,19 @@ public class SharpPackageManager
                 HookStartInfo.WaitForExit();
                 }
             }
-            if (dependencies!=null) {
+            if (dependencies.Count > 0) {
                 foreach (string dependency in dependencies) {
                     if (!currentappnames.Contains(dependency)) {
+                        Debug.WriteLine("Installing dependency " + dependency);
                         InstallPkg(dependency);
+                        Debug.WriteLine("Dependency "+dependency+"has been installed");
                     }
                 }
             }
-            exectuable.Clear();
-            shortcuts.Clear();
-            type.Clear();
-            dependencies.Clear();
+            else Debug.WriteLine("Dependencies are null");
+            if (exectuable.Count > 0) exectuable.Clear();
+            if (shortcuts.Count > 0) shortcuts.Clear();
+            if (dependencies.Count > 0) dependencies.Clear();
             
 
 
@@ -405,6 +413,7 @@ public class SharpPackageManager
                 if (type[0] == "zip") {
                     Console.Write("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder!");
                 }
+                if (type.Count > 0) type.Clear();
             }
             if (Multi || upgrade) PressAnyKey("continue");
             else PressAnyKey("exit", true);
@@ -509,7 +518,7 @@ public class SharpPackageManager
                     i++;
                 }
             }
-            if (output) Console.WriteLine("Loading Data");
+            if (output) Console.WriteLine("Loading Data...");
             DataLoad(InstallDir + "currentversions.txt", "currentversions");
             // Check if any packages are installed and if user has updates
             bool updates = false;
