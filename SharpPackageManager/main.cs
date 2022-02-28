@@ -10,8 +10,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  14;
-    public static string appversion = "v2.0 - PTB/ALPHA 3";
+    public static int currentversion =  15;
+    public static string appversion = "v2.0 - PTB/ALPHA 4";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -336,7 +336,7 @@ public class SharpPackageManager
             //Console.WriteLine(pkgnumber);
             if (!Directory.Exists("C:\\SPM\\Downloads\\")) Directory.CreateDirectory("C:\\SPM\\Downloads\\");
             if (appurls[pkgnumber].EndsWith(".exe")) {
-                Console.WriteLine("ERROR: You're downloading a legacy package! \nSPM v2.X.X DOES NOT SUPPORT legacy packages.");
+                Console.WriteLine("ERROR: You're downloading a legacy package! \nSPM v2.X.X DOES NOT SUPPORT legacy v1.X.X packages. \nIf your 'bultek' repo is http://bpmr.bultek.com.ua, change it to http://repo.bultek.com.ua/spm !");
                 PressAnyKey("exit", true);
             }
             Console.WriteLine("Downloading the package...");
@@ -517,7 +517,7 @@ public class SharpPackageManager
                     i++;
                 }
             }
-            if (output) Console.WriteLine("Loading Data");
+            if (output) Console.WriteLine("Loading Data...");
             DataLoad(InstallDir + "currentversions.txt", "currentversions");
             // Check if any packages are installed and if user has updates
             bool updates = false;
