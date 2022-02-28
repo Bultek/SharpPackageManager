@@ -124,7 +124,8 @@ public class SharpPackageManager
         //DataLoad(InstallDir + "apps.txt", "apps");
         if (args.Length == 0) {
         Console.WriteLine("Sharp Package Manager by Bultek. "+appversion);
-        Console.WriteLine("Please choose your action! And Before installing something update database please \n \n");
+        Console.WriteLine("Note: We recommend updating database!");
+        Console.WriteLine("Please choose your action!\n \n");
         Console.WriteLine("Install a package (Command: i) \n \n");
         Console.WriteLine("Install an AppKit (Command: ak) \n \n");
         Console.WriteLine("Update database (Command: up) \n \n");
