@@ -1,6 +1,9 @@
 # SharpPackageManager
 Package Manager written on C#
 
+
+# Installation/Building
+
 ## Installation
   * Download Installer: https://github.com/Bultek/SPMinstaller/releases
   * Or you can build it by yourself!
@@ -16,6 +19,9 @@ Package Manager written on C#
   10. Create ```currentversions.txt``` file in ```C:\SPM\config```
   11. Fill previously created file with ```placeholder, 1```
   12. You're good to go!
+
+# Usage and Contributing
+
 ## Usage
   Usage is pretty obvious, everything is explained when you start the app!
 ## Contributing
@@ -23,6 +29,8 @@ Package Manager written on C#
   1. Fork the project
   2. Make some changes in the dev branch
   3. Create a pull request
+
+# Packages and repositories
 
 ## How to create a package
  * Create a folder with needed files
