@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -10,8 +10,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  12;
-    public static string appversion = "v2.0 - ptb";
+    public static int currentversion =  13;
+    public static string appversion = "v2.0 - PTB/ALPHA 2";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -111,9 +111,9 @@ public class SharpPackageManager
         DataLoad(InstallDir + "currentversions.txt", "currentversions");
         if(System.IO.File.Exists(InstallDir+"latestversions.txt")) DataLoad(InstallDir + "latestversions.txt", "updates");
 
-        if (System.IO.File.Exists(InstallDir + "appsbultek.txt")) DataLoad(InstallDir + "appsbultek.txt", "apps");
+        //if (System.IO.File.Exists(InstallDir + "appsbultek.txt")) DataLoad(InstallDir + "appsbultek.txt", "apps");
         foreach (string repo in reponames) {
-            DataLoad(InstallDir +"apps"+repo+".txt", "apps");
+            if (File.Exists(InstallDir +"apps"+repo+".txt")) DataLoad(InstallDir +"apps"+repo+".txt", "apps");
         }
         //DataUpdate(false);
         //DataLoad(InstallDir + "apps.txt", "apps");
@@ -147,6 +147,16 @@ public class SharpPackageManager
             else {
                 if (args.Length==2) {
                     InstallPkg(args[1]);
+                }
+                else {
+                    List<String> argss = new List<String>();
+                    foreach (String arg in args) {
+                        argss.Add(arg);
+                    }
+                    argss.RemoveAt(0);
+                    foreach (String arg in argss) {
+                        InstallPkg(arg);
+                    }
                 }
             }
         }
@@ -188,14 +198,16 @@ public class SharpPackageManager
         }
         else if (action == "swbr") {
             if (curbranch == "ptb") {
-                SwitchBranch("ptb", args);
+                SwitchBranch("master", args);
             }
-            else SwitchBranch("master", args);
+            else SwitchBranch("ptb", args);
         }
         else if (action == "help") {
             Console.WriteLine("To get help just open the app without any options!");
         }
-        else PressAnyKey("exit", true);
+        else {
+            Console.WriteLine("Launch the app without any options to get help!");
+        }
     }
         public static void SwitchBranch(string Branch, string[] args) {
             VersionUpdate(Branch, true);
@@ -272,11 +284,14 @@ public class SharpPackageManager
     public static void SearchPackages(string keyword, string[] args){
         CheckForAppUpdates(false, true, false);
         DataUpdate(false);
+        string installedtext = string.Empty;
         foreach (string package in appnames) {
             if (package.Contains(keyword)) {
+                DataLoad(InstallDir + "currentversions.txt", "currentversions");
+                if (currentappnames.Contains(package)) installedtext=" (installed)";
                 int appverindex = updateappnames.IndexOf(package);
                 int ver = updateversions[appverindex];
-                Console.WriteLine("PKG: "+package+" \n VERSION: "+ver+"\n\n");
+                Console.WriteLine("PKG: "+package+installedtext+" \n VERSION: "+ver+"\n\n");
             }
         }
         PressAnyKey();
@@ -288,7 +303,8 @@ public class SharpPackageManager
             if (!upgrade) CheckForAppUpdates(false, true);
             if (!upgrade) DataLoad(InstallDir + "currentversions.txt", "currentversions");
             if (currentappnames.Contains(Package) && !upgrade) {
-                Console.WriteLine("This Package is already installed. If you want to install it again remove it from the currentversions.txt file. \n WARNING: It may break something!");
+                Console.WriteLine("ERROR: This Package is already installed. If you want to install it again remove it from the currentversions.txt file.");
+                PressAnyKey("exit", true);
             }
             if (!upgrade && AreModulesLoaded) {
                 foreach (string module in modules) {
@@ -308,6 +324,10 @@ public class SharpPackageManager
             int pkgnumber = appnames.IndexOf(Package);
             //Console.WriteLine(pkgnumber);
             if (!Directory.Exists("C:\\SPM\\Downloads\\")) Directory.CreateDirectory("C:\\SPM\\Downloads\\");
+            if (appurls[pkgnumber].EndsWith(".exe")) {
+                Console.WriteLine("ERROR: You're downloading a legacy package! \nSPM v2.X.X DOES NOT SUPPORT legacy packages.");
+                PressAnyKey("exit", true);
+            }
             Console.WriteLine("Downloading the package...");
             using (WebClient pkgdl = new WebClient())
             {
@@ -340,9 +360,11 @@ public class SharpPackageManager
                 HookStartInfo.WaitForExit();
                 }
             }
-            foreach (string dependency in dependencies) {
-                if (!currentappnames.Contains(dependency)) {
-                    InstallPkg(dependency);
+            if (dependencies!=null) {
+                foreach (string dependency in dependencies) {
+                    if (!currentappnames.Contains(dependency)) {
+                        InstallPkg(dependency);
+                    }
                 }
             }
             exectuable.Clear();
@@ -537,12 +559,14 @@ public class SharpPackageManager
 
     }
     
-    public static void PressAnyKey(string what="exit", bool exit=false)
+    public static void PressAnyKey(string what="exit", bool exit=false, int exitcode = 0)
     {
         Console.WriteLine("Press Any key to "+what+"...");
         Console.ReadKey();
         // exit the app
-        if (exit) System.Environment.Exit(0);
+
+        if (exit) System.Environment.Exit(exitcode);
+
     }
         public static void DataUpdate(bool Out=true)
         {
@@ -573,7 +597,6 @@ public class SharpPackageManager
             i = 0;
 
             }
-            //
         }
     public static void WriteData(string File, string data, string Type)
     {
@@ -651,10 +674,6 @@ public class SharpPackageManager
                             }
                             else if (keyValue.Key=="type") {
                                 type.Add(keyValue.Value);
-                            }
-                            else if (keyValue.Key=="shortuct") {
-                                shortcuts.Add(keyValue.Value);
-                                Debug.WriteLine(keyValue.Value);
                             }
                             break;
                     }
