@@ -11,8 +11,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  11;
-    public static string appversion = "v1.2";
+    public static int currentversion =  12;
+    public static string appversion = "v1.2.1";
     public static string curbranch = "master";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -148,9 +148,9 @@ public class SharpPackageManager
         }
         else if (action == "swbr") {
             if (curbranch == "ptb") {
-                SwitchBranch("ptb");
+                SwitchBranch("master");
             }
-            else SwitchBranch("master");
+            else SwitchBranch("ptb");
         }
         else PressAnyKey("exit", true);
     }
