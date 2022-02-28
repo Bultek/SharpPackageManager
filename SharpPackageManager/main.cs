@@ -10,8 +10,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  13;
-    public static string appversion = "v2.0 - PTB/ALPHA 2";
+    public static int currentversion =  14;
+    public static string appversion = "v2.0 - PTB/BETA 1";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -287,11 +287,17 @@ public class SharpPackageManager
         string installedtext = string.Empty;
         foreach (string package in appnames) {
             if (package.Contains(keyword)) {
+                string curver = "Not Installed";
                 DataLoad(InstallDir + "currentversions.txt", "currentversions");
-                if (currentappnames.Contains(package)) installedtext=" (installed)";
+                if (currentappnames.Contains(package)) {
+                    installedtext=" (installed)";
+                    int curverindex = currentappnames.IndexOf(package);
+                    curver = currentappversions[curverindex].ToString();
+                }
                 int appverindex = updateappnames.IndexOf(package);
                 int ver = updateversions[appverindex];
-                Console.WriteLine("PKG: "+package+installedtext+" \n VERSION: "+ver+"\n\n");
+                
+                Console.WriteLine("PKG: "+package+installedtext+" \n LATEST VERSION: "+ver+"\n INSTALLED VERSION: "+curver+"\n\n");
             }
         }
         PressAnyKey();
