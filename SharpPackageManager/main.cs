@@ -630,8 +630,8 @@ public class SharpPackageManager
             string[] ln3;
             while ((ln2 = file.ReadLine()) != null)
                {
-                ln3 = ln2.Split(", ");
-                repos.Add(ln3[0], ln3[1]);
+                    ln3 = ln2.Split(", ");
+                    repos.Add(ln3[0], ln3[1]);
                }
             if (repos!=null) {
                 switch (Type) {
@@ -650,7 +650,7 @@ public class SharpPackageManager
                     switch (Type)
                     {
                         case "apps":
-                            if (keyValue.Key!="placeholder"){
+                            if (keyValue.Key!="placeholder" && !appnames.Contains(keyValue.Key)){
                             appurls.Add(keyValue.Value);
                             appnames.Add(keyValue.Key);
                             }
