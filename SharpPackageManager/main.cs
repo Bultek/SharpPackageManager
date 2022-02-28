@@ -597,7 +597,6 @@ public class SharpPackageManager
             i = 0;
 
             }
-            //
         }
     public static void WriteData(string File, string data, string Type)
     {
