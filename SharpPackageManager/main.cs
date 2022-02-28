@@ -188,9 +188,9 @@ public class SharpPackageManager
         }
         else if (action == "swbr") {
             if (curbranch == "ptb") {
-                SwitchBranch("ptb", args);
+                SwitchBranch("master", args);
             }
-            else SwitchBranch("master", args);
+            else SwitchBranch("ptb", args);
         }
         else if (action == "help") {
             Console.WriteLine("To get help just open the app without any options!");
