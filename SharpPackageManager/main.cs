@@ -25,6 +25,11 @@ public class SharpPackageManager
     public static List<int> currentappversions = new List<int>();
     public static string InstallDir = "C:\\SPM\\config\\";
     public static string InstallPath = "C:\\SPM\\";
+    public static List<String> dependencies = new List<String>();
+    public static List<String> exectuable = new List<String>();
+
+    public static List<String> shortcuts = new List<String>();
+    public static List<String> type = new List<String>();
 
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
@@ -107,6 +112,9 @@ public class SharpPackageManager
         if(System.IO.File.Exists(InstallDir+"latestversions.txt")) DataLoad(InstallDir + "latestversions.txt", "updates");
 
         if (System.IO.File.Exists(InstallDir + "appsbultek.txt")) DataLoad(InstallDir + "appsbultek.txt", "apps");
+        foreach (string repo in reponames) {
+            DataLoad(InstallDir +"apps"+repo+".txt", "apps");
+        }
         //DataUpdate(false);
         //DataLoad(InstallDir + "apps.txt", "apps");
         if (args.Length == 0) {
@@ -118,7 +126,8 @@ public class SharpPackageManager
         Console.WriteLine("Check for SPM updates (Command: spmup) \n \n");
         Console.WriteLine("Check for app updates and upgrade packages (Command: upg) \n \n");
         Console.WriteLine("Search for packages (Command: se) \n \n");
-        Console.WriteLine("Switch branch (this is kinda risky! Command: swbr)");
+        Console.WriteLine("Switch branch (this is kinda risky! Command: swbr) \n \n");
+        Console.WriteLine("Remove a package (Works only with .zip type packages. Command: rmpkg)");
         action = Console.ReadLine();
         }
         else if (args.Length>0) {
@@ -141,8 +150,18 @@ public class SharpPackageManager
                 }
             }
         }
+        else if (action == "rmpkg") {
+            if (args.Length==2) {
+                RemovePKG(args[1]);
+            }
+            else { 
+                Console.WriteLine("Which Package you want to remove?");
+                string packageName = Console.ReadLine();
+                RemovePKG(packageName);
+            }
+        }
         else if (action == "up") DataUpdate();
-        else if (action == "upg") CheckForAppUpdates(true, true);
+        else if (action == "upg") CheckForAppUpdates(true, true, true);
         else if (action == "ak")
         {
             Console.WriteLine("Please write the appkit txt file path");
@@ -157,28 +176,28 @@ public class SharpPackageManager
             Console.WriteLine("Keyword: ");
             string Package=Console.ReadLine();
             if (Package != null) {
-                SearchPackages(Package);
+                SearchPackages(Package, args);
             }
             else { Console.WriteLine("ERROR: Keyword can't be null"); PressAnyKey("exit", true); }
             }
             else {
                 if (args.Length==2) {
-                    SearchPackages(args[1]);
+                    SearchPackages(args[1], args);
                 }
             }
         }
         else if (action == "swbr") {
             if (curbranch == "ptb") {
-                SwitchBranch("ptb");
+                SwitchBranch("ptb", args);
             }
-            else SwitchBranch("master");
+            else SwitchBranch("master", args);
         }
         else if (action == "help") {
             Console.WriteLine("To get help just open the app without any options!");
         }
         else PressAnyKey("exit", true);
     }
-        public static void SwitchBranch(string Branch) {
+        public static void SwitchBranch(string Branch, string[] args) {
             VersionUpdate(Branch, true);
         }
         public static void VersionUpdate(string branch, bool IsSwitch = false)
@@ -250,7 +269,7 @@ public class SharpPackageManager
         PressAnyKey();
     }
     
-    public static void SearchPackages(string keyword){
+    public static void SearchPackages(string keyword, string[] args){
         CheckForAppUpdates(false, true, false);
         DataUpdate(false);
         foreach (string package in appnames) {
@@ -284,8 +303,8 @@ public class SharpPackageManager
                 }
             }
         }
-            if (System.IO.File.Exists(InstallPath + "Downloads\\" + Package + ".exe")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
-            string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".exe";
+            if (System.IO.File.Exists(InstallPath + "Downloads\\" + Package + ".zip")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
+            string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".zip";
             int pkgnumber = appnames.IndexOf(Package);
             //Console.WriteLine(pkgnumber);
             if (!Directory.Exists("C:\\SPM\\Downloads\\")) Directory.CreateDirectory("C:\\SPM\\Downloads\\");
@@ -296,16 +315,41 @@ public class SharpPackageManager
                 // Param1 = Link of file
                 // Param2 = Path to save
             }
-            Process PackageStartInfo = new Process();
-            PackageStartInfo.StartInfo.FileName = pkgdir;
-            PackageStartInfo.StartInfo.UseShellExecute = true;
-            PackageStartInfo.StartInfo.Verb = "runas";
-            PackageStartInfo.Start();
-            PackageStartInfo.WaitForExit();
-            //CheckForAppUpdates(false);
-            //if (System.IO.File.Exists(InstallDir + "currentversions.txt")) System.IO.File.Delete(InstallDir + "currentversions.txt");
-            DataUpdate(false);
-            //DataLoad(InstallDir + reponames[1], "a");
+            if (!Directory.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS")) {
+                System.IO.Directory.CreateDirectory(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS");
+            }
+            if (System.IO.Directory.Exists(@"C:\SPM-APPS\"+ Package)) {
+                System.IO.Directory.Delete(@"C:\SPM-APPS\"+ Package, true);
+                //System.IO.Directory.CreateDirectory(@"C:\SPM-\APPS\"+ Package);
+            }
+            /*else if (!System.IO.Directory.Exists(@"C:\SPM-APPS\"+ Package)) {
+                System.IO.Directory.CreateDirectory(@"C:\SPM-\APPS\"+ Package);
+            }*/
+            if (Directory.Exists(@"C:\SPM-APPS\"+ Package)) {
+                Directory.Delete(@"C:\SPM-APPS\"+ Package);
+            }
+            Console.WriteLine("Extracting the package...");
+            ZipFile.ExtractToDirectory(pkgdir, @"C:\SPM-APPS\"+ Package);
+            DataLoad(@"C:\SPM-APPS\"+Package+@"\AppData.spmdata", "AppData");
+            if (type[0]=="exe") {
+                foreach (string exe in exectuable) {
+                Process HookStartInfo = new Process();  
+                HookStartInfo.StartInfo.FileName = @"C:\SPM-APPS\"+Package+"\\"+exe;
+                HookStartInfo.StartInfo.UseShellExecute = true;
+                HookStartInfo.Start();
+                HookStartInfo.WaitForExit();
+                }
+            }
+            foreach (string dependency in dependencies) {
+                if (!currentappnames.Contains(dependency)) {
+                    InstallPkg(dependency);
+                }
+            }
+            exectuable.Clear();
+            shortcuts.Clear();
+            type.Clear();
+            dependencies.Clear();
+            
 
 
             if (!upgrade)
@@ -318,17 +362,20 @@ public class SharpPackageManager
                 Console.WriteLine(wrdata);
                 WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
                 if (AreModulesLoaded) {
-                foreach (string module in modules) {
-                    if (File.Exists(module+"\\postinstallationhooks.py")){
-                        Process HookStartInfo = new Process();  
-                        HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
-                        HookStartInfo.StartInfo.UseShellExecute = true;
-                        Console.WriteLine("Running post-installation hook...");
-                        HookStartInfo.StartInfo.Arguments = module+"\\postinstallationhooks.py "+Package;
-                        HookStartInfo.Start();
-                        HookStartInfo.WaitForExit();
+                    foreach (string module in modules) {
+                        if (File.Exists(module+"\\postinstallationhooks.py")){
+                            Process HookStartInfo = new Process();  
+                            HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                            HookStartInfo.StartInfo.UseShellExecute = true;
+                            Console.WriteLine("Running post-installation hook...");
+                            HookStartInfo.StartInfo.Arguments = module+"\\postinstallationhooks.py "+Package;
+                            HookStartInfo.Start();
+                            HookStartInfo.WaitForExit();
+                        }
                     }
                 }
+                if (type[0] == "zip") {
+                    Console.Write("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder!");
                 }
             }
             if (Multi || upgrade) PressAnyKey("continue");
@@ -370,6 +417,27 @@ public class SharpPackageManager
                 HookStartInfo.Start();
                 HookStartInfo.WaitForExit();
                 }
+            }
+        }
+    }
+    public static void RemovePKG(string package) {
+        if (currentappnames.Contains(package)){
+            DataLoad(InstallDir + "currentversions.txt", "currentversions");
+            System.IO.File.WriteAllText(InstallDir+"currentversions.txt", string.Empty);
+            WriteData(InstallDir+"currentversions.txt", "placeholder, 1", "AppendToFile");
+            Console.WriteLine("Removing App Data...");
+            System.IO.Directory.Delete(@"C:\SPM-APPS\"+ package, true);
+            int currentappindex = currentappnames.IndexOf(package);
+            currentappversions.RemoveAt(currentappindex);
+            currentappnames.Remove(package);
+            foreach (string pack in currentappnames)
+            {
+                // Write current versions to currentappversions.txt
+                int writeappverindex=currentappnames.IndexOf(pack);
+                int writeappver=currentappversions[writeappverindex];
+                string wrdata = "\n" + pack + ", " + writeappver;
+                //Console.WriteLine("Trying to write version info...");
+                WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
             }
         }
     }
@@ -449,22 +517,7 @@ public class SharpPackageManager
                             DataLoad(InstallDir + "currentversions.txt", "currentversions");
                             System.IO.File.WriteAllText(InstallDir+"currentversions.txt", string.Empty);
                             WriteData(InstallDir+"currentversions.txt", "placeholder, 1", "AppendToFile");
-/*                            int finappcount = 0;
-                            int ver = 0;
-                            int appverindex = 0;
-                            int apppos = 0;
-                            foreach (string update in updatecount) {
-                                    string app = updatecount[finappcount];
-                                    InstallPkg(app, multiple, true);
-                                    ver = updateappnames.IndexOf(app);
-                                    appverindex = updateversions[ver];
-                                    apppos = currentappnames.IndexOf(app);
-                                    currentappversions[apppos] = appverindex;
-                                    ver = 0;
-                                    appverindex = 0;
-                                    apppos = 0;
-                            } 
-*/
+
                             foreach (string update in updatecount){
                                 UpgradePKG(update, multiple);
                             }
@@ -520,7 +573,7 @@ public class SharpPackageManager
             i = 0;
 
             }
-            if (Out) PressAnyKey();
+            //
         }
     public static void WriteData(string File, string data, string Type)
     {
@@ -540,7 +593,7 @@ public class SharpPackageManager
                 }
             }       
     }
-    public static void DataLoad(string File, string Type)
+    public static void DataLoad(string File, string Type, bool loadapps=false)
     {
         using (StreamReader file = new StreamReader(File))
         {
@@ -553,10 +606,6 @@ public class SharpPackageManager
                }
             if (repos!=null) {
                 switch (Type) {
-                    case "apps":
-                        appurls.Clear();
-                        appnames.Clear();
-                        break;
                     case "repos":
                         repourls.Clear();
                         reponames.Clear();
@@ -591,6 +640,21 @@ public class SharpPackageManager
                             if (keyValue.Key!="placeholder") {
                             currentappversions.Add(int.Parse(keyValue.Value));
                             currentappnames.Add(keyValue.Key);
+                            }
+                            break;
+                        case "AppData":
+                            if (keyValue.Key=="dep") {
+                                dependencies.Add(keyValue.Value);
+                            }
+                            else if (keyValue.Key=="exe"){
+                                exectuable.Add(keyValue.Value);
+                            }
+                            else if (keyValue.Key=="type") {
+                                type.Add(keyValue.Value);
+                            }
+                            else if (keyValue.Key=="shortuct") {
+                                shortcuts.Add(keyValue.Value);
+                                Debug.WriteLine(keyValue.Value);
                             }
                             break;
                     }
