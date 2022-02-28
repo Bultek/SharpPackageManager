@@ -99,12 +99,17 @@ public class SharpPackageManager
             Console.Clear();
             AreModulesLoaded=true;
             }
+            Debug.WriteLine("Are Modules Loaded: "+AreModulesLoaded);
         }
         else Debug.WriteLine("No modules are loaded");
 
         if (!System.IO.Directory.Exists("C:\\SPM\\Downloads")) System.IO.Directory.CreateDirectory("C:\\SPM\\Downloads");
         if (!System.IO.Directory.Exists("C:\\SPM\\config")) System.IO.Directory.CreateDirectory("C:\\SPM\\config");
-        if (!System.IO.File.Exists(InstallDir + "currentversions.txt")) System.IO.File.Create(InstallDir+"currentversions.txt");
+
+        if (!System.IO.File.Exists(InstallDir + "currentversions.txt")) {
+            Console.WriteLine("ERROR: Can't find currentversions.txt, please create it and set it up!");
+            PressAnyKey("exit", true);
+        }
         //if (!System.IO.File.Exists(InstallDir + "latestversions.txt")) System.IO.File.Create(InstallDir + "latestversions.txt");
 
         DataLoad(InstallDir + "sources.txt", "repos");
@@ -366,17 +371,19 @@ public class SharpPackageManager
                 HookStartInfo.WaitForExit();
                 }
             }
-            if (dependencies!=null) {
+            if (dependencies.Count > 0) {
                 foreach (string dependency in dependencies) {
                     if (!currentappnames.Contains(dependency)) {
+                        Debug.WriteLine("Installing dependency " + dependency);
                         InstallPkg(dependency);
+                        Debug.WriteLine("Dependency "+dependency+"has been installed");
                     }
                 }
             }
-            exectuable.Clear();
-            shortcuts.Clear();
-            type.Clear();
-            dependencies.Clear();
+            else Debug.WriteLine("Dependencies are null");
+            if (exectuable.Count > 0) exectuable.Clear();
+            if (shortcuts.Count > 0) shortcuts.Clear();
+            if (dependencies.Count > 0) dependencies.Clear();
             
 
 
@@ -405,6 +412,7 @@ public class SharpPackageManager
                 if (type[0] == "zip") {
                     Console.Write("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder!");
                 }
+                if (type.Count > 0) type.Clear();
             }
             if (Multi || upgrade) PressAnyKey("continue");
             else PressAnyKey("exit", true);
