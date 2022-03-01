@@ -125,7 +125,7 @@ public class SharpPackageManager
         if (args.Length == 0) {
         Console.WriteLine("Sharp Package Manager by Bultek. "+appversion);
         Console.WriteLine("Note: We recommend updating database!");
-        Console.WriteLine("Note: We recommend don't using long commands in interactive mode!");
+        Console.WriteLine("Note: We don't recommend using long commands in interactive mode!");
         Console.WriteLine("Please choose your action!\n \n");
         Console.WriteLine("Install a package (Command: i, install) \n \n");
         Console.WriteLine("Install an AppKit (Command: ak, appkit) \n \n");
