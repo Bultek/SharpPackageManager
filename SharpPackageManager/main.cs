@@ -10,8 +10,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  16;
-    public static string appversion = "v2.0 - PTB/BETA 2";
+    public static int currentversion =  17;
+    public static string appversion = "v2.0 - PTB/BETA 3";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -125,8 +125,8 @@ public class SharpPackageManager
         if (args.Length == 0) {
         Console.WriteLine("Sharp Package Manager by Bultek. "+appversion);
         Console.WriteLine("Note: We recommend updating database!");
-        Console.WriteLine("Note: We recommend don't using long commands in interactive mode!");
-        Console.WriteLine("Please choose your action!\n \n");
+        Console.WriteLine("Note: We don't recommend using long commands in interactive mode!");
+        Console.WriteLine("Please choose your action! \n \n");
         Console.WriteLine("Install a package (Command: i, install) \n \n");
         Console.WriteLine("Install an AppKit (Command: ak, appkit) \n \n");
         Console.WriteLine("Update database (Command: up, update) \n \n");
@@ -221,11 +221,11 @@ public class SharpPackageManager
             Console.WriteLine("Launch the app without any options to get help!");
         }
     }
-        public static void AddToPath(){
+        public static void AddToPath(string newentry=@"C:\SPM"){
             string path = Environment.GetEnvironmentVariable("Path");
             Debug.WriteLine("Path is: "+path);
-            if (!path.Contains("C:\\SPM")){
-                path = path+@";C:\SPM";
+            if (!path.Contains(newentry)){
+                path = path+@";"+newentry;
             }   
             Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
             Debug.WriteLine("New path is: "+path);
@@ -426,7 +426,8 @@ public class SharpPackageManager
                     }
                 }
                 if (type[0] == "zip") {
-                    Console.Write("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder!");
+                    Console.Write("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
+                    AddToPath(@"C:\\SPM-APPS\"+ Package);
                 }
                 if (type.Count > 0) type.Clear();
             }
