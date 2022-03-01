@@ -10,8 +10,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  17;
-    public static string appversion = "v2.0 - PTB/BETA 3";
+    public static int currentversion =  18;
+    public static string appversion = "v2.0.0";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -34,6 +34,8 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
+        Console.Title = "SharpPackageManager";
+        Debug.WriteLine(Console.LargestWindowWidth+"x"+Console.LargestWindowHeight);
 
         if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
         {
@@ -427,7 +429,7 @@ public class SharpPackageManager
                 }
                 if (type[0] == "zip") {
                     Console.Write("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
-                    AddToPath(@"C:\\SPM-APPS\"+ Package);
+                    AddToPath(@"C:\SPM-APPS\"+ Package);
                 }
                 if (type.Count > 0) type.Clear();
             }
@@ -491,6 +493,19 @@ public class SharpPackageManager
                 string wrdata = "\n" + pack + ", " + writeappver;
                 //Console.WriteLine("Trying to write version info...");
                 WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
+            }
+            Console.WriteLine("Removing From PATH...");
+            string path = Environment.GetEnvironmentVariable("Path");
+            if (path.Contains(@"SPM-APPS\"+ package)) {
+                Debug.WriteLine("Found in PATH");
+                string[] pathdirs;
+                pathdirs = path.Split(';');
+                foreach (string pathdir in pathdirs) {
+                    if (pathdir.Contains(package)) {
+                        path = path.Replace(";"+pathdir, string.Empty);
+                    }
+                }
+                Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
             }
         }
     }
