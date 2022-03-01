@@ -10,7 +10,7 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  15;
+    public static int currentversion =  16;
     public static string appversion = "v2.0 - PTB/BETA 2";
     public static string curbranch = "ptb";
     public static string? tag;
