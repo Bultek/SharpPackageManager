@@ -10,8 +10,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  17;
-    public static string appversion = "v2.0 - PTB/BETA 3";
+    public static int currentversion =  18;
+    public static string appversion = "v2.0 - PTB/BETA 4";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -34,6 +34,8 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
+        Console.Title = "SharpPackageManager";
+        Debug.WriteLine(Console.LargestWindowWidth+"x"+Console.LargestWindowHeight);
 
         if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
         {
