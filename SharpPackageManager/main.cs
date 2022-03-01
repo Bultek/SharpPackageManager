@@ -429,7 +429,7 @@ public class SharpPackageManager
                 }
                 if (type[0] == "zip") {
                     Console.Write("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
-                    AddToPath(@"C:\\SPM-APPS\"+ Package);
+                    AddToPath(@"C:\SPM-APPS\"+ Package);
                 }
                 if (type.Count > 0) type.Clear();
             }
@@ -493,6 +493,19 @@ public class SharpPackageManager
                 string wrdata = "\n" + pack + ", " + writeappver;
                 //Console.WriteLine("Trying to write version info...");
                 WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
+            }
+            Console.WriteLine("Removing From PATH...");
+            string path = Environment.GetEnvironmentVariable("Path");
+            if (path.Contains(@"SPM-APPS\"+ package)) {
+                Debug.WriteLine("Found in PATH");
+                string[] pathdirs;
+                pathdirs = path.Split(';');
+                foreach (string pathdir in pathdirs) {
+                    if (pathdir.Contains(package)) {
+                        path = path.Replace(";"+pathdir, string.Empty);
+                    }
+                }
+                Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
             }
         }
     }
