@@ -10,8 +10,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  15;
-    public static string appversion = "v2.0 - PTB/BETA 1";
+    public static int currentversion =  16;
+    public static string appversion = "v2.0 - PTB/BETA 2";
     public static string curbranch = "ptb";
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -125,22 +125,25 @@ public class SharpPackageManager
         if (args.Length == 0) {
         Console.WriteLine("Sharp Package Manager by Bultek. "+appversion);
         Console.WriteLine("Note: We recommend updating database!");
+        Console.WriteLine("Note: We recommend don't using long commands in interactive mode!");
         Console.WriteLine("Please choose your action!\n \n");
-        Console.WriteLine("Install a package (Command: i) \n \n");
-        Console.WriteLine("Install an AppKit (Command: ak) \n \n");
-        Console.WriteLine("Update database (Command: up) \n \n");
+        Console.WriteLine("Install a package (Command: i, install) \n \n");
+        Console.WriteLine("Install an AppKit (Command: ak, appkit) \n \n");
+        Console.WriteLine("Update database (Command: up, update) \n \n");
         Console.WriteLine("Check for SPM updates (Command: spmup) \n \n");
-        Console.WriteLine("Check for app updates and upgrade packages (Command: upg) \n \n");
-        Console.WriteLine("Search for packages (Command: se) \n \n");
-        Console.WriteLine("Switch branch (this is kinda risky! Command: swbr) \n \n");
-        Console.WriteLine("Remove a package (Works only with .zip type packages. Command: rmpkg)");
+        Console.WriteLine("Check for app updates and upgrade packages (Command: upg, upgrade) \n \n");
+        Console.WriteLine("Search for packages (Command: se, search) \n \n");
+        Console.WriteLine("Switch branch (this is kinda risky! Command: swbr, switchbranch) \n \n");
+        Console.WriteLine("Remove a package (Works only with .zip type packages. Command: remove) \n \n");
+        Console.WriteLine("Add SPM to path (Command: pathadd)");
         action = Console.ReadLine();
         }
         else if (args.Length>0) {
             action = args[0];
             argav = true;
         }
-        if (action == "i")
+        
+        if (action == "i" || action == "install")
         {
             if (!argav) {
             Console.WriteLine("Package to install (note: you can install only one package)");
@@ -166,7 +169,10 @@ public class SharpPackageManager
                 }
             }
         }
-        else if (action == "rmpkg") {
+        else if (action == "pathadd") {
+            AddToPath();
+        }
+        else if (action == "remove") {
             if (args.Length==2) {
                 RemovePKG(args[1]);
             }
@@ -176,9 +182,9 @@ public class SharpPackageManager
                 RemovePKG(packageName);
             }
         }
-        else if (action == "up") DataUpdate();
-        else if (action == "upg") CheckForAppUpdates(true, true, true);
-        else if (action == "ak")
+        else if (action == "up" || action == "update") DataUpdate();
+        else if (action == "upg" || action == "upgrade") CheckForAppUpdates(true, true, true);
+        else if (action == "ak" || action == "appkit")
         {
             Console.WriteLine("Please write the appkit txt file path");
             string kitpath = @Console.ReadLine();
@@ -186,7 +192,7 @@ public class SharpPackageManager
             else Console.WriteLine("Kit path has to be something another (not null)");
         }
         else if (action == "spmup") VersionUpdate(curbranch);
-        else if (action == "se")
+        else if (action == "se" || action == "search")
         {
             if (!argav) {
             Console.WriteLine("Keyword: ");
@@ -202,19 +208,28 @@ public class SharpPackageManager
                 }
             }
         }
-        else if (action == "swbr") {
+        else if (action == "swbr" || action == "switchbranch") {
             if (curbranch == "ptb") {
                 SwitchBranch("master", args);
             }
             else SwitchBranch("ptb", args);
         }
-        else if (action == "help") {
+        else if (action == "help" || action == "h") {
             Console.WriteLine("To get help just open the app without any options!");
         }
         else {
             Console.WriteLine("Launch the app without any options to get help!");
         }
     }
+        public static void AddToPath(){
+            string path = Environment.GetEnvironmentVariable("Path");
+            Debug.WriteLine("Path is: "+path);
+            if (!path.Contains("C:\\SPM")){
+                path = path+@";C:\SPM";
+            }   
+            Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
+            Debug.WriteLine("New path is: "+path);
+        }
         public static void SwitchBranch(string Branch, string[] args) {
             VersionUpdate(Branch, true);
         }
@@ -395,7 +410,7 @@ public class SharpPackageManager
                 currentappnames.Add(Package);
                 currentappversions.Add(appverindex);
                 string wrdata = "\n" + Package + ", " + appverindex;
-                Console.WriteLine(wrdata);
+                Debug.WriteLine(wrdata);
                 WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
                 if (AreModulesLoaded) {
                     foreach (string module in modules) {
