@@ -38,8 +38,8 @@ Package Manager written on C#
  * Fill it using ``config files syntax``
  * There are 3 things that can be modified!
     1. Type (```.exe``` or ```.zip```) (e.g ```type, zip```, ```type, exe```)
-    2. Dependencies (e.g ```dep, funnimoneyframework```)
-    3. Executables (not used in zip type, required in exe type) (e.g ```exe, funnimonkeyframeworkinstaller.exe```)
+    2. Dependencies (e.g ```dep, funnimonkeyframework```)
+    3. Executables (Used in zip type as shortcut (you can create only one shortcut), required in exe type, used as installer) (e.g ```exe, funnimonkeyframeworkinstaller.exe```)
  * Exe type just launches the specified executable (kinda reminds v1.x.x versions)
  * Zip type extracts contents of an archive to ```C:\SPM-APPS\<Package-Name>```
 ## Syntax of config files and appkits
@@ -49,7 +49,7 @@ Package Manager written on C#
       3. Also, if your app is in the 17th line in the apps file, it also has to be on the 17th line in the versions file
       4. apps.txt should be filled with ```app-name, download link.zip```
       5. The base of the syntax is ```name, value```
-      6. If syntax is broken the app WILL crash!
+      6. If syntax is broken the app WILL have issues!
    * AppKits
       1. Just arrange the apps in a txt file (e.g magic.txt)
       2. All apps have to be in their own line

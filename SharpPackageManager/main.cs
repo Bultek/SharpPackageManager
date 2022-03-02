@@ -277,6 +277,14 @@ public class SharpPackageManager
         else Console.WriteLine("You have the latest version");
         PressAnyKey();
     }
+
+    public static void CreateShortcut(string exectuable, string destination) {
+        Process HookStartInfo = new Process();
+        HookStartInfo.StartInfo.FileName = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe";
+        HookStartInfo.StartInfo.UseShellExecute = true;
+        HookStartInfo.StartInfo.Arguments = @"$ShortcutPath = "+'"'+destination+'"'+"; $WScriptObj = New-Object -ComObject ("+'"'+"WScript.Shell"+'"'+") ; $shortcut = $WscriptObj.CreateShortcut($ShortcutPath) ; $shortcut.TargetPath = "+exectuable+"; $shortcut.Save()";
+        Debug.WriteLine(@"$ShortcutPath = "+'"'+destination+'"'+"; $WScriptObj = New-Object -ComObject ("+'"'+"WScript.Shell"+'"'+") ; $shortcut = $WscriptObj.CreateShortcut($ShortcutPath) ; $shortcut.TargetPath = "+exectuable+"; $shortcut.Save()");
+        HookStartInfo.Start();
     public static void AppKits(string AppKitFile)
     {
 
@@ -396,9 +404,6 @@ public class SharpPackageManager
                 }
             }
             else Debug.WriteLine("Dependencies are null");
-            if (exectuable.Count > 0) exectuable.Clear();
-            if (shortcuts.Count > 0) shortcuts.Clear();
-            if (dependencies.Count > 0) dependencies.Clear();
             
 
 
@@ -424,12 +429,21 @@ public class SharpPackageManager
                         }
                     }
                 }
+                if (!Directory.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS")) {
+                    Directory.CreateDirectory(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS");
+                }
+                if (exectuable.Count > 0 && type[0] == "zip") {
+                    //CreateShortcut(exectuable[0], @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS\"+ Package+".lnk");
+                }
                 if (type[0] == "zip") {
                     Console.WriteLine("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
                     AddToPath(@"C:\SPM-APPS\"+ Package);
                 }
-                if (type.Count > 0) type.Clear();
             }
+            if (exectuable.Count > 0) exectuable.Clear();
+            if (shortcuts.Count > 0) shortcuts.Clear();
+            if (dependencies.Count > 0) dependencies.Clear();
+            if (type.Count > 0) type.Clear();
             if (Multi || upgrade) PressAnyKey("continue");
             else PressAnyKey("exit", true);
         }
@@ -503,6 +517,10 @@ public class SharpPackageManager
                     }
                 }
                 Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
+                Console.WriteLine("Removing from Start menu...");
+                if (File.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS\"+ package +".lnk")) {
+                    File.Delete(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS\"+ package +".lnk");
+                }
             }
         }
     }
