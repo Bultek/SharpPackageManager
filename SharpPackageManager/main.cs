@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -11,8 +11,8 @@ public class SharpPackageManager
     public static bool AreModulesLoaded = false;
     public static int latestversion;
     public static int currentversion =  20;
-    public static string appversion = "v2.1.0 - PTB-2";
-    public static string curbranch = "ptb";
+    public static string appversion = "v2.1.0";
+    public static string curbranch = "master";
 
     public static string? tag;
     public static List<String> reponames = new List<String>();
