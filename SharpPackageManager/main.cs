@@ -261,7 +261,7 @@ public class SharpPackageManager
                 using (WebClient tagdl = new WebClient())
                 {
                     //Console.WriteLine("Downloading versions info...");
-                    tagdl.DownloadFile("http://repo.bultek.com.ua/SPM-BINARY/SPM.zip", "C:\\SPM.zip");
+                    tagdl.DownloadFile("http://repo.bultek.com.ua/SPM-BINARY/SPM-"+branch+".zip", "C:\\SPM.zip");
                     // Param1 = Link of file
                     // Param2 = Path to save
                 }
