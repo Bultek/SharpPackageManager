@@ -32,7 +32,7 @@ Package Manager written on C#
  * There are 3 things that can be modified!
     1. Type (```.exe``` or ```.zip```) (e.g ```type, zip```, ```type, exe```)
     2. Dependencies (e.g ```dep, funnimonkeyframework```)
-    3. Executables (Used in zip type as shortcut (you can create only one shortcut), required in exe type, used as installer) (e.g ```exe, funnimonkeyframeworkinstaller.exe```)
+    3. Executables (Not used in zip type, required in exe type, used as installer) (e.g ```exe, funnimonkeyframeworkinstaller.exe```)
  * Exe type just launches the specified executable (kinda reminds v1.x.x versions)
  * Zip type extracts contents of an archive to ```C:\SPM-APPS\<Package-Name>```
 ## Syntax of config files and appkits

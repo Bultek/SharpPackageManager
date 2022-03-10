@@ -10,8 +10,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  19;
-    public static string appversion = "v2.1.0 - PTB-1";
+    public static int currentversion =  20;
+    public static string appversion = "v2.1.0 - PTB-2";
     public static string curbranch = "ptb";
 
     public static string? tag;
@@ -239,12 +239,12 @@ public class SharpPackageManager
         public static void VersionUpdate(string branch, bool IsSwitch = false)
         {
             Console.WriteLine("Loading latest versions info...");
-            if (File.Exists("C:\\temp\\latestversioninfo.bpmsvi")) File.Delete("C:\\temp\\latestversioninfo.bpmsvi");
-            if (File.Exists("C:\\temp\\latestversiontag.bpmsvi")) File.Delete("C:\\temp\\latestversiontag.bpmsvi");
+            if (File.Exists("C:\\temp\\latestversioninfo.spmvi")) File.Delete("C:\\temp\\latestversioninfo.spmvi");
+            if (File.Exists("C:\\temp\\latestversiontag.spmvi")) File.Delete("C:\\temp\\latestversiontag.spmsvi");
             using (WebClient tagdl = new WebClient())
             {
-                tagdl.DownloadFile("https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/raw/versioncontrol/" + branch + ".spmvi", "C:\\temp\\latestversioninfo.bpmsvi");
-                tagdl.DownloadFile("https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/raw/versioncontrol/" + branch + "tag.spmvi", "C:\\temp\\latestversiontag.bpmsvi");
+                tagdl.DownloadFile("https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/raw/versioncontrol/" + branch + ".spmvi", "C:\\temp\\latestversioninfo.spmvi");
+                tagdl.DownloadFile("https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/raw/versioncontrol/" + branch + "tag.spmvi", "C:\\temp\\latestversiontag.spmvi");
                 // Param1 = Link of file
                 // Param2 = Path to save
             }
