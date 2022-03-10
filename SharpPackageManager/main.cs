@@ -10,9 +10,10 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  18;
-    public static string appversion = "v2.0.0";
-    public static string curbranch = "master";
+    public static int currentversion =  19;
+    public static string appversion = "v2.1.0 - PTB-1";
+    public static string curbranch = "ptb";
+
     public static string? tag;
     public static List<String> reponames = new List<String>();
     public static List<String> repourls = new List<String>();
@@ -85,7 +86,7 @@ public class SharpPackageManager
         string action = "null";
         bool argav = false;
         Debug.WriteLine("Loading Modules");
-        if (File.Exists(@"C:\SPM\libspm.py") && Directory.Exists(@"C:\SPM\pythonlibspmruntime") && Directory.Exists(@"C:\SPM\modules") && !AreModulesLoaded) {
+        if (File.Exists(@"C:\SPM\libspm.py") && Directory.Exists(@"C:\SPM-APPS\python310") && Directory.Exists(@"C:\SPM\modules") && !AreModulesLoaded) {
             modules = Directory.GetDirectories(@"C:\SPM\modules");
             foreach (string module in modules) {
             if (File.Exists(module+"\\libspm.py")) {
@@ -93,7 +94,7 @@ public class SharpPackageManager
             }
             System.IO.File.Copy("C:\\SPM\\libspm.py", module+"\\libspm.py");
             Process PackageStartInfo = new Process();
-            PackageStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+            PackageStartInfo.StartInfo.FileName = @"C:\\SPM-APPS\\python310\\python.exe";
             PackageStartInfo.StartInfo.Arguments = module+"\\init.py";
             PackageStartInfo.StartInfo.UseShellExecute = true;
             PackageStartInfo.Start();
@@ -242,8 +243,8 @@ public class SharpPackageManager
             if (File.Exists("C:\\temp\\latestversiontag.bpmsvi")) File.Delete("C:\\temp\\latestversiontag.bpmsvi");
             using (WebClient tagdl = new WebClient())
             {
-                tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/raw/versioncontrol/" + branch + ".spmvi", "C:\\temp\\latestversioninfo.bpmsvi");
-                tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/raw/versioncontrol/" + branch + "tag.spmvi", "C:\\temp\\latestversiontag.bpmsvi");
+                tagdl.DownloadFile("https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/raw/versioncontrol/" + branch + ".spmvi", "C:\\temp\\latestversioninfo.bpmsvi");
+                tagdl.DownloadFile("https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/raw/versioncontrol/" + branch + "tag.spmvi", "C:\\temp\\latestversiontag.bpmsvi");
                 // Param1 = Link of file
                 // Param2 = Path to save
             }
@@ -261,7 +262,7 @@ public class SharpPackageManager
                 using (WebClient tagdl = new WebClient())
                 {
                     //Console.WriteLine("Downloading versions info...");
-                    tagdl.DownloadFile("https://github.com/Bultek/SharpPackageManager/releases/download/" + tag + "/SPM.zip", "C:\\SPM.zip");
+                    tagdl.DownloadFile("http://repo.bultek.com.ua/SPM-BINARY/SPM-"+branch+".zip", "C:\\SPM.zip");
                     // Param1 = Link of file
                     // Param2 = Path to save
                 }
@@ -276,6 +277,15 @@ public class SharpPackageManager
         }
         else Console.WriteLine("You have the latest version");
         PressAnyKey();
+    }
+
+    public static void CreateShortcut(string exectuable, string destination) {
+        Process HookStartInfo = new Process();
+        HookStartInfo.StartInfo.FileName = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe";
+        HookStartInfo.StartInfo.UseShellExecute = true;
+        HookStartInfo.StartInfo.Arguments = @"$ShortcutPath = "+'"'+destination+'"'+"; $WScriptObj = New-Object -ComObject ("+'"'+"WScript.Shell"+'"'+") ; $shortcut = $WscriptObj.CreateShortcut($ShortcutPath) ; $shortcut.TargetPath = "+exectuable+"; $shortcut.Save()";
+        Debug.WriteLine(@"$ShortcutPath = "+'"'+destination+'"'+"; $WScriptObj = New-Object -ComObject ("+'"'+"WScript.Shell"+'"'+") ; $shortcut = $WscriptObj.CreateShortcut($ShortcutPath) ; $shortcut.TargetPath = "+exectuable+"; $shortcut.Save()");
+        HookStartInfo.Start();
     }
     public static void AppKits(string AppKitFile)
     {
@@ -364,9 +374,6 @@ public class SharpPackageManager
                 // Param1 = Link of file
                 // Param2 = Path to save
             }
-            if (!Directory.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS")) {
-                System.IO.Directory.CreateDirectory(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS");
-            }
             if (System.IO.Directory.Exists(@"C:\SPM-APPS\"+ Package)) {
                 System.IO.Directory.Delete(@"C:\SPM-APPS\"+ Package, true);
                 //System.IO.Directory.CreateDirectory(@"C:\SPM-\APPS\"+ Package);
@@ -399,9 +406,6 @@ public class SharpPackageManager
                 }
             }
             else Debug.WriteLine("Dependencies are null");
-            if (exectuable.Count > 0) exectuable.Clear();
-            if (shortcuts.Count > 0) shortcuts.Clear();
-            if (dependencies.Count > 0) dependencies.Clear();
             
 
 
@@ -427,12 +431,21 @@ public class SharpPackageManager
                         }
                     }
                 }
+                if (!Directory.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS")) {
+                    Directory.CreateDirectory(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS");
+                }
+                if (exectuable.Count > 0 && type[0] == "zip") {
+                    //CreateShortcut(exectuable[0], @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS\"+ Package+".lnk");
+                }
                 if (type[0] == "zip") {
-                    Console.Write("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
+                    Console.WriteLine("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
                     AddToPath(@"C:\SPM-APPS\"+ Package);
                 }
-                if (type.Count > 0) type.Clear();
             }
+            if (exectuable.Count > 0) exectuable.Clear();
+            if (shortcuts.Count > 0) shortcuts.Clear();
+            if (dependencies.Count > 0) dependencies.Clear();
+            if (type.Count > 0) type.Clear();
             if (Multi || upgrade) PressAnyKey("continue");
             else PressAnyKey("exit", true);
         }
@@ -506,6 +519,10 @@ public class SharpPackageManager
                     }
                 }
                 Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
+                Console.WriteLine("Removing from Start menu...");
+                if (File.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS\"+ package +".lnk")) {
+                    File.Delete(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS\"+ package +".lnk");
+                }
             }
         }
     }
