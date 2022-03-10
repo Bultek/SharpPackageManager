@@ -66,7 +66,7 @@ Package Manager written on C#
     SPM module is a collection of python scripts
   * Note: we recommend using ```libspm.py``` for os modules
   * Note: Scripts will run under "libspm Python runtime", it means WE DON'T RECOMMEND TO USE ANY CUSTOM MODULES THAT ARE NOT INCLUDED IN PYTHON 3.10.2!
-  * We recommend using this ![example](https://github.com/mrquantumoff/supersimplebackups-spm-module)
+  * We recommend using this [example](https://github.com/mrquantumoff/supersimplebackups-spm-module)
   * Note: Just ```init.py``` file is essential!
  ## How to enable and use modules?
   * Install the ```python310``` package from ```bultek-new``` repo
