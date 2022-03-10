@@ -20,7 +20,11 @@ Package Manager written on C#
   11. Fill previously created file with ```placeholder, 1```
   12. You're good to go!
 
-# Usage
+# Usage and contributing
+## Contributing
+  * Request access to the repo (we'll grant it)
+  * Clone the repo
+  * Do something, idk
 ## Usage
   Usage is pretty obvious, everything is explained when you start the app!
 # Packages and repositories
