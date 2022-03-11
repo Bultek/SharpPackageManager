@@ -1,18 +1,17 @@
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Collections.Generic;
 using System.Diagnostics;
 #pragma warning disable
-
 public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  20;
-    public static string appversion = "v2.1.0";
-    public static string curbranch = "master";
+    public static int currentversion =  22;
+    public static string appversion = "v2.2.0";
+    public static string curbranch = "ptb";
 
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -94,7 +93,7 @@ public class SharpPackageManager
             }
             System.IO.File.Copy("C:\\SPM\\libspm.py", module+"\\libspm.py");
             Process PackageStartInfo = new Process();
-            PackageStartInfo.StartInfo.FileName = @"C:\\SPM-APPS\\python310\\python.exe";
+            PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
             PackageStartInfo.StartInfo.Arguments = module+"\\init.py";
             PackageStartInfo.StartInfo.UseShellExecute = true;
             PackageStartInfo.Start();
@@ -138,7 +137,8 @@ public class SharpPackageManager
         Console.WriteLine("Search for packages (Command: se, search) \n \n");
         Console.WriteLine("Switch branch (this is kinda risky! Command: swbr, switchbranch) \n \n");
         Console.WriteLine("Remove a package (Works only with .zip type packages. Command: remove) \n \n");
-        Console.WriteLine("Add SPM to path (Command: pathadd)");
+        Console.WriteLine("Add SPM to path (Command: pathadd) \n \n");
+        Console.WriteLine("Clean up (Command: cleanup)");
         action = Console.ReadLine();
         }
         else if (args.Length>0) {
@@ -171,6 +171,9 @@ public class SharpPackageManager
                     }
                 }
             }
+        }
+        else if (action=="cleanup") {
+            CleanUp(true);
         }
         else if (action == "pathadd") {
             AddToPath();
@@ -279,13 +282,14 @@ public class SharpPackageManager
         PressAnyKey();
     }
 
-    public static void CreateShortcut(string exectuable, string destination) {
-        Process HookStartInfo = new Process();
-        HookStartInfo.StartInfo.FileName = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe";
-        HookStartInfo.StartInfo.UseShellExecute = true;
-        HookStartInfo.StartInfo.Arguments = @"$ShortcutPath = "+'"'+destination+'"'+"; $WScriptObj = New-Object -ComObject ("+'"'+"WScript.Shell"+'"'+") ; $shortcut = $WscriptObj.CreateShortcut($ShortcutPath) ; $shortcut.TargetPath = "+exectuable+"; $shortcut.Save()";
-        Debug.WriteLine(@"$ShortcutPath = "+'"'+destination+'"'+"; $WScriptObj = New-Object -ComObject ("+'"'+"WScript.Shell"+'"'+") ; $shortcut = $WscriptObj.CreateShortcut($ShortcutPath) ; $shortcut.TargetPath = "+exectuable+"; $shortcut.Save()");
-        HookStartInfo.Start();
+    public static void CleanUp(bool downloadcache) {
+        if (downloadcache) {
+            string[] files = Directory.GetFiles(@"C:\SPM\Downloads");
+            foreach (string file in files) {
+                System.IO.File.Delete(file);
+                Debug.WriteLine("Deleted file " + file);
+            }
+        }
     }
     public static void AppKits(string AppKitFile)
     {
@@ -349,7 +353,7 @@ public class SharpPackageManager
                 foreach (string module in modules) {
                 if (File.Exists(module+"\\preinstallationhooks.py")){
                     Process HookStartInfo = new Process();
-                    HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                    HookStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
                     HookStartInfo.StartInfo.UseShellExecute = true;
                     Console.WriteLine("Running pre-installation hook...");
                     HookStartInfo.StartInfo.Arguments = module+"\\preinstallationhooks.py "+Package;
@@ -384,19 +388,36 @@ public class SharpPackageManager
             if (Directory.Exists(@"C:\SPM-APPS\"+ Package)) {
                 Directory.Delete(@"C:\SPM-APPS\"+ Package);
             }
+            bool execerrors;
+            bool success = true;
             Console.WriteLine("Extracting the package...");
             ZipFile.ExtractToDirectory(pkgdir, @"C:\SPM-APPS\"+ Package);
             DataLoad(@"C:\SPM-APPS\"+Package+@"\AppData.spmdata", "AppData");
             if (type[0]=="exe") {
                 foreach (string exe in exectuable) {
-                Process HookStartInfo = new Process();  
-                HookStartInfo.StartInfo.FileName = @"C:\SPM-APPS\"+Package+"\\"+exe;
-                HookStartInfo.StartInfo.UseShellExecute = true;
-                HookStartInfo.Start();
-                HookStartInfo.WaitForExit();
+                    Process HookStartInfo = new Process();  
+                    HookStartInfo.StartInfo.FileName = @"C:\SPM-APPS\"+Package+"\\"+exe;
+                    HookStartInfo.StartInfo.UseShellExecute = true;
+                    try {
+                        HookStartInfo.Start();
+                        HookStartInfo.WaitForExit();
+                    }
+                    catch (Exception ex) {
+                        Console.WriteLine("Error while starting "+exe);
+                        Debug.WriteLine(ex.Message);
+                        Console.WriteLine("Did app install correctly? (Y/n)");
+                        string answer = "Yes";
+                        answer = Console.ReadLine();
+                        answer = answer.ToLower();
+                        if (answer != "yes" || answer != "y") {
+                            success = false;
+                            PressAnyKey("exit", true, 1);
+                        }
+                    }
+                    System.IO.Directory.Delete(@"C:\SPM-APPS\"+ Package, true);
                 }
             }
-            if (dependencies.Count > 0) {
+            if (dependencies.Count > 0 && success) {
                 foreach (string dependency in dependencies) {
                     if (!currentappnames.Contains(dependency)) {
                         Debug.WriteLine("Installing dependency " + dependency);
@@ -409,7 +430,7 @@ public class SharpPackageManager
             
 
 
-            if (!upgrade)
+            if (!upgrade && success)
             {
                 int ver = updateappnames.IndexOf(Package);
                 int appverindex = updateversions[ver];
@@ -422,7 +443,7 @@ public class SharpPackageManager
                     foreach (string module in modules) {
                         if (File.Exists(module+"\\postinstallationhooks.py")){
                             Process HookStartInfo = new Process();  
-                            HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                            HookStartInfo.StartInfo.FileName = @"C:\\SPM-APPS\\python310\\python.exe";
                             HookStartInfo.StartInfo.UseShellExecute = true;
                             Console.WriteLine("Running post-installation hook...");
                             HookStartInfo.StartInfo.Arguments = module+"\\postinstallationhooks.py "+Package;
@@ -433,9 +454,6 @@ public class SharpPackageManager
                 }
                 if (!Directory.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS")) {
                     Directory.CreateDirectory(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS");
-                }
-                if (exectuable.Count > 0 && type[0] == "zip") {
-                    //CreateShortcut(exectuable[0], @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS\"+ Package+".lnk");
                 }
                 if (type[0] == "zip") {
                     Console.WriteLine("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
@@ -457,7 +475,7 @@ public class SharpPackageManager
         foreach (string module in modules) {
             if (File.Exists(module+"\\preupgradehooks.py")){
                 Process HookStartInfo = new Process();  
-                HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                HookStartInfo.StartInfo.FileName = @"C:\\SPM-APPS\\python310\\python.exe";
                 HookStartInfo.StartInfo.UseShellExecute = true;
                 Console.WriteLine("Running pre-upgrade hook...");
                 HookStartInfo.StartInfo.Arguments = module+"\\preupgradehooks.py "+pkg;
@@ -478,7 +496,7 @@ public class SharpPackageManager
         foreach (string module in modules) {
             if (File.Exists(module+"\\postupgradehooks.py")){
                 Process HookStartInfo = new Process();  
-                HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                HookStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
                 HookStartInfo.StartInfo.UseShellExecute = true;
                 Console.WriteLine("Running post-upgrade hook...");
                 HookStartInfo.StartInfo.Arguments = module+"\\postupgradehooks.py "+pkg;
@@ -669,7 +687,7 @@ public class SharpPackageManager
                         System.IO.File.AppendAllText(File, data);
                         break; // When done we can break loop
                     }
-                    catch (IOException e) when (i <= 3) {
+                    catch (IOException) when (i <= 3) {
                     // You may check error code to filter some exceptions, not every error
                     // can be recovered.
                     Thread.Sleep(1000);
