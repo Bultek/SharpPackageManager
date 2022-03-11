@@ -138,7 +138,8 @@ public class SharpPackageManager
         Console.WriteLine("Switch branch (this is kinda risky! Command: swbr, switchbranch) \n \n");
         Console.WriteLine("Remove a package (Works only with .zip type packages. Command: remove) \n \n");
         Console.WriteLine("Add SPM to path (Command: pathadd) \n \n");
-        Console.WriteLine("Clean up (Command: cleanup)");
+        Console.WriteLine("Clean up (Command: cleanup) \n \n");
+        Console.WriteLine("List Packages (listall/listinstalled)");
         action = Console.ReadLine();
         }
         else if (args.Length>0) {
@@ -171,6 +172,12 @@ public class SharpPackageManager
                     }
                 }
             }
+        }
+        else if (action == "listall") {
+            ListPackages();
+        }
+        else if (action=="listinstalled") {
+            ListPackages("installed");
         }
         else if (action=="cleanup") {
             CleanUp(true);
@@ -289,6 +296,32 @@ public class SharpPackageManager
                 System.IO.File.Delete(file);
                 Debug.WriteLine("Deleted file " + file);
             }
+        }
+    }
+    public static void ListPackages(string type = "all") {
+        DataLoad(InstallDir + "currentversions.txt", "currentversions");
+        DataUpdate();
+        switch (type) {
+            case "all":
+                foreach (string Package in appnames) {
+                    Console.WriteLine("PKG: "+Package);
+                    appverindex=appnames.IndexOf(Package);
+                    appver=updateappnames[appverindex];
+                    Console.WriteLine(" Latest Version: "+appver);
+                    if (currentappnames.Contains(Package)) {
+                        curverindex=currentappnames.IndexOf(Package);
+                        curver=currentversions[curverindex];
+                        Console.WriteLine(" Current Version: "+curver);
+                    }
+                }
+                break;
+            case "installed":
+                foreach (string Package in currentappnames) {
+                    Console.WriteLine("PKG: "+Package);
+                    curverindex=currentappnames.IndexOf(Package);
+                    curver=currentversions[curverindex];
+                    Console.WriteLine(" Current Version: "+curver);
+                }
         }
     }
     public static void AppKits(string AppKitFile)
