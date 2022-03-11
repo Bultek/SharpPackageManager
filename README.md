@@ -5,7 +5,7 @@ Package Manager written on C#
 # Installation/Building
 
 ## Installation
-  * [Download Installer from our site](http://repo.bultek.com.ua/SPM-BINARY/SPMinstaller.exe) or download the latest version [Here](https://gitlab.com/bultekdev/spm-projects/SPMinstaller/-/releases)
+  * Download Installer from the [releases tab (recommended)](https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/releases) or download it from [here](https://gitlab.com/bultekdev/spm-projects/SPMinstaller/-/releases)
   * Or you can build it by yourself!
 ## How to build?
   1. Install .NET 6 SDK
@@ -20,7 +20,11 @@ Package Manager written on C#
   11. Fill previously created file with ```placeholder, 1```
   12. You're good to go!
 
-# Usage
+# Usage and contributing
+## Contributing
+  * Request access to the repo (we'll grant it)
+  * Clone the repo
+  * Do something, idk
 ## Usage
   Usage is pretty obvious, everything is explained when you start the app!
 # Packages and repositories
@@ -62,7 +66,7 @@ Package Manager written on C#
     SPM module is a collection of python scripts
   * Note: we recommend using ```libspm.py``` for os modules
   * Note: Scripts will run under "libspm Python runtime", it means WE DON'T RECOMMEND TO USE ANY CUSTOM MODULES THAT ARE NOT INCLUDED IN PYTHON 3.10.2!
-  * We recommend using this ![example](https://github.com/mrquantumoff/supersimplebackups-spm-module)
+  * We recommend using this [example](https://github.com/mrquantumoff/supersimplebackups-spm-module)
   * Note: Just ```init.py``` file is essential!
  ## How to enable and use modules?
   * Install the ```python310``` package from ```bultek-new``` repo
