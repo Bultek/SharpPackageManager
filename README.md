@@ -5,7 +5,7 @@ Package Manager written on C#
 # Installation/Building
 
 ## Installation
-  * Download Installer: https://gitlab.com/bultekdev/spm-projects/SPMinstaller/-/releases
+  * Download Installer from the releases tab (recommended) or download it from [here](https://gitlab.com/bultekdev/spm-projects/SPMinstaller/-/releases)
   * Or you can build it by yourself!
 ## How to build?
   1. Install .NET 6 SDK
