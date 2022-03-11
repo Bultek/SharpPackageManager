@@ -278,6 +278,33 @@ public class SharpPackageManager
         PressAnyKey();
     }
 
+    public static void ListPackages(string type = "all") {
+        DataLoad(InstallDir + "currentversions.txt", "currentversions");
+        DataUpdate();
+        switch (type) {
+            case "all":
+                foreach (string Package in appnames) {
+                    Console.WriteLine("PKG: "+Package);
+                    appverindex=appnames.IndexOf(Package);
+                    appver=updateappnames[appverindex];
+                    Console.WriteLine(" Latest Version: "+appver);
+                    if (currentappnames.Contains(Package)) {
+                        curverindex=currentappnames.IndexOf(Package);
+                        curver=currentversions[curverindex];
+                        Console.WriteLine(" Current Version: "+curver);
+                    }
+                }
+                break;
+            case "installed":
+                foreach (string Package in currentappnames) {
+                    Console.WriteLine("PKG: "+Package);
+                    curverindex=currentappnames.IndexOf(Package);
+                    curver=currentversions[curverindex];
+                    Console.WriteLine(" Current Version: "+curver);
+                }
+        }
+    }
+
     public static void CreateShortcut(string exectuable, string destination) {
         Process HookStartInfo = new Process();
         HookStartInfo.StartInfo.FileName = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe";
