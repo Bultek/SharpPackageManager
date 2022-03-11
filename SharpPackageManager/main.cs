@@ -9,9 +9,9 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  22;
-    public static string appversion = "v2.2.0";
-    public static string curbranch = "master";
+    public static int currentversion =  23;
+    public static string appversion = "v2.3.0 - PTB-1";
+    public static string curbranch = "ptb";
 
     public static string? tag;
     public static List<String> reponames = new List<String>();
