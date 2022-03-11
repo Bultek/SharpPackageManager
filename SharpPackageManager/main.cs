@@ -389,19 +389,36 @@ public class SharpPackageManager
             if (Directory.Exists(@"C:\SPM-APPS\"+ Package)) {
                 Directory.Delete(@"C:\SPM-APPS\"+ Package);
             }
+            bool execerrors;
+            bool success = true;
             Console.WriteLine("Extracting the package...");
             ZipFile.ExtractToDirectory(pkgdir, @"C:\SPM-APPS\"+ Package);
             DataLoad(@"C:\SPM-APPS\"+Package+@"\AppData.spmdata", "AppData");
             if (type[0]=="exe") {
                 foreach (string exe in exectuable) {
-                Process HookStartInfo = new Process();  
-                HookStartInfo.StartInfo.FileName = @"C:\SPM-APPS\"+Package+"\\"+exe;
-                HookStartInfo.StartInfo.UseShellExecute = true;
-                HookStartInfo.Start();
-                HookStartInfo.WaitForExit();
+                    Process HookStartInfo = new Process();  
+                    HookStartInfo.StartInfo.FileName = @"C:\SPM-APPS\"+Package+"\\"+exe;
+                    HookStartInfo.StartInfo.UseShellExecute = true;
+                    try {
+                        HookStartInfo.Start();
+                        HookStartInfo.WaitForExit();
+                    }
+                    catch (Exception ex) {
+                        Console.WriteLine("Error while starting "+exe);
+                        Debug.WriteLine(ex.Message);
+                        Console.WriteLine("Did app install correctly? (Y/n)");
+                        string answer = "Yes";
+                        answer = Console.ReadLine();
+                        answer = answer.ToLower();
+                        if (answer != "yes" || answer != "y") {
+                            success = false;
+                            PressAnyKey("exit", true, 1);
+                        }
+                    }
+                    System.IO.Directory.Delete(@"C:\SPM-APPS\"+ Package, true);
                 }
             }
-            if (dependencies.Count > 0) {
+            if (dependencies.Count > 0 && success) {
                 foreach (string dependency in dependencies) {
                     if (!currentappnames.Contains(dependency)) {
                         Debug.WriteLine("Installing dependency " + dependency);
@@ -414,7 +431,7 @@ public class SharpPackageManager
             
 
 
-            if (!upgrade)
+            if (!upgrade && success)
             {
                 int ver = updateappnames.IndexOf(Package);
                 int appverindex = updateversions[ver];
@@ -438,9 +455,6 @@ public class SharpPackageManager
                 }
                 if (!Directory.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS")) {
                     Directory.CreateDirectory(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS");
-                }
-                if (exectuable.Count > 0 && type[0] == "zip") {
-                    //CreateShortcut(exectuable[0], @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS\"+ Package+".lnk");
                 }
                 if (type[0] == "zip") {
                     Console.WriteLine("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\"+ Package+" folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
