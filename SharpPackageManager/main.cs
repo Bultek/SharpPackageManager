@@ -9,9 +9,11 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  23;
-    public static string appversion = "v2.3.0 - PTB-1";
-    public static string curbranch = "ptb";
+    public static int currentversion;
+    public static string appversion;
+    public static string curbranch;
+
+    public static int currentapiversion = 2;
 
     public static string? tag;
     public static List<String> reponames = new List<String>();
@@ -34,6 +36,20 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
+        if (!File.Exists(InstallDir+"intversion.spmvi") && !File.Exists(InstallDir+"strversion.txt")) {
+            currentversion=-1;
+            appversion = "UNKNOWN! Updating the app may fix it!";
+        }
+        else {
+            appversion = System.IO.File.ReadAllText(InstallDir+"strversion.spmvi");
+            currentversion = int.Parse(System.IO.File.ReadAllText(InstallDir+"intversion.spmvi"));
+            Debug.WriteLine(currentversion);
+            string lowerappversion = appversion.ToLower();
+            if (lowerappversion.Contains("ptb")) {
+                curbranch = "ptb";
+            }
+            else curbranch = "master";
+        }
         Console.Title = "SharpPackageManager";
         Debug.WriteLine(Console.LargestWindowWidth+"x"+Console.LargestWindowHeight);
 
@@ -126,6 +142,7 @@ public class SharpPackageManager
         //DataLoad(InstallDir + "apps.txt", "apps");
         if (args.Length == 0) {
         Console.WriteLine("Sharp Package Manager by Bultek. "+appversion);
+        Console.WriteLine("Sharp Package Manager API compatibility Version: "+currentapiversion);
         Console.WriteLine("Note: We recommend updating database!");
         Console.WriteLine("Note: We don't recommend using long commands in interactive mode!");
         Console.WriteLine("Please choose your action! \n \n");
@@ -301,16 +318,17 @@ public class SharpPackageManager
     public static void ListPackages(string type = "all") {
         DataLoad(InstallDir + "currentversions.txt", "currentversions");
         DataUpdate();
+        CheckForAppUpdates(false, true, false);
         switch (type) {
             case "all":
                 foreach (string Package in appnames) {
                     Console.WriteLine("PKG: "+Package);
-                    appverindex=appnames.IndexOf(Package);
-                    appver=updateappnames[appverindex];
+                    int appverindex=appnames.IndexOf(Package);
+                    int appver=updateversions[appverindex];
                     Console.WriteLine(" Latest Version: "+appver);
                     if (currentappnames.Contains(Package)) {
-                        curverindex=currentappnames.IndexOf(Package);
-                        curver=currentversions[curverindex];
+                        int curverindex=currentappnames.IndexOf(Package);
+                        int curver=currentappversions[curverindex];
                         Console.WriteLine(" Current Version: "+curver);
                     }
                 }
@@ -318,10 +336,11 @@ public class SharpPackageManager
             case "installed":
                 foreach (string Package in currentappnames) {
                     Console.WriteLine("PKG: "+Package);
-                    curverindex=currentappnames.IndexOf(Package);
-                    curver=currentversions[curverindex];
+                    int curverindex=currentappnames.IndexOf(Package);
+                    int curver=currentappversions[curverindex];
                     Console.WriteLine(" Current Version: "+curver);
                 }
+                break;
         }
     }
     public static void AppKits(string AppKitFile)
