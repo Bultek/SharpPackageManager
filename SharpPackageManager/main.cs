@@ -94,7 +94,7 @@ public class SharpPackageManager
             }
             System.IO.File.Copy("C:\\SPM\\libspm.py", module+"\\libspm.py");
             Process PackageStartInfo = new Process();
-            PackageStartInfo.StartInfo.FileName = @"C:\\SPM-APPS\\python310\\python.exe";
+            PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
             PackageStartInfo.StartInfo.Arguments = module+"\\init.py";
             PackageStartInfo.StartInfo.UseShellExecute = true;
             PackageStartInfo.Start();
@@ -354,7 +354,7 @@ public class SharpPackageManager
                 foreach (string module in modules) {
                 if (File.Exists(module+"\\preinstallationhooks.py")){
                     Process HookStartInfo = new Process();
-                    HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                    HookStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
                     HookStartInfo.StartInfo.UseShellExecute = true;
                     Console.WriteLine("Running pre-installation hook...");
                     HookStartInfo.StartInfo.Arguments = module+"\\preinstallationhooks.py "+Package;
@@ -427,7 +427,7 @@ public class SharpPackageManager
                     foreach (string module in modules) {
                         if (File.Exists(module+"\\postinstallationhooks.py")){
                             Process HookStartInfo = new Process();  
-                            HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                            HookStartInfo.StartInfo.FileName = @"C:\\SPM-APPS\\python310\\python.exe";
                             HookStartInfo.StartInfo.UseShellExecute = true;
                             Console.WriteLine("Running post-installation hook...");
                             HookStartInfo.StartInfo.Arguments = module+"\\postinstallationhooks.py "+Package;
@@ -462,7 +462,7 @@ public class SharpPackageManager
         foreach (string module in modules) {
             if (File.Exists(module+"\\preupgradehooks.py")){
                 Process HookStartInfo = new Process();  
-                HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                HookStartInfo.StartInfo.FileName = @"C:\\SPM-APPS\\python310\\python.exe";
                 HookStartInfo.StartInfo.UseShellExecute = true;
                 Console.WriteLine("Running pre-upgrade hook...");
                 HookStartInfo.StartInfo.Arguments = module+"\\preupgradehooks.py "+pkg;
@@ -483,7 +483,7 @@ public class SharpPackageManager
         foreach (string module in modules) {
             if (File.Exists(module+"\\postupgradehooks.py")){
                 Process HookStartInfo = new Process();  
-                HookStartInfo.StartInfo.FileName = @"C:\\SPM\\pythonlibspmruntime\\python.exe";
+                HookStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
                 HookStartInfo.StartInfo.UseShellExecute = true;
                 Console.WriteLine("Running post-upgrade hook...");
                 HookStartInfo.StartInfo.Arguments = module+"\\postupgradehooks.py "+pkg;
