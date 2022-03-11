@@ -10,8 +10,8 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion =  20;
-    public static string appversion = "v2.1.0 - PTB-2";
+    public static int currentversion =  21;
+    public static string appversion = "v2.2.0 - PTB-1";
     public static string curbranch = "ptb";
 
     public static string? tag;
@@ -138,7 +138,8 @@ public class SharpPackageManager
         Console.WriteLine("Search for packages (Command: se, search) \n \n");
         Console.WriteLine("Switch branch (this is kinda risky! Command: swbr, switchbranch) \n \n");
         Console.WriteLine("Remove a package (Works only with .zip type packages. Command: remove) \n \n");
-        Console.WriteLine("Add SPM to path (Command: pathadd)");
+        Console.WriteLine("Add SPM to path (Command: pathadd) \n \n");
+        Console.WriteLine("Clean up (Command: cleanup)");
         action = Console.ReadLine();
         }
         else if (args.Length>0) {
@@ -171,6 +172,9 @@ public class SharpPackageManager
                     }
                 }
             }
+        }
+        else if (action=="cleanup") {
+            CleanUp(true);
         }
         else if (action == "pathadd") {
             AddToPath();
@@ -279,13 +283,14 @@ public class SharpPackageManager
         PressAnyKey();
     }
 
-    public static void CreateShortcut(string exectuable, string destination) {
-        Process HookStartInfo = new Process();
-        HookStartInfo.StartInfo.FileName = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe";
-        HookStartInfo.StartInfo.UseShellExecute = true;
-        HookStartInfo.StartInfo.Arguments = @"$ShortcutPath = "+'"'+destination+'"'+"; $WScriptObj = New-Object -ComObject ("+'"'+"WScript.Shell"+'"'+") ; $shortcut = $WscriptObj.CreateShortcut($ShortcutPath) ; $shortcut.TargetPath = "+exectuable+"; $shortcut.Save()";
-        Debug.WriteLine(@"$ShortcutPath = "+'"'+destination+'"'+"; $WScriptObj = New-Object -ComObject ("+'"'+"WScript.Shell"+'"'+") ; $shortcut = $WscriptObj.CreateShortcut($ShortcutPath) ; $shortcut.TargetPath = "+exectuable+"; $shortcut.Save()");
-        HookStartInfo.Start();
+    public static void CleanUp(bool downloadcache) {
+        if (downloadcache) {
+            string[] files = Directory.GetFiles(@"C:\SPM\Downloads");
+            foreach (string file in files) {
+                System.IO.File.Delete(file);
+                Debug.WriteLine("Deleted file " + file);
+            }
+        }
     }
     public static void AppKits(string AppKitFile)
     {
