@@ -92,12 +92,19 @@ public class SharpPackageManager
         }
         else
         {
-            MainApp(args);
+            if (File.Exists(@"C:\SPM\config\action.lock")) {
+                MainApp(args);
+            }
+            else {
+                Console.WriteLine(@"C:\SPM\config\action.lock exists. DO NOT REMOVE IT UNLESS YOU'RE 100% SURE THAT THERE IS NO OTHER SPM INSTANCE, BECAUSE IT MAY BREAK SPM!");
+                PressAnyKey("exit", true);
+            }
         }
        
     }
     public static void MainApp(string[] args)
     {
+        System.IO.File.Create(@"C:\SPM\config\action.lock");
         string action = "null";
         bool argav = false;
         Debug.WriteLine("Loading Modules");
@@ -250,6 +257,7 @@ public class SharpPackageManager
         else {
             Console.WriteLine("Launch the app without any options to get help!");
         }
+        File.Delete(@"C:\SPM\config\action.lock");
     }
         public static void AddToPath(string newentry=@"C:\SPM"){
             string path = Environment.GetEnvironmentVariable("Path");
@@ -303,7 +311,7 @@ public class SharpPackageManager
                 Console.WriteLine("Please, restart the app to continue!");
         }
         else Console.WriteLine("You have the latest version");
-        PressAnyKey();
+        PressAnyKey("exit", true);
     }
 
     public static void CleanUp(bool downloadcache) {
@@ -367,7 +375,7 @@ public class SharpPackageManager
             InstallPkg(kitappnames[finappcount], true);
             finappcount++;
         }
-        PressAnyKey();
+        PressAnyKey("exit", true);
     }
     
     public static void SearchPackages(string keyword, string[] args){
@@ -389,7 +397,7 @@ public class SharpPackageManager
                 Console.WriteLine("PKG: "+package+installedtext+" \n LATEST VERSION: "+ver+"\n INSTALLED VERSION: "+curver+"\n\n");
             }
         }
-        PressAnyKey();
+        PressAnyKey("exit", true);
     }
     public static void InstallPkg(string Package, bool Multi=false, bool upgrade=false)
     {
@@ -656,37 +664,35 @@ public class SharpPackageManager
                 
                 if (currentappversions.Count == 0) {
                     Console.WriteLine("You don't have any packages!");
-                    PressAnyKey();
+                    PressAnyKey("exit", true);
                 }
                 else if (!updates && updatecount.Count == 0) {
                     Console.WriteLine("No Updates available!"); 
-                    PressAnyKey();
+                    PressAnyKey("exit",true);
                 }
                 else {
                     bool multiple = true;
                     if (updatecount.Count==1) {
                         multiple=false;
                     }  
-                            CheckForAppUpdates(false, true, false);
-                            // Clear currentversions.txt
-                            DataLoad(InstallDir + "currentversions.txt", "currentversions");
-                            System.IO.File.WriteAllText(InstallDir+"currentversions.txt", string.Empty);
-                            WriteData(InstallDir+"currentversions.txt", "placeholder, 1", "AppendToFile");
-
-                            foreach (string update in updatecount){
-                                UpgradePKG(update, multiple);
-                            }
-                            foreach (string pack in currentappnames)
-                            {
-                                // Write current versions to currentappversions.txt
-
-                                int writeappverindex=updateappnames.IndexOf(pack);
-                                int writeappver=updateversions[writeappverindex];
-                                string wrdata = "\n" + pack + ", " + writeappver;
-                                //Console.WriteLine("Trying to write version info...");
-                                WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
-                            }
-                            PressAnyKey();
+                    CheckForAppUpdates(false, true, false);
+                    // Clear currentversions.txt
+                    DataLoad(InstallDir + "currentversions.txt", "currentversions");
+                    System.IO.File.WriteAllText(InstallDir+"currentversions.txt", string.Empty);
+                    WriteData(InstallDir+"currentversions.txt", "placeholder, 1", "AppendToFile");
+                    foreach (string update in updatecount){
+                        UpgradePKG(update, multiple);
+                    }
+                    foreach (string pack in currentappnames)
+                    {
+                        // Write current versions to currentappversions.tx
+                        int writeappverindex=updateappnames.IndexOf(pack);
+                        int writeappver=updateversions[writeappverindex];
+                        string wrdata = "\n" + pack + ", " + writeappver;
+                        //Console.WriteLine("Trying to write version info...");
+                        WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
+                    }
+                    PressAnyKey("exit", true);
                 }
             }
 
@@ -698,7 +704,10 @@ public class SharpPackageManager
         Console.ReadKey();
         // exit the app
 
-        if (exit) System.Environment.Exit(exitcode);
+        if (exit) {
+            File.Delete(@"C:\SPM\config\action.lock");
+            System.Environment.Exit(exitcode);
+        }
 
     }
         public static void DataUpdate(bool Out=true)
