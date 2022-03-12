@@ -9,9 +9,11 @@ public class SharpPackageManager
 {
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion;
-    public static string appversion;
-    public static string curbranch;
+    public static int currentversion = int.Parse(DateTime.Now.ToString("yyyyMd"));
+    
+    
+    public static string appversion = "dev build";
+    public static string curbranch = "dev";
 
     public static int currentapiversion = 2;
 
@@ -36,6 +38,7 @@ public class SharpPackageManager
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
     public static void Main(string[] args)
     {
+        Debug.WriteLine(currentversion);
         if (!File.Exists(InstallDir+"intversion.spmvi") && !File.Exists(InstallDir+"strversion.txt")) {
             currentversion=-1;
             appversion = "UNKNOWN! Updating the app may fix it!";
@@ -92,12 +95,12 @@ public class SharpPackageManager
         }
         else
         {
-            if (File.Exists(@"C:\SPM\config\action.lock")) {
+            if (!File.Exists(@"C:\SPM\config\action.lock")) {
                 MainApp(args);
             }
             else {
                 Console.WriteLine(@"C:\SPM\config\action.lock exists. DO NOT REMOVE IT UNLESS YOU'RE 100% SURE THAT THERE IS NO OTHER SPM INSTANCE, BECAUSE IT MAY BREAK SPM!");
-                PressAnyKey("exit", true);
+                PressAnyKey("exit", true, 0, false);
             }
         }
        
@@ -257,7 +260,6 @@ public class SharpPackageManager
         else {
             Console.WriteLine("Launch the app without any options to get help!");
         }
-        File.Delete(@"C:\SPM\config\action.lock");
     }
         public static void AddToPath(string newentry=@"C:\SPM"){
             string path = Environment.GetEnvironmentVariable("Path");
@@ -698,14 +700,14 @@ public class SharpPackageManager
 
     }
     
-    public static void PressAnyKey(string what="exit", bool exit=false, int exitcode = 0)
+    public static void PressAnyKey(string what="exit", bool exit=false, int exitcode = 0, bool rmaction = true)
     {
         Console.WriteLine("Press Any key to "+what+"...");
         Console.ReadKey();
         // exit the app
 
         if (exit) {
-            File.Delete(@"C:\SPM\config\action.lock");
+            if (rmaction) File.Delete(@"C:\SPM\config\action.lock");
             System.Environment.Exit(exitcode);
         }
 
