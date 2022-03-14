@@ -6,7 +6,7 @@
 # The following script will work for any project that can be built from command line by msbuild
 # It uses powershell shell executor, so you need to add the following line to your config.toml file
 # (located in gitlab-runner.exe directory):
-shell = "powershell"
+#shell = "powershell"
 #
 # The script is composed of 3 stages: build, test and deploy.
 #
