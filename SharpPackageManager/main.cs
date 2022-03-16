@@ -156,24 +156,24 @@ public class SharpPackageManager
         }
         //DataUpdate(false);
         //DataLoad(InstallDir + "apps.txt", "apps");
-        if (args.Length == 0) {
-        Console.WriteLine("Sharp Package Manager by Bultek. "+appversion);
-        Console.WriteLine("Sharp Package Manager API compatibility Version: "+currentapiversion);
-        Console.WriteLine("Note: We recommend updating database!");
-        Console.WriteLine("Note: We don't recommend using long commands in interactive mode!");
-        Console.WriteLine("Please choose your action! \n \n");
-        Console.WriteLine("Install a package (Command: i, install) \n \n");
-        Console.WriteLine("Install an AppKit (Command: ak, appkit) \n \n");
-        Console.WriteLine("Update database (Command: up, update) \n \n");
-        Console.WriteLine("Check for SPM updates (Command: spmup) \n \n");
-        Console.WriteLine("Check for app updates and upgrade packages (Command: upg, upgrade) \n \n");
-        Console.WriteLine("Search for packages (Command: se, search) \n \n");
-        Console.WriteLine("Switch branch (this is kinda risky! Command: swbr, switchbranch) \n \n");
-        Console.WriteLine("Remove a package (Works only with .zip type packages. Command: remove) \n \n");
-        Console.WriteLine("Add SPM to path (Command: pathadd) \n \n");
-        Console.WriteLine("Clean up (Command: cleanup) \n \n");
-        Console.WriteLine("List Packages (listall/listinstalled)");
-        if (output) action = Console.ReadLine();
+        if (args.Length == 0 && output) {
+            Console.WriteLine("Sharp Package Manager by Bultek. "+appversion);
+            Console.WriteLine("Sharp Package Manager API compatibility Version: "+currentapiversion);
+            Console.WriteLine("Note: We recommend updating database!");
+            Console.WriteLine("Note: We don't recommend using long commands in interactive mode!");
+            Console.WriteLine("Please choose your action! \n \n");
+            Console.WriteLine("Install a package (Command: i, install) \n \n");
+            Console.WriteLine("Install an AppKit (Command: ak, appkit) \n \n");
+            Console.WriteLine("Update database (Command: up, update) \n \n");
+            Console.WriteLine("Check for SPM updates (Command: spmup) \n \n");
+            Console.WriteLine("Check for app updates and upgrade packages (Command: upg, upgrade) \n \n");
+            Console.WriteLine("Search for packages (Command: se, search) \n \n");
+            Console.WriteLine("Switch branch (this is kinda risky! Command: swbr, switchbranch) \n \n");
+            Console.WriteLine("Remove a package (Works only with .zip type packages. Command: remove) \n \n");
+            Console.WriteLine("Add SPM to path (Command: pathadd) \n \n");
+            Console.WriteLine("Clean up (Command: cleanup) \n \n");
+            Console.WriteLine("List Packages (listall/listinstalled)");
+            action = Console.ReadLine();
         }
         else if (args.Length>0) {
             action = args[0];
@@ -186,13 +186,13 @@ public class SharpPackageManager
             Console.WriteLine("Package to install (note: you can install only one package)");
             string Package=Console.ReadLine();
             if (Package != null) {
-                InstallPkg(Package);
+                InstallPkg(Package, false, false , true);
             }
             else { Console.WriteLine("ERROR: Package can't be null"); PressAnyKey("exit", true); }
             }
             else {
                 if (args.Length==2) {
-                    InstallPkg(args[1]);
+                    InstallPkg(args[1], false, false , true);
                 }
                 else {
                     List<String> argss = new List<String>();
@@ -201,7 +201,7 @@ public class SharpPackageManager
                     }
                     argss.RemoveAt(0);
                     foreach (String arg in argss) {
-                        InstallPkg(arg);
+                        InstallPkg(arg, true, false , true);
                     }
                 }
             }
@@ -264,9 +264,9 @@ public class SharpPackageManager
             Console.WriteLine("To get help just open the app without any options!");
         }
         else {
-            Console.WriteLine("Launch the app without any options to get help!");
+            if (output) Console.WriteLine("Launch the app without any options to get help!");
         }
-        PressAnyKey("exit", true, 0, true, true);
+        PressAnyKey("exit", true, 0, true, output);
     }
         public static void AddToPath(string newentry=@"C:\SPM"){
             string path = Environment.GetEnvironmentVariable("Path");
@@ -323,12 +323,13 @@ public class SharpPackageManager
         PressAnyKey("exit", true);
     }
 
-    public static void CleanUp(bool downloadcache) {
+    public static void CleanUp(bool downloadcache, bool output = true) {
         if (downloadcache) {
             string[] files = Directory.GetFiles(@"C:\SPM\Downloads");
             foreach (string file in files) {
                 System.IO.File.Delete(file);
                 Debug.WriteLine("Deleted file " + file);
+                if (output) Console.WriteLine("Deleted file " + file);
             }
         }
     }
@@ -381,7 +382,7 @@ public class SharpPackageManager
         int finappcount = 0;
         while (finappcount < kitappnames.Count);
         {
-            InstallPkg(kitappnames[finappcount], true);
+            InstallPkg(kitappnames[finappcount], false, false , true);
             finappcount++;
         }
         PressAnyKey("exit", true);
@@ -408,16 +409,16 @@ public class SharpPackageManager
         }
         PressAnyKey("exit", true);
     }
-    public static void InstallPkg(string Package, bool Multi=false, bool upgrade=false)
+    public static void InstallPkg(string Package, bool Multi=false, bool upgrade=false, bool output = true)
     {
         if (appnames.Contains(Package) || upgrade)
         {
             System.IO.File.Create(@"C:\SPM\config\action.lock");
-            if (!upgrade) CheckForAppUpdates(false, true);
+            if (!upgrade) CheckForAppUpdates(false, true, output);
             if (!upgrade) DataLoad(InstallDir + "currentversions.txt", "currentversions");
             if (currentappnames.Contains(Package) && !upgrade) {
-                Console.WriteLine("ERROR: This Package is already installed. If you want to install it again remove it from the currentversions.txt file.");
-                PressAnyKey("exit", true);
+                if (output) Console.WriteLine("ERROR: This Package is already installed. If you want to install it again remove it from the currentversions.txt file.");
+                PressAnyKey("exit", true, -1, true, output);
             }
             if (!upgrade && AreModulesLoaded) {
                 foreach (string module in modules) {
@@ -493,7 +494,7 @@ public class SharpPackageManager
                 foreach (string dependency in dependencies) {
                     if (!currentappnames.Contains(dependency)) {
                         Debug.WriteLine("Installing dependency " + dependency);
-                        InstallPkg(dependency);
+                        InstallPkg(dependency, true, false, output);
                         Debug.WriteLine("Dependency "+dependency+"has been installed");
                     }
                 }
@@ -542,14 +543,14 @@ public class SharpPackageManager
         else Console.WriteLine("Please specify the package correctly!");
         
     }
-    public static void UpgradePKG(string pkg, bool multiple) {
+    public static void UpgradePKG(string pkg, bool multiple, bool output) {
         if (AreModulesLoaded) {
         foreach (string module in modules) {
             if (File.Exists(module+"\\preupgradehooks.py")){
                 Process HookStartInfo = new Process();  
                 HookStartInfo.StartInfo.FileName = @"C:\\SPM-APPS\\python310\\python.exe";
                 HookStartInfo.StartInfo.UseShellExecute = true;
-                Console.WriteLine("Running pre-upgrade hook...");
+                if (output) Console.WriteLine("Running pre-upgrade hook...");
                 HookStartInfo.StartInfo.Arguments = module+"\\preupgradehooks.py "+pkg;
                 HookStartInfo.Start();
                 HookStartInfo.WaitForExit();
@@ -561,7 +562,7 @@ public class SharpPackageManager
         int currentappver = currentappversions[currentappverindex];
         int latestappverversion = updateversions[latestappverindex];
         if (latestappverversion>currentappver){
-            InstallPkg(pkg, multiple, true);
+            InstallPkg(pkg, multiple, true, output);
             currentappversions[currentappverindex]=latestappverversion;
         }
         if (AreModulesLoaded) {
@@ -570,7 +571,7 @@ public class SharpPackageManager
                 Process HookStartInfo = new Process();  
                 HookStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
                 HookStartInfo.StartInfo.UseShellExecute = true;
-                Console.WriteLine("Running post-upgrade hook...");
+                if (output) Console.WriteLine("Running post-upgrade hook...");
                 HookStartInfo.StartInfo.Arguments = module+"\\postupgradehooks.py "+pkg;
                 HookStartInfo.Start();
                 HookStartInfo.WaitForExit();
@@ -624,7 +625,7 @@ public class SharpPackageManager
                 updateversions.Clear();
                 updateappnames.Clear();
             }
-            Console.WriteLine("Downloading the latest versions info");
+            if (output) Console.WriteLine("Downloading the latest versions info");
             using (WebClient datadl = new WebClient()) {
                 int i = 0;
                 while (i < reponames.Count) {
@@ -676,11 +677,11 @@ public class SharpPackageManager
                 
                 if (currentappversions.Count == 0) {
                     Console.WriteLine("You don't have any packages!");
-                    PressAnyKey("exit", true);
+                    PressAnyKey("exit", true, 0, true, output);
                 }
                 else if (!updates && updatecount.Count == 0) {
                     Console.WriteLine("No Updates available!"); 
-                    PressAnyKey("exit",true);
+                    PressAnyKey("exit",true, 0, true, output);
                 }
                 else {
                     bool multiple = true;
@@ -693,7 +694,7 @@ public class SharpPackageManager
                     System.IO.File.WriteAllText(InstallDir+"currentversions.txt", string.Empty);
                     WriteData(InstallDir+"currentversions.txt", "placeholder, 1", "AppendToFile");
                     foreach (string update in updatecount){
-                        UpgradePKG(update, multiple);
+                        UpgradePKG(update, multiple, output);
                     }
                     foreach (string pack in currentappnames)
                     {
@@ -712,16 +713,16 @@ public class SharpPackageManager
     
     public static void PressAnyKey(string what="exit", bool exit=false, int exitcode = 0, bool rmaction = true, bool output = true)
     {
-        
-        Console.WriteLine("Press Any key to "+what+"...");
-        Console.ReadKey();
-        // exit the app
+        if (output) {
+            Console.WriteLine("Press Any key to "+what+"...");
+            Console.ReadKey();
+            // exit the app
 
-        if (exit) {
-            if (rmaction) File.Delete(@"C:\SPM\config\action.lock");
-            System.Environment.Exit(exitcode);
+            if (exit) {
+                if (rmaction) File.Delete(@"C:\SPM\config\action.lock");
+                System.Environment.Exit(exitcode);
+            }
         }
-
     }
         public static void DataUpdate(bool Out=true)
         {
