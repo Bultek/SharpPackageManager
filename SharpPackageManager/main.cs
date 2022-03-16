@@ -40,7 +40,7 @@ public class SharpPackageManager
     public static void Main(string[] args) {
         MAIN(args);
     }
-    public static void MAIN(string[] args, bool launchmainapp = true, bool output = true)
+    public static void MAIN(string[] args, bool launchmainapp = true, bool output = true, bool forexit = false)
     {
         Debug.WriteLine(currentversion);
         if (!File.Exists(InstallDir+"intversion.spmvi") && !File.Exists(InstallDir+"strversion.txt")) {
@@ -106,7 +106,7 @@ public class SharpPackageManager
                 MainApp(args, output);
             }
             else {
-                Console.WriteLine(@"C:\SPM\config\action.lock exists. DO NOT REMOVE IT UNLESS YOU'RE 100% SURE THAT THERE IS NO OTHER SPM INSTANCE, BECAUSE IT MAY BREAK SPM!");
+                if (output) Console.WriteLine(@"C:\SPM\config\action.lock exists. DO NOT REMOVE IT UNLESS YOU'RE 100% SURE THAT THERE IS NO OTHER SPM INSTANCE, BECAUSE IT MAY BREAK SPM!");
                 PressAnyKey("exit", true, 0, false, false);
             }
         }
@@ -114,7 +114,6 @@ public class SharpPackageManager
     }
     public static void MainApp(string[] args, bool output = true)
     {
-        System.IO.File.Create(@"C:\SPM\config\action.lock");
         string action = "null";
         bool argav = false;
         Debug.WriteLine("Loading Modules");
@@ -267,6 +266,7 @@ public class SharpPackageManager
         else {
             Console.WriteLine("Launch the app without any options to get help!");
         }
+        PressAnyKey("exit", true, 0, true, true);
     }
         public static void AddToPath(string newentry=@"C:\SPM"){
             string path = Environment.GetEnvironmentVariable("Path");
@@ -412,6 +412,7 @@ public class SharpPackageManager
     {
         if (appnames.Contains(Package) || upgrade)
         {
+            System.IO.File.Create(@"C:\SPM\config\action.lock");
             if (!upgrade) CheckForAppUpdates(false, true);
             if (!upgrade) DataLoad(InstallDir + "currentversions.txt", "currentversions");
             if (currentappnames.Contains(Package) && !upgrade) {
@@ -486,7 +487,9 @@ public class SharpPackageManager
                     System.IO.Directory.Delete(@"C:\SPM-APPS\"+ Package, true);
                 }
             }
-            if (dependencies.Count > 0 && success) {
+            List<string> deps = new List<string>();
+            deps = dependencies;
+            if (deps.Count > 0 && success) {
                 foreach (string dependency in dependencies) {
                     if (!currentappnames.Contains(dependency)) {
                         Debug.WriteLine("Installing dependency " + dependency);
