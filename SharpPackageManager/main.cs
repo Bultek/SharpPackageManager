@@ -36,7 +36,11 @@ public class SharpPackageManager
     public static List<String> type = new List<String>();
 
     public static Dictionary<string, string> repos = new Dictionary<string, string>();
-    public static void Main(string[] args)
+
+    public static void Main(string[] args) {
+        MAIN(args);
+    }
+    public static void MAIN(string[] args, bool launchmainapp = true, bool output = true)
     {
         Debug.WriteLine(currentversion);
         if (!File.Exists(InstallDir+"intversion.spmvi") && !File.Exists(InstallDir+"strversion.txt")) {
@@ -53,12 +57,15 @@ public class SharpPackageManager
             }
             else curbranch = "master";
         }
-        Console.Title = "SharpPackageManager";
-        Debug.WriteLine(Console.LargestWindowWidth+"x"+Console.LargestWindowHeight);
+        if (output) { 
+            Console.Title = "SharpPackageManager";
+            Debug.WriteLine(Console.LargestWindowWidth+"x"+Console.LargestWindowHeight);
+        }
+
 
         if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
         {
-            Console.WriteLine("Unlocking update on app start and executing the app...");
+            if (output) Console.WriteLine("Unlocking update on app start and executing the app...");
             System.IO.File.Create("C:\\SPM\\futureversion\\unlock.txt");
             Process PackageStartInfo = new Process();
             PackageStartInfo.StartInfo.FileName = ("C:\\SPM\\futureversion\\SPM\\SharpPackageManager.exe");
@@ -69,7 +76,7 @@ public class SharpPackageManager
         else if (System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.Directory.Exists("C:\\SPM\\clean.txt"))
         {
             
-            Console.WriteLine("Update is unlocked, starting the main upgrade script...");
+            if (output) Console.WriteLine("Update is unlocked, starting the main upgrade script...");
             System.IO.File.Delete("C:\\SPM\\futureversion\\unlock.txt");
             Console.WriteLine("Copying Files...");
             string[] upfiles = System.IO.Directory.GetFiles("C:\\SPM\\futureversion\\SPM");
@@ -83,29 +90,29 @@ public class SharpPackageManager
 
             }
             System.IO.File.Create(InstallDir + "clean.txt");
-            Console.WriteLine("Please restart the app!");
+            if (output) Console.WriteLine("Please restart the app!");
         }
         else if (System.IO.File.Exists("C:\\SPM\\config\\clean.txt"))
         {
-            Console.WriteLine("Cleaning Up...");
+            if (output) Console.WriteLine("Cleaning Up...");
             System.IO.Directory.Delete(InstallPath + "futureversion", true);
             System.IO.File.Delete("C:\\SPM.zip");
             System.IO.File.Delete(InstallDir + "clean.txt");
-            Console.WriteLine("Update Finished!");
-        }
+            if (output) Console.WriteLine("Update Finished!");
+        } 
         else
         {
             if (!File.Exists(@"C:\SPM\config\action.lock")) {
-                MainApp(args);
+                MainApp(args, output);
             }
             else {
                 Console.WriteLine(@"C:\SPM\config\action.lock exists. DO NOT REMOVE IT UNLESS YOU'RE 100% SURE THAT THERE IS NO OTHER SPM INSTANCE, BECAUSE IT MAY BREAK SPM!");
-                PressAnyKey("exit", true, 0, false);
+                PressAnyKey("exit", true, 0, false, false);
             }
         }
        
     }
-    public static void MainApp(string[] args)
+    public static void MainApp(string[] args, bool output = true)
     {
         System.IO.File.Create(@"C:\SPM\config\action.lock");
         string action = "null";
@@ -167,7 +174,7 @@ public class SharpPackageManager
         Console.WriteLine("Add SPM to path (Command: pathadd) \n \n");
         Console.WriteLine("Clean up (Command: cleanup) \n \n");
         Console.WriteLine("List Packages (listall/listinstalled)");
-        action = Console.ReadLine();
+        if (output) action = Console.ReadLine();
         }
         else if (args.Length>0) {
             action = args[0];
@@ -700,8 +707,9 @@ public class SharpPackageManager
 
     }
     
-    public static void PressAnyKey(string what="exit", bool exit=false, int exitcode = 0, bool rmaction = true)
+    public static void PressAnyKey(string what="exit", bool exit=false, int exitcode = 0, bool rmaction = true, bool output = true)
     {
+        
         Console.WriteLine("Press Any key to "+what+"...");
         Console.ReadKey();
         // exit the app
