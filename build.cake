@@ -1,0 +1,24 @@
+var target = Argument("target", "Build");
+var configuration = Argument("configuration", "Release");
+
+//////////////////////////////////////////////////////////////////////
+// TASKS
+//////////////////////////////////////////////////////////////////////
+
+
+Task("Clean")
+    .Does(() =>
+{
+    CleanDirectory($"./SharpPackageManager/bin/{configuration}/net6.0");
+});
+
+Task("Build")
+    .IsDependentOn("Clean")
+    .Does(() =>
+{
+    DotNetCoreBuild("SharpPackageManager.sln", new DotNetCoreBuildSettings
+    {
+        Configuration = configuration,
+    });
+});
+RunTarget(target);
