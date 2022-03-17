@@ -16,7 +16,7 @@ Task("Build")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    DotNetCoreBuild("SharpPackageManager.sln", new DotNetCoreBuildSettings
+    DotNetBuild("SharpPackageManager.sln", new DotNetCoreBuildSettings
     {
         Configuration = configuration,
     });

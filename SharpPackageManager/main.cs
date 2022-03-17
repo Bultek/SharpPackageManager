@@ -102,13 +102,7 @@ public class SharpPackageManager
         } 
         else
         {
-            if (!File.Exists(@"C:\SPM\config\action.lock")) {
-                MainApp(args, output);
-            }
-            else {
-                if (output) Console.WriteLine(@"C:\SPM\config\action.lock exists. DO NOT REMOVE IT UNLESS YOU'RE 100% SURE THAT THERE IS NO OTHER SPM INSTANCE, BECAUSE IT MAY BREAK SPM!");
-                PressAnyKey("exit", true, 0, false);
-            }
+            MainApp(args, output);
         }
        
     }
