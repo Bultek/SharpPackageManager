@@ -107,7 +107,7 @@ public class SharpPackageManager
             }
             else {
                 if (output) Console.WriteLine(@"C:\SPM\config\action.lock exists. DO NOT REMOVE IT UNLESS YOU'RE 100% SURE THAT THERE IS NO OTHER SPM INSTANCE, BECAUSE IT MAY BREAK SPM!");
-                PressAnyKey("exit", true, 0, false, false);
+                PressAnyKey("exit", true, 0, false);
             }
         }
        
@@ -266,7 +266,7 @@ public class SharpPackageManager
         else {
             if (output) Console.WriteLine("Launch the app without any options to get help!");
         }
-        PressAnyKey("exit", true, 0, true, output);
+        PressAnyKey("exit", true, 0, output);
     }
         public static void AddToPath(string newentry=@"C:\SPM"){
             string path = Environment.GetEnvironmentVariable("Path");
@@ -413,12 +413,11 @@ public class SharpPackageManager
     {
         if (appnames.Contains(Package) || upgrade)
         {
-            System.IO.File.Create(@"C:\SPM\config\action.lock");
             if (!upgrade) CheckForAppUpdates(false, true, output);
             if (!upgrade) DataLoad(InstallDir + "currentversions.txt", "currentversions");
             if (currentappnames.Contains(Package) && !upgrade) {
                 if (output) Console.WriteLine("ERROR: This Package is already installed. If you want to install it again remove it from the currentversions.txt file.");
-                PressAnyKey("exit", true, -1, true, output);
+                PressAnyKey("exit", true, -1, output);
             }
             if (!upgrade && AreModulesLoaded) {
                 foreach (string module in modules) {
@@ -677,11 +676,11 @@ public class SharpPackageManager
                 
                 if (currentappversions.Count == 0) {
                     Console.WriteLine("You don't have any packages!");
-                    PressAnyKey("exit", true, 0, true, output);
+                    PressAnyKey("exit", true, 0, output);
                 }
                 else if (!updates && updatecount.Count == 0) {
                     Console.WriteLine("No Updates available!"); 
-                    PressAnyKey("exit",true, 0, true, output);
+                    PressAnyKey("exit",true, 0, output);
                 }
                 else {
                     bool multiple = true;
@@ -711,7 +710,7 @@ public class SharpPackageManager
 
     }
     
-    public static void PressAnyKey(string what="exit", bool exit=false, int exitcode = 0, bool rmaction = true, bool output = true)
+    public static void PressAnyKey(string what="exit", bool exit=false, int exitcode = 0, bool output = true)
     {
         if (output) {
             Console.WriteLine("Press Any key to "+what+"...");
@@ -719,7 +718,6 @@ public class SharpPackageManager
             // exit the app
 
             if (exit) {
-                if (rmaction) File.Delete(@"C:\SPM\config\action.lock");
                 System.Environment.Exit(exitcode);
             }
         }
