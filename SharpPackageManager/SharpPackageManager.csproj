@@ -13,4 +13,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>True</Optimize>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Cake.DotNetTool.Module" Version="2.1.0" />
+  </ItemGroup>
 </Project>
