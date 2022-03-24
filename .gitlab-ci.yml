@@ -6,7 +6,7 @@
 # The following script will work for any project that can be built from command line by msbuild
 # It uses powershell shell executor, so you need to add the following line to your config.toml file
 # (located in gitlab-runner.exe directory):
-#   shell = "powershell"
+#   shell = 'powershell'
 #
 # The script is composed of 3 stages: build, test and deploy.
 #
@@ -28,22 +28,31 @@
 variables:
   EXE_RELEASE_FOLDER: 'src\SharpPackageManager\bin\Release'
   NUGET_PATH: 'C:\NuGet\nuget.exe'
-  MSBUILD_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Binmsbuild.exe'
+  VSURL: 'https://aka.ms/vs/17/release/vs_community.exe'
+  DLURL: 'VSINSTALLER.exe'
+  MSBUILD_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\msbuild.exe'
   NUNIT_PATH: 'C:\Program Files (x86)\NUnit.org\nunit-console\nunit3-console.exe'
 
 stages:
+  - downloadvisualstudio2022
   - build
 
+downloadvisualstudio2022:
+  stage: downloadvisualstudio2022
+  script:
+    - '& mkdir VS'
+    - '& Invoke-WebRequest -Uri $VSURL -OutFile $DLURL
+    - '& start VSINSTALLER.exe -q -y'
 build_job:
   stage: build
   only:
     - tags  # the build process will only be started by git tag commits
   script:
     - '& "$env:NUGET_PATH" restore'  # restore Nuget dependencies
-    - '& "$env:MSBUILD_PATH" /p:Configuration=Release'  # build the project
+    - '& "$env:MSBUILD_PATH" /p:Configuration=Release' 
   artifacts:
     expire_in: 1 week  # save gitlab server space, we copy the files we need to deploy folder later on
     paths:
-      - '$env:EXE_RELEASE_FOLDER\SharpPackageManager.exe'  # saving exe to copy to deploy folder
-
-
+      - '$env:EXE_RELEASE_FOLDER\'  # saving exe to copy to deploy folder
+  dependencies:
+    - downloadvisualstudio2022
