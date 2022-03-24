@@ -41,7 +41,7 @@ build_job:
     - pushes
     - merges
   script:
-    - 'export MSBUILD_PATH=C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild.exe'
+    - 'export MSBUILD_PATH="C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild.exe"'
     - 'dotnet restore'  # restore Nuget dependencies
     - '"$MSBUILD_PATH" /p:Configuration=Release' 
   artifacts:
