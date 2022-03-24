@@ -41,7 +41,7 @@ downloadvisualstudio2022:
   stage: downloadvisualstudio2022
   script:
     - '& mkdir VS'
-    - '& Invoke-WebRequest -Uri $VSURL -OutFile $DLURL
+    - '& Invoke-WebRequest -Uri $VSURL -OutFile $DLURL'
     - '& start VSINSTALLER.exe -q -y'
 build_job:
   stage: build
