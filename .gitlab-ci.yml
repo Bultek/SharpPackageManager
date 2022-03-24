@@ -42,7 +42,7 @@ build_job:
     - merges
   script:
     - 'export MSBUILD_PATH="C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild.exe"'
-    - 'wget https://dot.net/v1/dotnet-install.sh && bash dotnet-install.sh -c 6.0 && source dotnet-install.sh'
+    - 'wget https://dot.net/v1/dotnet-install.sh && bash dotnet-install.sh -c 6.0 && source dotnet-install.sh && chmod +x /root/.dotnet/dotnet'
     - 'bash dotnet restore'
     - '"$MSBUILD_PATH" /p:Configuration=Release' 
   artifacts:
