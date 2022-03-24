@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "buildspm",
-            "command": "dotnet",
+            "command": "powershell ${workspaceFolder}/src/SharpPackageManager/build.ps1",
             "type": "process",
             "args": [
                 "build",
