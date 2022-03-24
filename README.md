@@ -21,7 +21,7 @@ Package Manager written on C#
   11. Fill previously created file with ```placeholder, 1```
   12. You're good to go!
 ## Additional Development Notes
-  1. You can try to debug the app using VSCode/Other IDEs/Code Editors, but we recommend to debug SPM using [Visual Studio Community 20222](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&channel=Release)
+  1. You can try to debug the app using VSCode/Other IDEs/Code Editors, but we recommend to debug SPM using [Visual Studio Community 2022](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&channel=Release)
 
 # Usage and contributing
 ## Contributing
@@ -40,7 +40,7 @@ Package Manager written on C#
  * There are 3 things that can be modified!
     1. Type (```.exe``` or ```.zip```) (e.g ```type, zip```, ```type, exe```)
     2. Dependencies (e.g ```dep, funnimonkeyframework```)
-    3. Executables (Not used in zip type, required in exe type, used as installer) (e.g ```exe, funnimonkeyframeworkinstaller.exe```)
+    3. Executables (Optional in zip type as shortcut paths, required in exe type, used as installer) (e.g ```exe, funnimonkeyframeworkinstaller.exe```)
  * Exe type just launches the specified executable (kinda reminds v1.x.x versions)
  * Zip type extracts contents of an archive to ```C:\SPM-APPS\<Package-Name>```
 ## Syntax of config files and appkits
