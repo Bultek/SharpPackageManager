@@ -38,6 +38,8 @@ build_job:
   stage: build
   only:
     - tags  # the build process will only be started by git tag commits
+    - pushes
+    - merges
   script:
     - '& "$env:NUGET_PATH" restore'  # restore Nuget dependencies
     - '& "$env:MSBUILD_PATH" /p:Configuration=Release' 
