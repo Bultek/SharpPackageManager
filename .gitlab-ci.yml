@@ -33,18 +33,17 @@ variables:
 
 
 stages:
-  - build
+  - restore
 build_job:
-  stage: build
+  stage: restore
   only:
     - tags  # the build process will only be started by git tag commits
     - pushes
     - merges
   script:
     - 'export MSBUILD_PATH="C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild.exe"'
-    - 'wget https://dot.net/v1/dotnet-install.sh && bash dotnet-install.sh -c 6.0 && source dotnet-install.sh && chmod +x /root/.dotnet/dotnet'
-    - 'dotnet restore'
-    - '"$MSBUILD_PATH" /p:Configuration=Release' 
+    - 'wget https://dot.net/v1/dotnet-install.sh && bash dotnet-install.sh -c 6.0 && source dotnet-install.sh && chmod +x /root/.dotnet/dotnet && cd src/SharpPackageManager'
+    - 'dotnet restore' 
   artifacts:
     expire_in: 1 week  # save gitlab server space, we copy the files we need to deploy folder later on
     paths:
