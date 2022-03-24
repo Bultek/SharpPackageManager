@@ -42,7 +42,7 @@ build_job:
     - merges
   script:
     - 'export MSBUILD_PATH="C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild.exe"'
-    - 'dotnet restore'  # restore Nuget dependencies
+    - 'curl https://dot.net/v1/dotnet-install.sh && bash ./dotnet-install.sh -c 6.0'
     - '"$MSBUILD_PATH" /p:Configuration=Release' 
   artifacts:
     expire_in: 1 week  # save gitlab server space, we copy the files we need to deploy folder later on
