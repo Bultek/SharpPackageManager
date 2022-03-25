@@ -14,6 +14,13 @@
     <SignAssembly>False</SignAssembly>
     <PackageLicenseFile>C:\Users\yemas\Documents\GitHub\SharpPackageManager\LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Company>BultekDev Software</Company>
+    <Product>SharpPackageManager</Product>
+    <Description>Package Manager Written in C#</Description>
+    <Copyright>2022, BultekDev / SharpPackageManager</Copyright>
+    <PackageProjectUrl>https://gitlab.com/bultekdev/spm-projects/SharpPackageManager</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>True</Optimize>
@@ -28,5 +35,14 @@
       <Isolated>false</Isolated>
       <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 </Project>
