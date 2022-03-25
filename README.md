@@ -1,30 +1,33 @@
 # SharpPackageManager
 Package Manager written on C#
 
-
-# Installation/Building
+# Installation, Building and Developing
 
 ## Installation
   * Download Installer from the [releases tab (recommended)](https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/releases) or download it from [here](https://gitlab.com/bultekdev/spm-projects/SPMinstaller/-/releases)
   * Or you can build it by yourself!
-## How to build?
-  1. Install .NET 6 SDK
-  2. Clone the repo
-  3. Open the apps folder in the terminal
-  5. Run ```dotnet build```
-  6. Copy the output
+## How to build
+  1. Install Visual Studio 2022 Community with .NET Desktop Development Pack
+  2. Install .NET 6 SDK
+  3. Clone the repo
+  4. Open The Repo in ```Developer Command Prompt for VS 2022```
+  5. Run ```msbuild```
+  6. Copy the output (```bin``` folder)
   7. Now you should organise config files
   8. Create ```sources.txt``` file in ```C:\SPM\config```
   9. (optional) Fill the default repo ```bultek-new, http://repo.bultek.com.ua/spm```
   10. Create ```currentversions.txt``` file in ```C:\SPM\config```
   11. Fill previously created file with ```placeholder, 1```
   12. You're good to go!
+## Additional Development Notes
+  1. You can try to debug the app using VSCode/Other IDEs/Code Editors, but we recommend to debug SPM using [Visual Studio Community 2022](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&channel=Release)
 
 # Usage and contributing
 ## Contributing
   * Request access to the repo (we'll grant it)
   * Clone the repo
-  * Do something, idk
+  * Do something in the dev branch
+  * Create a merge request to ```dev-testing``` branch
 ## Usage
   Usage is pretty obvious, everything is explained when you start the app!
 # Packages and repositories
@@ -36,9 +39,9 @@ Package Manager written on C#
  * There are 3 things that can be modified!
     1. Type (```.exe``` or ```.zip```) (e.g ```type, zip```, ```type, exe```)
     2. Dependencies (e.g ```dep, funnimonkeyframework```)
-    3. Executables (Not used in zip type, required in exe type, used as installer) (e.g ```exe, funnimonkeyframeworkinstaller.exe```)
+    3. Executables (Optional in zip type as shortcut paths (Only one shortcut can be created for now, we will improve this in new versions), required in exe type, used as installer) (e.g ```exe, funnimonkeyframeworkinstaller.exe```)
  * Exe type just launches the specified executable (kinda reminds v1.x.x versions)
- * Zip type extracts contents of an archive to ```C:\SPM-APPS\<Package-Name>```
+ * Zip type extracts contents of the archive to ```C:\SPM-APPS\<Package-Name>```
 ## Syntax of config files and appkits
    * Config files
       1. apps<reponame>.txt and versions<reponame>.txt are highly connected
@@ -62,13 +65,13 @@ Package Manager written on C#
  # Modules
  
  ## WARNING: WE DON'T RECOMMEND USING MODULES, they may cause crashes, compatibility issues (that's why it's not so easy to install them)
- ## How to create a module?
+ ## How to create a module
     SPM module is a collection of python scripts
   * Note: we recommend using ```libspm.py``` for os modules
   * Note: Scripts will run under "libspm Python runtime", it means WE DON'T RECOMMEND TO USE ANY CUSTOM MODULES THAT ARE NOT INCLUDED IN PYTHON 3.10.2!
   * We recommend using this [example](https://github.com/mrquantumoff/supersimplebackups-spm-module)
   * Note: Just ```init.py``` file is essential!
- ## How to enable and use modules?
+ ## How to enable and use modules
   * Install the ```python310``` package from ```bultek-new``` repo
   * Download libspm.py from the releases tab
   * Create ```C:\SPM\modules``` folder
