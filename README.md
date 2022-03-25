@@ -15,7 +15,6 @@ Package Manager written on C#
   * #### [Syntax](#Syntax of config files and appkits)
   * #### [Setup a repo](#How to setup a repo)
   ## [Modules Info](#Modules)
-  * #### [Warning](#WARNING: WE DON'T RECOMMEND USING MODULES, they may cause crashes, compatibility issues (that's why it's not so easy to install them))
   * #### [How to create a module guide](#How to create a module)
   * #### [How to enable and use modules guide](#How to enable and use modules)
 # Installation, Building and Developing
