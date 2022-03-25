@@ -2,6 +2,22 @@
 Package Manager written on C#
 
 
+# Contents
+  ## [Installation, building and developing](#Installation, Building and Developing)
+    * #### [Installation](#Installation)
+    * #### [Building](#How to build)
+    * #### [Additional Development Notes](##Additional Development Notes)
+  ## [Usage And Contributing](#Usage And Contributing)
+    * #### [Contributing](#Contributing)
+    * #### [Usage](#Usage)
+  ## [Packages and repositories](#Packages and repositories)
+    * #### [How to create a package](#How to create a package)
+    * #### [Syntax of config files and appkits](#Syntax of config files and appkits)
+    * #### [How to setup a repo](#How to setup a repo)
+  ## [Modules](#Modules)
+    * #### [Warning](#WARNING: WE DON'T RECOMMEND USING MODULES, they may cause crashes, compatibility issues (that's why it's not so easy to install them))
+    * #### [How to create a module](#How to create a module)
+    * #### [How to enable and use modules](#How to enable and use modules)
 # Installation, Building and Developing
 
 ## Installation
@@ -72,7 +88,7 @@ Package Manager written on C#
   * Note: Scripts will run under "libspm Python runtime", it means WE DON'T RECOMMEND TO USE ANY CUSTOM MODULES THAT ARE NOT INCLUDED IN PYTHON 3.10.2!
   * We recommend using this [example](https://github.com/mrquantumoff/supersimplebackups-spm-module)
   * Note: Just ```init.py``` file is essential!
- ## How to enable and use modules?
+ ## How to enable and use modules
   * Install the ```python310``` package from ```bultek-new``` repo
   * Download libspm.py from the releases tab
   * Create ```C:\SPM\modules``` folder

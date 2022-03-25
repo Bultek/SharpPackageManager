@@ -609,9 +609,9 @@ public class SharpPackageManager
                         {
                             if (!string.IsNullOrEmpty(icon))
                             {
-                                CreateShortcut(exe, icon, Package);
+                                CreateShortcut(exe, Package, icon);
                             }
-                            else CreateShortcut(exe, string.Empty, Package);
+                            else CreateShortcut(exe, Package);
                         }
                     }
                 }
@@ -627,7 +627,7 @@ public class SharpPackageManager
 
     }
 
-    public static async Task CreateShortcut(string executable, string icon, string package)
+    public static async Task CreateShortcut(string executable, string package, string icon = @"C:\SPM\icon.ico")
     {
         // Create a shortcut to Start Menu
         string shortcutPath = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\" + package + ".lnk";
@@ -636,6 +636,7 @@ public class SharpPackageManager
         shortcut.TargetPath = executable;
         shortcut.WorkingDirectory = @"C:\SPM-APPS\" + package;
         shortcut.IconLocation = icon;
+        
         shortcut.Save();
         Debug.WriteLine("Shortcut created!");
         // Thanks Copilot
