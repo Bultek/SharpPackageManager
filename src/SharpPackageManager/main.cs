@@ -92,14 +92,17 @@ public class SharpPackageManager
             {
                 string fileName = System.IO.Path.GetFileName(upfile);
                 string destFile = System.IO.Path.Combine(InstallPath + fileName);
-                if (!upfile.Contains("currentversions") || !upfile.Contains("sources"))
+                if (!upfile.StartsWith("currentversions") || !upfile.StartsWith("sources"))
                 {
+                    Debug.WriteLine("Copying " + fileName + " to " + destFile);
                     System.IO.File.Copy(upfile, destFile, true);
                 }
-
+                System.IO.File.Copy(@"C:\SPM\futureversion\SPM\config\intversion.spmvi", InstallDir + "intversion.spmvi", true);
+                System.IO.File.Copy(@"C:\SPM\futureversion\SPM\config\strversion.spmvi", InstallDir + "intversion.spmvi", true);
             }
             System.IO.File.Create(InstallDir + "clean.txt");
             if (output) Console.WriteLine("Please restart the app!");
+            PressAnyKey();
         }
         else if (System.IO.File.Exists("C:\\SPM\\config\\clean.txt"))
         {
@@ -149,7 +152,7 @@ public class SharpPackageManager
         if (!System.IO.File.Exists(InstallDir + "currentversions.txt"))
         {
             Console.WriteLine("ERROR: Can't find currentversions.txt, please create it and set it up!");
-            PressAnyKey("exit", true);
+            PressAnyKey("exit", true, 1);
         }
         //if (!System.IO.File.Exists(InstallDir + "latestversions.txt")) System.IO.File.Create(InstallDir + "latestversions.txt");
 
@@ -171,16 +174,16 @@ public class SharpPackageManager
             Console.WriteLine("Note: We recommend updating database!");
             Console.WriteLine("Note: We don't recommend using long commands in interactive mode!");
             Console.WriteLine("Please choose your action! \n \n");
-            Console.WriteLine("Install a package (Command: i, install) \n \n");
-            Console.WriteLine("Install an AppKit (Command: ak, appkit) \n \n");
-            Console.WriteLine("Update database (Command: up, update) \n \n");
-            Console.WriteLine("Check for SPM updates (Command: spmup) \n \n");
-            Console.WriteLine("Check for app updates and upgrade packages (Command: upg, upgrade) \n \n");
-            Console.WriteLine("Search for packages (Command: se, search) \n \n");
-            Console.WriteLine("Switch branch (this is kinda risky! Command: swbr, switchbranch) \n \n");
-            Console.WriteLine("Remove a package (Works only with .zip type packages. Command: remove) \n \n");
-            Console.WriteLine("Add SPM to path (Command: pathadd) \n \n");
-            Console.WriteLine("Clean up (Command: cleanup) \n \n");
+            Console.WriteLine("Install a package (Command: i, install)");
+            Console.WriteLine("Install an AppKit (Command: ak, appkit)");
+            Console.WriteLine("Update database (Command: up, update)");
+            Console.WriteLine("Check for SPM updates (Command: spmup)");
+            Console.WriteLine("Check for app updates and upgrade packages (Command: upg, upgrade)");
+            Console.WriteLine("Search for packages (Command: se, search)");
+            Console.WriteLine("Switch branch (this is kinda risky! Command: swbr, switchbranch)");
+            Console.WriteLine("Remove a package (Works only with .zip type packages. Command: remove)");
+            Console.WriteLine("Add SPM to path (Command: pathadd)");
+            Console.WriteLine("Clean up (Command: cleanup)");
             Console.WriteLine("List Packages (listall/listinstalled)");
             action = Console.ReadLine();
         }
