@@ -597,22 +597,18 @@ public class SharpPackageManager
                 {
                     if (output) Console.WriteLine("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\" + Package + " folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
                     AddToPath(@"C:\SPM-APPS\" + Package);
-                    if (output) Console.WriteLine("Do you want to create a start menu shortcut for the package (recommended for GUI apps) (y/N)? ");
-                    bool createshim = false;
-                    string answer = "yes";
+                    if (output && exectuable.Count>0) Console.WriteLine("Do you want to create a start menu shortcut for the package (recommended for GUI apps) (y/N)? ");
+                    string answer = "no";
                     if (output) answer = Console.ReadLine();
                     if (answer.ToLower().StartsWith('y') && exectuable.Count > 0)
                     {
                         string icon = string.Empty;
                         if (System.IO.File.Exists(@"C:\SPM-APPS\" + Package + @"\icon.ico")) icon = @"C:\SPM-APPS\" + Package + @"\icon.ico";
-                        foreach (string exe in exectuable)
+                        if (!string.IsNullOrEmpty(icon))
                         {
-                            if (!string.IsNullOrEmpty(icon))
-                            {
-                                CreateShortcut(exe, Package, icon);
-                            }
-                            else CreateShortcut(exe, Package);
+                            CreateShortcut(exectuable[0], Package, icon);
                         }
+                        else CreateShortcut(exectuable[0], Package);
                     }
                 }
             }
