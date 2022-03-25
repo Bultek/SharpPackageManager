@@ -1,4 +1,9 @@
-﻿using IWshRuntimeLibrary;
+﻿// Some parts of this code were made by GitHub Copilot. If any of this code violates license of other project, most probably it's written by Github Copilot. If you have any questions or concerns contact GitHub and Microsoft.
+// This Code is licensed under the BSD 2 Clause License.
+// Copyright (c) 2022, BultekDev / SharpPackageManager
+// All rights reserved.
+
+using IWshRuntimeLibrary;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Net;
@@ -592,11 +597,11 @@ public class SharpPackageManager
                 {
                     if (output) Console.WriteLine("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\" + Package + " folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
                     AddToPath(@"C:\SPM-APPS\" + Package);
-                    if (output) Console.WriteLine("Do you want to create a SPMshim for the package (recommended for GUI apps) (Y/n)? ");
-                    bool createshim = true;
+                    if (output) Console.WriteLine("Do you want to create a start menu shortcut for the package (recommended for GUI apps) (y/N)? ");
+                    bool createshim = false;
                     string answer = "yes";
                     if (output) answer = Console.ReadLine();
-                    if (answer.ToLower().StartsWith('y') && exectuable.Count >= 1)
+                    if (answer.ToLower().StartsWith('y') && exectuable.Count > 0)
                     {
                         string icon = string.Empty;
                         if (System.IO.File.Exists(@"C:\SPM-APPS\" + Package + @"\icon.ico")) icon = @"C:\SPM-APPS\" + Package + @"\icon.ico";
@@ -624,17 +629,16 @@ public class SharpPackageManager
 
     public static async Task CreateShortcut(string executable, string icon, string package)
     {
+        // Create a shortcut to Start Menu
+        string shortcutPath = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\" + package + ".lnk";
         WshShell shell = new WshShell();
-        IWshShortcut PKGShortcut;
-        PKGShortcut = (IWshShortcut)shell.CreateShortcut(StartMenuDirectory + @"\" + package + ".lnk");
-        PKGShortcut.TargetPath = executable;
-        PKGShortcut.Description = "Launch " + executable + " That was installed with SPM";
-        if (string.IsNullOrEmpty(icon))
-        {
-            PKGShortcut.IconLocation = icon;
-        }
-        PKGShortcut.Save();
-        Console.WriteLine("Shortuct Saved");
+        IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
+        shortcut.TargetPath = executable;
+        shortcut.WorkingDirectory = @"C:\SPM-APPS\" + package;
+        shortcut.IconLocation = icon;
+        shortcut.Save();
+        Debug.WriteLine("Shortcut created!");
+        // Thanks Copilot
     }
     public static void UpgradePKG(string pkg, bool multiple, bool output)
     {
@@ -717,9 +721,9 @@ public class SharpPackageManager
                 }
                 Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
                 Console.WriteLine("Removing from Start menu...");
-                if (System.IO.File.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS\" + package + ".lnk"))
+                if (System.IO.File.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\" + package + ".lnk"))
                 {
-                    System.IO.File.Delete(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS\" + package + ".lnk");
+                    System.IO.File.Delete(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\" + package + ".lnk");
                 }
             }
         }
