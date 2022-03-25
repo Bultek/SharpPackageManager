@@ -2,12 +2,24 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "buildspm",
+            "command": "powershell ${workspaceFolder}/src/SharpPackageManager/build.ps1",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/src/SharpPackageManager/SharpPackageManager.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "buildshim",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/SharpPackageManager/SharpPackageManager.csproj",
+                "${workspaceFolder}/src/SPMshim/SPMshim.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -26,13 +38,26 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "watch",
+            "label": "watchspm",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/SharpPackageManager/SharpPackageManager.csproj",
+                "${workspaceFolder}/src/SharpPackageManager/SharpPackageManager.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watchshim",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "${workspaceFolder}/src/SPMshim/SPMshim.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
