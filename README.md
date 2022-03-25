@@ -1,6 +1,6 @@
 # SharpPackageManager
 Package Manager written on C#
-
+[![Code Quality Rank](https://app.codacy.com/project/badge/Grade/54a8a31a08604afeaee09e1852919214)](https://www.codacy.com/gl/bultekdev/SharpPackageManager/dashboard?utm_source=gitlab.com&amp;utm_medium=referral&amp;utm_content=bultekdev/spm-projects/SharpPackageManager&amp;utm_campaign=Badge_Grade)
 # Installation, Building and Developing
 
 ## Installation
