@@ -2,16 +2,16 @@
 Package Manager written on C#
 
 
-# Installation/Building/Developing
+# Installation, Building and Developing
 
 ## Installation
   * Download Installer from the [releases tab (recommended)](https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/releases) or download it from [here](https://gitlab.com/bultekdev/spm-projects/SPMinstaller/-/releases)
   * Or you can build it by yourself!
-## How to build?
-  0. Install Visual Studio 2022 Community with .NET Desktop Development Pack
-  1. Install .NET 6 SDK
-  2. Clone the repo
-  3. Open The Repo in ```Developer Command Prompt for VS 2022```
+## How to build
+  1. Install Visual Studio 2022 Community with .NET Desktop Development Pack
+  2. Install .NET 6 SDK
+  3. Clone the repo
+  4. Open The Repo in ```Developer Command Prompt for VS 2022```
   5. Run ```msbuild```
   6. Copy the output (```bin``` folder)
   7. Now you should organise config files
@@ -66,7 +66,7 @@ Package Manager written on C#
  # Modules
  
  ## WARNING: WE DON'T RECOMMEND USING MODULES, they may cause crashes, compatibility issues (that's why it's not so easy to install them)
- ## How to create a module?
+ ## How to create a module
     SPM module is a collection of python scripts
   * Note: we recommend using ```libspm.py``` for os modules
   * Note: Scripts will run under "libspm Python runtime", it means WE DON'T RECOMMEND TO USE ANY CUSTOM MODULES THAT ARE NOT INCLUDED IN PYTHON 3.10.2!
