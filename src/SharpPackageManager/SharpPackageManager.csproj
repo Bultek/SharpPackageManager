@@ -2,13 +2,18 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
     <StartupObject>SharpPackageManager</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <PlatformTarget>x64</PlatformTarget>
+    <DebugType>embedded</DebugType>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <SignAssembly>False</SignAssembly>
+    <PackageLicenseFile>C:\Users\yemas\Documents\GitHub\SharpPackageManager\LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>True</Optimize>

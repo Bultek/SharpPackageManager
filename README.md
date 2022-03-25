@@ -1,17 +1,16 @@
 # SharpPackageManager
 Package Manager written on C#
 
-
-# Installation/Building/Developing
+# Installation, Building and Developing
 
 ## Installation
   * Download Installer from the [releases tab (recommended)](https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/releases) or download it from [here](https://gitlab.com/bultekdev/spm-projects/SPMinstaller/-/releases)
   * Or you can build it by yourself!
-## How to build?
-  0. Install Visual Studio 2022 Community with .NET Desktop Development Pack
-  1. Install .NET 6 SDK
-  2. Clone the repo
-  3. Open The Repo in ```Developer Command Prompt for VS 2022```
+## How to build
+  1. Install Visual Studio 2022 Community with .NET Desktop Development Pack
+  2. Install .NET 6 SDK
+  3. Clone the repo
+  4. Open The Repo in ```Developer Command Prompt for VS 2022```
   5. Run ```msbuild```
   6. Copy the output (```bin``` folder)
   7. Now you should organise config files
@@ -40,9 +39,9 @@ Package Manager written on C#
  * There are 3 things that can be modified!
     1. Type (```.exe``` or ```.zip```) (e.g ```type, zip```, ```type, exe```)
     2. Dependencies (e.g ```dep, funnimonkeyframework```)
-    3. Executables (Optional in zip type as shortcut paths, required in exe type, used as installer) (e.g ```exe, funnimonkeyframeworkinstaller.exe```)
+    3. Executables (Optional in zip type as shortcut paths (Only one shortcut can be created for now, we will improve this in new versions), required in exe type, used as installer) (e.g ```exe, funnimonkeyframeworkinstaller.exe```)
  * Exe type just launches the specified executable (kinda reminds v1.x.x versions)
- * Zip type extracts contents of an archive to ```C:\SPM-APPS\<Package-Name>```
+ * Zip type extracts contents of the archive to ```C:\SPM-APPS\<Package-Name>```
 ## Syntax of config files and appkits
    * Config files
       1. apps<reponame>.txt and versions<reponame>.txt are highly connected
@@ -66,13 +65,13 @@ Package Manager written on C#
  # Modules
  
  ## WARNING: WE DON'T RECOMMEND USING MODULES, they may cause crashes, compatibility issues (that's why it's not so easy to install them)
- ## How to create a module?
+ ## How to create a module
     SPM module is a collection of python scripts
   * Note: we recommend using ```libspm.py``` for os modules
   * Note: Scripts will run under "libspm Python runtime", it means WE DON'T RECOMMEND TO USE ANY CUSTOM MODULES THAT ARE NOT INCLUDED IN PYTHON 3.10.2!
   * We recommend using this [example](https://github.com/mrquantumoff/supersimplebackups-spm-module)
   * Note: Just ```init.py``` file is essential!
- ## How to enable and use modules?
+ ## How to enable and use modules
   * Install the ```python310``` package from ```bultek-new``` repo
   * Download libspm.py from the releases tab
   * Create ```C:\SPM\modules``` folder
