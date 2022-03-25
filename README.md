@@ -1,22 +1,6 @@
 # SharpPackageManager
 Package Manager written on C#
 
-
-# Contents
-  ## [Installation, building and developing](#Installation, Building and Developing)
-  * #### [How to install](#Installation)
-  * #### [Building SPM](#How to build)
-  * #### [Development Notes](##Additional Development Notes)
-  ## [Usage And Contributing](#Usage And Contributing)
-  * #### [Contributing to SPM](#Contributing)
-  * #### [Usage of the app](#Usage)
-  ## [About packages and repositories](#Packages and repositories)
-  * #### [Create a package](#How to create a package)
-  * #### [Syntax](#Syntax of config files and appkits)
-  * #### [Setup a repo](#How to setup a repo)
-  ## [Modules Info](#Modules)
-  * #### [How to create a module guide](#How to create a module)
-  * #### [How to enable and use modules guide](#How to enable and use modules)
 # Installation, Building and Developing
 
 ## Installation
