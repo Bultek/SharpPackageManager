@@ -1,6 +1,8 @@
 # SharpPackageManager
 Package Manager written on C#
 
+#### Status: [![Code Quality Rank](https://app.codacy.com/project/badge/Grade/54a8a31a08604afeaee09e1852919214)](https://www.codacy.com/gl/bultekdev/SharpPackageManager/dashboard?utm_source=gitlab.com&amp;utm_medium=referral&amp;utm_content=bultekdev/spm-projects/SharpPackageManager&amp;utm_campaign=Badge_Grade)   [![pipeline status](https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/badges/dev/pipeline.svg)](https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/commits/dev)   [![Latest Release](https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/badges/release.svg)](https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/releases) 
+
 # Installation, Building and Developing
 
 ## Installation

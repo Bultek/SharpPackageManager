@@ -327,11 +327,11 @@ public class SharpPackageManager
             // Param1 = Link of file
             // Param2 = Path to save
         }
-        using (StreamReader file = new StreamReader("C:\\temp\\latestversioninfo.bpmsvi"))
+        using (StreamReader file = new StreamReader("C:\\temp\\latestversioninfo.spmvi"))
         {
             latestversion = int.Parse(file.ReadLine());
         }
-        using (StreamReader file = new StreamReader("C:\\temp\\latestversiontag.bpmsvi"))
+        using (StreamReader file = new StreamReader("C:\\temp\\latestversiontag.spmvi"))
         {
             tag = file.ReadLine();
         }
@@ -353,6 +353,7 @@ public class SharpPackageManager
                 ZipFile.ExtractToDirectory("C:\\SPM.zip", "C:\\SPM\\futureversion");
             }
             Console.WriteLine("Please, restart the app to continue!");
+            PressAnyKey("exit", true, 0, true);
         }
         else Console.WriteLine("You have the latest version");
         PressAnyKey("exit", true);
