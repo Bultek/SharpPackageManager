@@ -13,11 +13,11 @@ public class SharpPackageManager
     public static string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion = int.Parse(DateTime.Now.ToString("yyyyMd"));
+    public static int currentversion = 22;
 
 
-    public static string appversion = "dev build";
-    public static string curbranch = "dev";
+    public static string appversion = "v2.3.0 - PTB 4";
+    public static string curbranch = "ptb";
 
     public static int currentapiversion = 2;
 
@@ -47,23 +47,6 @@ public class SharpPackageManager
     public static void MAIN(string[] args, bool launchmainapp = true, bool output = true, bool forexit = false)
     {
         Debug.WriteLine(currentversion);
-        if (!System.IO.File.Exists(InstallDir + "intversion.spmvi") && !System.IO.File.Exists(InstallDir + "strversion.txt"))
-        {
-            currentversion = -1;
-            appversion = "UNKNOWN! Updating the app may fix it!";
-        }
-        else
-        {
-            appversion = System.IO.File.ReadAllText(InstallDir + "strversion.spmvi");
-            currentversion = int.Parse(System.IO.File.ReadAllText(InstallDir + "intversion.spmvi"));
-            Debug.WriteLine(currentversion);
-            string lowerappversion = appversion.ToLower();
-            if (lowerappversion.Contains("ptb"))
-            {
-                curbranch = "ptb";
-            }
-            else curbranch = "master";
-        }
         if (output)
         {
             Console.Title = "SharpPackageManager";
@@ -73,6 +56,7 @@ public class SharpPackageManager
 
         if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
         {
+            // Start upgrade process
             if (output) Console.WriteLine("Unlocking update on app start and executing the app...");
             System.IO.File.Create("C:\\SPM\\futureversion\\unlock.txt");
             Process PackageStartInfo = new Process();
@@ -80,37 +64,27 @@ public class SharpPackageManager
             PackageStartInfo.StartInfo.UseShellExecute = true;
             PackageStartInfo.StartInfo.Verb = "runas";
             PackageStartInfo.Start();
+            System.Environment.Exit(0);
         }
-        else if (System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.Directory.Exists("C:\\SPM\\clean.txt"))
-        {
-
-            if (output) Console.WriteLine("Update is unlocked, starting the main upgrade script...");
-            System.IO.File.Delete("C:\\SPM\\futureversion\\unlock.txt");
-            Console.WriteLine("Copying Files...");
-            string[] upfiles = System.IO.Directory.GetFiles("C:\\SPM\\futureversion\\SPM");
-            foreach (string upfile in upfiles)
+        else if (System.IO.File.Exists(@"C:\\SPM\\futureversion\\unlock.txt")) {
+            // List all files in the update folder and copy them to the main folder
+            if (output) Console.WriteLine("Updating files...");
+            foreach (string file in System.IO.Directory.GetFiles(@"C:\\SPM\\futureversion"))
             {
-                string fileName = System.IO.Path.GetFileName(upfile);
-                string destFile = System.IO.Path.Combine(InstallPath + fileName);
-                if (!upfile.StartsWith("currentversions") || !upfile.StartsWith("sources"))
+                if (file != "currentversions.txt" && file != "sources.txt")
                 {
-                    Debug.WriteLine("Copying " + fileName + " to " + destFile);
-                    System.IO.File.Copy(upfile, destFile, true);
+                    System.IO.File.Copy(file, file.Replace(@"C:\\SPM\\futureversion\", @"C:\SPM"), true);
                 }
-                System.IO.File.Copy(@"C:\SPM\futureversion\SPM\config\intversion.spmvi", InstallDir + "intversion.spmvi", true);
-                System.IO.File.Copy(@"C:\SPM\futureversion\SPM\config\strversion.spmvi", InstallDir + "intversion.spmvi", true);
+                System.IO.File.Delete(@"C:\SPM\futureversion\unlock.txt");
+                System.IO.File.Create(InstallDir + "clean.txt");
             }
-            System.IO.File.Create(InstallDir + "clean.txt");
-            if (output) Console.WriteLine("Please restart the app!");
-            PressAnyKey();
         }
-        else if (System.IO.File.Exists("C:\\SPM\\config\\clean.txt"))
+        else if (System.IO.File.Exists(InstallDir + "clean.txt"))
         {
-            if (output) Console.WriteLine("Cleaning Up...");
-            System.IO.Directory.Delete(InstallPath + "futureversion", true);
-            System.IO.File.Delete("C:\\SPM.zip");
+            // Clean the update folder
+            if (output) Console.WriteLine("Cleaning update cache folder...");
+            System.IO.Directory.Delete(@"C:\SPM\futureversion", true);
             System.IO.File.Delete(InstallDir + "clean.txt");
-            if (output) Console.WriteLine("Update Finished!");
         }
         else
         {
@@ -330,13 +304,10 @@ public class SharpPackageManager
             // Param1 = Link of file
             // Param2 = Path to save
         }
+        // Read latest version info
         using (StreamReader file = new StreamReader("C:\\temp\\latestversioninfo.spmvi"))
         {
             latestversion = int.Parse(file.ReadLine());
-        }
-        using (StreamReader file = new StreamReader("C:\\temp\\latestversiontag.spmvi"))
-        {
-            tag = file.ReadLine();
         }
         if (latestversion > currentversion || IsSwitch)
         {
@@ -978,6 +949,7 @@ public class SharpPackageManager
     }
 
     public static string[] modules;
+    
 }
 public static class Extensions
 {
