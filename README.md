@@ -4,7 +4,7 @@ Package Manager written on C#
 
 # Contents
   ## [Installation, building and developing](#Installation, Building and Developing)
-    * #### [Installation](#Installation)
+  * #### [Installation](#Installation)
     * #### [Building](#How to build)
     * #### [Additional Development Notes](##Additional Development Notes)
   ## [Usage And Contributing](#Usage And Contributing)
