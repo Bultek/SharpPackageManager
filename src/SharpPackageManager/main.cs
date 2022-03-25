@@ -20,7 +20,6 @@ public class SharpPackageManager
     public static List<String> reponames = new List<String>();
     public static List<String> repourls = new List<String>();
     public static List<String> appnames = new List<String>();
-    public static List<char> spacecharacters = new List<char>();
     public static List<String> appurls = new List<String>();
     public static List<String> updateappnames = new List<String>();
     public static List<int> updateversions = new List<int>();
@@ -28,13 +27,13 @@ public class SharpPackageManager
     public static List<int> currentappversions = new List<int>();
     public static string InstallDir = "C:\\SPM\\config\\";
     public static string InstallPath = "C:\\SPM\\";
-    public static List<String> dependencies = new List<String>();
-    public static List<String> exectuable = new List<String>();
+    private static List<String> dependencies = new List<String>();
+    private static List<String> exectuable = new List<String>();
 
-    public static List<String> shortcuts = new List<String>();
-    public static List<String> type = new List<String>();
+    private static List<String> shortcuts = new List<String>();
+    private static List<String> type = new List<String>();
 
-    public static Dictionary<string, string> repos = new Dictionary<string, string>();
+    private static Dictionary<string, string> repos = new Dictionary<string, string>();
 
     public static void Main(string[] args)
     {
