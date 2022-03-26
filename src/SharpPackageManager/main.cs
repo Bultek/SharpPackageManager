@@ -13,10 +13,10 @@ public class SharpPackageManager
     public static string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion = 22;
+    public static int currentversion = 27;
 
 
-    public static string appversion = "v2.3.0 - PTB 4";
+    public static string appversion = "v2.3.0 - PTB 5";
     public static string curbranch = "ptb";
 
     public static int currentapiversion = 2;
