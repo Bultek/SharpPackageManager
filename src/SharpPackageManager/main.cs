@@ -13,10 +13,10 @@ public class SharpPackageManager
     public static string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion = 22;
+    public static int currentversion = 27;
 
 
-    public static string appversion = "v2.3.0 - PTB 4";
+    public static string appversion = "v2.3.0 - PTB 5";
     public static string curbranch = "ptb";
 
     public static int currentapiversion = 2;
@@ -53,38 +53,25 @@ public class SharpPackageManager
             Debug.WriteLine(Console.LargestWindowWidth + "x" + Console.LargestWindowHeight);
         }
 
-
-        if (System.IO.Directory.Exists("C:\\SPM\\futureversion") && !System.IO.File.Exists("C:\\SPM\\futureversion\\unlock.txt") && !System.IO.File.Exists(InstallDir + "clean.txt"))
-        {
-            // Start upgrade process
-            if (output) Console.WriteLine("Unlocking update on app start and executing the app...");
-            System.IO.File.Create("C:\\SPM\\futureversion\\unlock.txt");
-            Process PackageStartInfo = new Process();
-            PackageStartInfo.StartInfo.FileName = ("C:\\SPM\\futureversion\\SPM\\SharpPackageManager.exe");
-            PackageStartInfo.StartInfo.UseShellExecute = true;
-            PackageStartInfo.StartInfo.Verb = "runas";
-            PackageStartInfo.Start();
-            System.Environment.Exit(0);
-        }
-        else if (System.IO.File.Exists(@"C:\\SPM\\futureversion\\unlock.txt")) {
-            // List all files in the update folder and copy them to the main folder
-            if (output) Console.WriteLine("Updating files...");
-            foreach (string file in System.IO.Directory.GetFiles(@"C:\\SPM\\futureversion"))
+        if (System.IO.File.Exists(@"C:\\SPM\\futureversion\\")) {
+            DataUpdate(false);
+            CheckForAppUpdates(false, true, false);
+            DataLoad(InstallDir + "currentversions.txt", "currentversions");
+            if (!currentappnames.Contains("spmupdatemanager"))
             {
-                if (file != "currentversions.txt" && file != "sources.txt")
-                {
-                    System.IO.File.Copy(file, file.Replace(@"C:\\SPM\\futureversion\", @"C:\SPM"), true);
-                }
-                System.IO.File.Delete(@"C:\SPM\futureversion\unlock.txt");
-                System.IO.File.Create(InstallDir + "clean.txt");
+                Console.WriteLine("Installing SPM Update Manager...");
+                InstallPkg("spmupdatemanager", false, false, false);
             }
-        }
-        else if (System.IO.File.Exists(InstallDir + "clean.txt"))
-        {
-            // Clean the update folder
-            if (output) Console.WriteLine("Cleaning update cache folder...");
-            System.IO.Directory.Delete(@"C:\SPM\futureversion", true);
-            System.IO.File.Delete(InstallDir + "clean.txt");
+            else
+            {
+                Console.WriteLine("SPM Update Manager is already installed. Proceeding to update");
+                Process PackageStartInfo = new Process();
+                PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
+                PackageStartInfo.StartInfo.Arguments = curbranch+" "+currentversion;
+                PackageStartInfo.StartInfo.UseShellExecute = true;
+                PackageStartInfo.Start();
+                System.Environment.Exit(0);
+            }
         }
         else
         {
@@ -108,7 +95,7 @@ public class SharpPackageManager
                 }
                 System.IO.File.Copy("C:\\SPM\\libspm.py", module + "\\libspm.py");
                 Process PackageStartInfo = new Process();
-                PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
+                PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
                 PackageStartInfo.StartInfo.Arguments = module + "\\init.py";
                 PackageStartInfo.StartInfo.UseShellExecute = true;
                 PackageStartInfo.Start();
@@ -292,45 +279,24 @@ public class SharpPackageManager
     {
         VersionUpdate(Branch, true);
     }
-    public static void VersionUpdate(string branch, bool IsSwitch = false)
+    public static void VersionUpdate(string ubranch, bool IsSwitch = false)
     {
-        Console.WriteLine("Loading latest versions info...");
-        if (System.IO.File.Exists("C:\\temp\\latestversioninfo.spmvi")) System.IO.File.Delete("C:\\temp\\latestversioninfo.spmvi");
-        if (System.IO.File.Exists("C:\\temp\\latestversiontag.spmvi")) System.IO.File.Delete("C:\\temp\\latestversiontag.spmsvi");
-        using (WebClient tagdl = new WebClient())
+        DataUpdate(false);
+        CheckForAppUpdates(false, true, false);
+        DataLoad(InstallDir + "currentversions.txt", "currentversions");
+        if (!currentappnames.Contains("spmupdatemanager"))
         {
-            tagdl.DownloadFile("https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/raw/versioncontrol/" + branch + ".spmvi", "C:\\temp\\latestversioninfo.spmvi");
-            tagdl.DownloadFile("https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/raw/versioncontrol/" + branch + "tag.spmvi", "C:\\temp\\latestversiontag.spmvi");
-            // Param1 = Link of file
-            // Param2 = Path to save
+            Console.WriteLine("Installing SPM Update Manager...");
+            InstallPkg("spmupdatemanager", false, false, false);
         }
-        // Read latest version info
-        using (StreamReader file = new StreamReader("C:\\temp\\latestversioninfo.spmvi"))
-        {
-            latestversion = int.Parse(file.ReadLine());
-        }
-        if (latestversion > currentversion || IsSwitch)
-        {
-            Console.WriteLine("Downloading update...");
-            using (WebClient tagdl = new WebClient())
-            {
-                //Console.WriteLine("Downloading versions info...");
-                tagdl.DownloadFile("http://repo.bultek.com.ua/SPM-BINARY/SPM-" + branch + ".zip", "C:\\SPM.zip");
-                // Param1 = Link of file
-                // Param2 = Path to save
-            }
-            Console.WriteLine("Pre-Configuring update...");
-            if (System.IO.Directory.Exists("C:\\SPM\\futureversion")) System.IO.Directory.Delete("C:\\SPM\\futureversion", true);
-            if (!System.IO.Directory.Exists("C:\\SPM\\futureversion"))
-            {
-                System.IO.Directory.CreateDirectory("C:\\SPM\\futureversion");
-                ZipFile.ExtractToDirectory("C:\\SPM.zip", "C:\\SPM\\futureversion");
-            }
-            Console.WriteLine("Please, restart the app to continue!");
-            PressAnyKey("exit", true, 0, true);
-        }
-        else Console.WriteLine("You have the latest version");
-        PressAnyKey("exit", true);
+            Process PackageStartInfo = new Process();
+            PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
+            if (IsSwitch) PackageStartInfo.StartInfo.Arguments = ubranch + " 1";
+            else PackageStartInfo.StartInfo.Arguments = ubranch + " " + currentversion;
+            PackageStartInfo.StartInfo.UseShellExecute = true;
+            PackageStartInfo.Start();
+            System.Environment.Exit(0);
+
     }
 
     public static void CleanUp(bool downloadcache, bool output = true)
