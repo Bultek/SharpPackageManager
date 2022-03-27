@@ -14,10 +14,10 @@ public class SharpPackageManager
     public static bool AreModulesLoaded = false;
     public static int latestversion;
     public static int currentversion = 29;
-
-
-    public static string appversion = "v2.4.0";
+    public static string appversion = "v2.4.0 - Testing build ID" + currentversion;
+    public static string codename = "RickRoll";
     public static string curbranch = "ptb";
+    
 
     public static int currentapiversion = 2;
 
