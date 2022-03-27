@@ -414,6 +414,7 @@ public class SharpPackageManager
                 if (output) Console.WriteLine("ERROR: This Package is already installed. If you want to install it again remove it from the currentversions.txt file.");
                 PressAnyKey("exit", true, -1, output);
             }
+            Console.WriteLine("By installing any of the package you agree to the license agreement of the package.");
             if (!upgrade && AreModulesLoaded)
             {
                 foreach (string module in modules)
