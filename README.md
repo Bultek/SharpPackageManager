@@ -60,7 +60,7 @@ Package Manager written on C#
  2. create an apps.txt file on your server
  3. create a versions.txt file on your server
  4. Set up both files using the SPM config syntax
- 5. Add the repo to ```C:\SPM\sources.txt``` file
+ 5. Add the repo to ```C:\SPM\config\sources.txt``` file
  6. You're done!
  
  # Modules
