@@ -13,11 +13,12 @@ public class SharpPackageManager
     public static string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
     public static int latestversion;
-    public static int currentversion = 27;
-
-
-    public static string appversion = "v2.3.0 - PTB 5";
+    public static int currentversion = 29;
+    public static string date = DateTime.Now.ToString("dd-MM");
+    public static string appversion = "v2.4.0 - Testing build ID " + currentversion;
+    public static string codename = "RickRoll";
     public static string curbranch = "ptb";
+    
 
     public static int currentapiversion = 2;
 
@@ -81,6 +82,11 @@ public class SharpPackageManager
     }
     public static void MainApp(string[] args, bool output = true)
     {
+        if (output && date == "01-04" || args.Contains("--rickrollme"))
+        {
+            Console.WriteLine("It's the rickroll day!");
+            Console.WriteLine("Never gonna give you up,\n never gonna let you down,\n never gonna run around and desert you,\n never gonna make you cry,\n never gonna say goodbye,\n never gonna tell a lie and hurt you.\n");
+        }
         string action = "null";
         bool argav = false;
         Debug.WriteLine("Loading Modules");
@@ -113,6 +119,9 @@ public class SharpPackageManager
         if (!System.IO.File.Exists(InstallDir + "currentversions.txt"))
         {
             Console.WriteLine("ERROR: Can't find currentversions.txt, please create it and set it up!");
+            Console.WriteLine("Opening instructions in your default browser...");
+            Process.Start("explorer", "https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/blob/ptb/README.md#syntax-of-config-files-and-appkits");
+            Process.Start("explorer", @"C:\SPM\config");
             PressAnyKey("exit", true, 1);
         }
         //if (!System.IO.File.Exists(InstallDir + "latestversions.txt")) System.IO.File.Create(InstallDir + "latestversions.txt");
