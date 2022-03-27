@@ -63,16 +63,13 @@ public class SharpPackageManager
                 Console.WriteLine("Installing SPM Update Manager...");
                 InstallPkg("spmupdatemanager", false, false, false);
             }
-            else
-            {
-                Console.WriteLine("SPM Update Manager is already installed. Proceeding to update");
+                //Console.WriteLine("SPM Update Manager is already installed. Proceeding to update");
                 Process PackageStartInfo = new Process();
                 PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
                 PackageStartInfo.StartInfo.Arguments = curbranch+" "+currentversion;
                 PackageStartInfo.StartInfo.UseShellExecute = true;
                 PackageStartInfo.Start();
                 System.Environment.Exit(0);
-            }
         }
         else
         {
