@@ -23,8 +23,8 @@ public static class SharpPackageManager
     public const int currentapiversion = 2;
 
     
-    public static List<String> reponames = new List<String>();
-    public static List<String> repourls = new List<String>();
+    private static List<String> reponames = new List<String>();
+    private static List<String> repourls = new List<String>();
     public static List<String> appnames = new List<String>();
     public static List<String> appurls = new List<String>();
     public static List<String> updateappnames = new List<String>();
@@ -889,7 +889,6 @@ public static class SharpPackageManager
                 // Param1 = Link of file
                 // Param2 = Path to save
             } while (i != repourls.Count());
-            i = 0;
 
         }
     }
