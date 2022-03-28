@@ -516,9 +516,9 @@ public class SharpPackageManager
                     {
                         Console.WriteLine("Error while starting " + exe);
                         Debug.WriteLine(ex.Message);
-                        Console.WriteLine("Is app installed correctly? (Y/n)");
+                        if (output) Console.WriteLine("Is app installed correctly? (Y/n)");
                         string answer = "Yes";
-                        answer = Console.ReadLine();
+                        if (output) answer = Console.ReadLine();
                         answer = answer.ToLower();
                         if (answer.ToLower().StartsWith("n"))
                         {
@@ -567,7 +567,9 @@ public class SharpPackageManager
                             Process HookStartInfo = new Process();
                             HookStartInfo.StartInfo.FileName = @"C:\\SPM-APPS\\python310\\python.exe";
                             HookStartInfo.StartInfo.UseShellExecute = true;
-                            Console.WriteLine("Running post-installation hook...");
+                            if (output) Console.WriteLine("================================================================================");
+                            if (output) Console.WriteLine("Running post-installation hook...");
+                            if (output) Console.WriteLine("================================================================================");
                             HookStartInfo.StartInfo.Arguments = module + "\\postinstallationhooks.py " + Package;
                             HookStartInfo.Start();
                             HookStartInfo.WaitForExit();
@@ -633,7 +635,9 @@ public class SharpPackageManager
                     Process HookStartInfo = new Process();
                     HookStartInfo.StartInfo.FileName = @"C:\\SPM-APPS\\python310\\python.exe";
                     HookStartInfo.StartInfo.UseShellExecute = true;
+                    if (output) Console.WriteLine("================================================================================");
                     if (output) Console.WriteLine("Running pre-upgrade hook...");
+                    if (output) Console.WriteLine("================================================================================");
                     HookStartInfo.StartInfo.Arguments = module + "\\preupgradehooks.py " + pkg;
                     HookStartInfo.Start();
                     HookStartInfo.WaitForExit();
@@ -658,7 +662,9 @@ public class SharpPackageManager
                     Process HookStartInfo = new Process();
                     HookStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
                     HookStartInfo.StartInfo.UseShellExecute = true;
+                    if (output) Console.WriteLine("================================================================================");
                     if (output) Console.WriteLine("Running post-upgrade hook...");
+                    if (output) Console.WriteLine("================================================================================");
                     HookStartInfo.StartInfo.Arguments = module + "\\postupgradehooks.py " + pkg;
                     HookStartInfo.Start();
                     HookStartInfo.WaitForExit();
@@ -666,14 +672,16 @@ public class SharpPackageManager
             }
         }
     }
-    public static void RemovePKG(string package)
+    public static void RemovePKG(string package, bool output)
     {
         if (currentappnames.Contains(package))
         {
+            if (output) Console.WriteLine("================================================================================");
             DataLoad(InstallDir + "currentversions.txt", "currentversions");
             System.IO.File.WriteAllText(InstallDir + "currentversions.txt", string.Empty);
             WriteData(InstallDir + "currentversions.txt", "placeholder, 1", "AppendToFile");
-            Console.WriteLine("Removing App Data...");
+            if (output) Console.WriteLine("Removing App Data...");
+            if (output) Console.WriteLine("================================================================================");
             System.IO.Directory.Delete(@"C:\SPM-APPS\" + package, true);
             int currentappindex = currentappnames.IndexOf(package);
             currentappversions.RemoveAt(currentappindex);
@@ -687,6 +695,7 @@ public class SharpPackageManager
                 //Console.WriteLine("Trying to write version info...");
                 WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
             }
+            if (output) Console.WriteLine("================================================================================");
             Console.WriteLine("Removing From PATH...");
             string path = Environment.GetEnvironmentVariable("Path");
             if (path.Contains(@"SPM-APPS\" + package))
