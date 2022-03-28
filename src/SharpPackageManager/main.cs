@@ -227,13 +227,13 @@ public class SharpPackageManager
         {
             if (args.Length == 2)
             {
-                RemovePKG(args[1]);
+                RemovePKG(args[1], output);
             }
             else
             {
                 Console.WriteLine("Which Package you want to remove?");
                 string packageName = Console.ReadLine();
-                RemovePKG(packageName);
+                RemovePKG(packageName, output);
             }
         }
         else if (action == "up" || action == "update") DataUpdate();
