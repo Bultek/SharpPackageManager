@@ -18,11 +18,11 @@ public static class SharpPackageManager
     public static readonly string appversion = "v2.4.0 - Testing build ID " + currentversion;
     public static readonly string codename = "RickRoll";
     public static readonly string curbranch = "ptb";
-    
+
     // basically major version
     public const int currentapiversion = 2;
 
-    
+
     private static List<String> reponames = new List<String>();
     private static List<String> repourls = new List<String>();
     public static List<String> appnames = new List<String>();
@@ -57,7 +57,8 @@ public static class SharpPackageManager
         }
 
         // If the app was upgraded with old SPM versions (if it's possible ofc)
-        if (System.IO.File.Exists(@"C:\\SPM\\futureversion\\")) {
+        if (System.IO.File.Exists(@"C:\\SPM\\futureversion\\"))
+        {
             DataUpdate(true);
             CheckForAppUpdates(true, true, output);
             DataLoad(InstallDir + "currentversions.txt", "currentversions");
@@ -68,13 +69,12 @@ public static class SharpPackageManager
                 Console.WriteLine("================================");
                 InstallPkg("spmupdatemanager", false, false, false);
             }
-                //Console.WriteLine("SPM Update Manager is already installed. Proceeding to update");
-                Process PackageStartInfo = new Process();
-                PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
-                PackageStartInfo.StartInfo.Arguments = curbranch+" "+currentversion;
-                PackageStartInfo.StartInfo.UseShellExecute = true;
-                PackageStartInfo.Start();
-                System.Environment.Exit(0);
+            Process PackageStartInfo = new Process();
+            PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
+            PackageStartInfo.StartInfo.Arguments = curbranch + " " + currentversion;
+            PackageStartInfo.StartInfo.UseShellExecute = true;
+            PackageStartInfo.Start();
+            System.Environment.Exit(0);
         }
         else
         {
@@ -140,8 +140,6 @@ public static class SharpPackageManager
         {
             if (System.IO.File.Exists(InstallDir + "apps" + repo + ".txt")) DataLoad(InstallDir + "apps" + repo + ".txt", "apps");
         }
-        //DataUpdate(false);
-        //DataLoad(InstallDir + "apps.txt", "apps");
         if (args.Length == 0 && output)
         {
             Console.WriteLine("================================================================================");
@@ -183,7 +181,7 @@ public static class SharpPackageManager
                     InstallPkg(Package, false, false, true);
                     Console.WriteLine("================================================================================");
                 }
-               
+
                 else { Console.WriteLine("ERROR: Package can't be null"); PressAnyKey("exit", true); }
             }
             else
@@ -280,7 +278,7 @@ public static class SharpPackageManager
         }
         else if (action == "help" || action == "h")
         {
-           if (output) Console.WriteLine("To get help just open the app without any options!");
+            if (output) Console.WriteLine("To get help just open the app without any options!");
         }
         else
         {
@@ -316,13 +314,13 @@ public static class SharpPackageManager
             Console.WriteLine("================================================================================");
             InstallPkg("spmupdatemanager", false, false, false);
         }
-            Process PackageStartInfo = new Process();
-            PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
-            if (IsSwitch) PackageStartInfo.StartInfo.Arguments = ubranch + " 1";
-            else PackageStartInfo.StartInfo.Arguments = ubranch + " " + currentversion;
-            PackageStartInfo.StartInfo.UseShellExecute = true;
-            PackageStartInfo.Start();
-            System.Environment.Exit(0);
+        Process PackageStartInfo = new Process();
+        PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
+        if (IsSwitch) PackageStartInfo.StartInfo.Arguments = ubranch + " 1";
+        else PackageStartInfo.StartInfo.Arguments = ubranch + " " + currentversion;
+        PackageStartInfo.StartInfo.UseShellExecute = true;
+        PackageStartInfo.Start();
+        System.Environment.Exit(0);
 
     }
 
@@ -468,7 +466,7 @@ public static class SharpPackageManager
             if (System.IO.File.Exists(InstallPath + "Downloads\\" + Package + ".zip")) System.IO.File.Delete(InstallPath + "Downloads\\" + Package + ".exe");
             string pkgdir = "C:\\SPM\\Downloads\\" + Package + ".zip";
             int pkgnumber = appnames.IndexOf(Package);
-            //Console.WriteLine(pkgnumber);
+
             if (!Directory.Exists("C:\\SPM\\Downloads\\")) Directory.CreateDirectory("C:\\SPM\\Downloads\\");
             // Stop people from using v1.X.X packages
             if (appurls[pkgnumber].EndsWith(".exe"))
@@ -579,17 +577,12 @@ public static class SharpPackageManager
                         }
                     }
                 }
-                /*
-                if (!Directory.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS"))
-                {
-                    Directory.CreateDirectory(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS");
-                } Will be used in the future */
                 if (type[0] == "zip")
                 {
                     // Add the app to machine path and maybe create shortcuts
                     if (output) Console.WriteLine("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\" + Package + " folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
                     AddToPath(@"C:\SPM-APPS\" + Package);
-                    if (output && exectuable.Count>0) Console.WriteLine("Do you want to create a start menu shortcut for the package (recommended for GUI apps) (y/N)? ");
+                    if (output && exectuable.Count > 0) Console.WriteLine("Do you want to create a start menu shortcut for the package (recommended for GUI apps) (y/N)? ");
                     string answer = "no";
                     if (output) answer = Console.ReadLine();
                     if (answer.ToLower().StartsWith('y') && exectuable.Count > 0)
@@ -598,7 +591,7 @@ public static class SharpPackageManager
                         if (System.IO.File.Exists(@"C:\SPM-APPS\" + Package + @"\icon.ico")) icon = @"C:\SPM-APPS\" + Package + @"\icon.ico";
                         if (!string.IsNullOrEmpty(icon))
                         {
-                             CreateShortcut(exectuable[0], Package, icon);
+                            CreateShortcut(exectuable[0], Package, icon);
                         }
                         else CreateShortcut(exectuable[0], Package);
                     }
@@ -625,7 +618,7 @@ public static class SharpPackageManager
         shortcut.TargetPath = executable;
         shortcut.WorkingDirectory = @"C:\SPM-APPS\" + package;
         shortcut.IconLocation = icon;
-        
+
         shortcut.Save();
         Debug.WriteLine("Shortcut created!");
         // Thanks Copilot
@@ -699,7 +692,6 @@ public static class SharpPackageManager
                 int writeappverindex = currentappnames.IndexOf(pack);
                 int writeappver = currentappversions[writeappverindex];
                 string wrdata = "\n" + pack + ", " + writeappver;
-                //Console.WriteLine("Trying to write version info...");
                 WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
             }
             if (output) Console.WriteLine("================================================================================");
@@ -873,7 +865,6 @@ public static class SharpPackageManager
                 string currepopath = InstallDir + "apps" + reponames[i] + ".txt";
                 if (System.IO.File.Exists(currepopath)) System.IO.File.Delete(currepopath);
 
-                //Console.WriteLine(repourls[i]);
                 if (Out == true)
                 {
                     Console.WriteLine("==================================");
@@ -885,7 +876,6 @@ public static class SharpPackageManager
                 i++;
                 DataLoad(currepopath, "apps");
 
-                //Console.WriteLine(appnames[i]);
                 // Param1 = Link of file
                 // Param2 = Path to save
             } while (i != repourls.Count());
@@ -896,7 +886,7 @@ public static class SharpPackageManager
     {
         if (Type == "AppendToFile")
         {
-            #pragma warning disable CS0162 // Unreachable code detected
+#pragma warning disable CS0162 // Unreachable code detected
             for (int i = 1; i <= 3; ++i)
             {
                 try
@@ -994,14 +984,5 @@ public static class SharpPackageManager
     }
 
     public static string[] modules;
-    
-}
-public static class Extensions
-{
-    public static string Filter(this string str, List<char> charsToRemove)
-    {
-        // return String.Join(String.Empty, str.Split(charsToRemove.ToArray()));
 
-        return String.Concat(str.Split(charsToRemove.ToArray()));
-    }
 }
