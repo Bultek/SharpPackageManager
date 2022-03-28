@@ -21,6 +21,7 @@
     <Copyright>2022, BultekDev / SharpPackageManager</Copyright>
     <PackageProjectUrl>https://gitlab.com/bultekdev/spm-projects/SharpPackageManager</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
+    <AssemblyName>SPM</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>True</Optimize>
