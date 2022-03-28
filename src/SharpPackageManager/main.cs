@@ -827,7 +827,6 @@ public static class SharpPackageManager
                     int writeappverindex = updateappnames.IndexOf(pack);
                     int writeappver = updateversions[writeappverindex];
                     string wrdata = "\n" + pack + ", " + writeappver;
-                    //Console.WriteLine("Trying to write version info...");
                     WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
                 }
                 PressAnyKey("exit", true);
