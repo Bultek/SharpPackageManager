@@ -55,12 +55,14 @@ public class SharpPackageManager
         }
 
         if (System.IO.File.Exists(@"C:\\SPM\\futureversion\\")) {
-            DataUpdate(false);
-            CheckForAppUpdates(false, true, false);
+            DataUpdate(true);
+            CheckForAppUpdates(true, true, true);
             DataLoad(InstallDir + "currentversions.txt", "currentversions");
             if (!currentappnames.Contains("spmupdatemanager"))
             {
+                Console.WriteLine("================================");
                 Console.WriteLine("Installing SPM Update Manager...");
+                Console.WriteLine("================================");
                 InstallPkg("spmupdatemanager", false, false, false);
             }
                 //Console.WriteLine("SPM Update Manager is already installed. Proceeding to update");
@@ -81,8 +83,10 @@ public class SharpPackageManager
     {
         if (output && date == "01-04" || args.Contains("--rickrollme"))
         {
+            Console.WriteLine("==============================================");
             Console.WriteLine("It's the rickroll day!");
             Console.WriteLine("Never gonna give you up,\n never gonna let you down,\n never gonna run around and desert you,\n never gonna make you cry,\n never gonna say goodbye,\n never gonna tell a lie and hurt you.\n");
+            Console.WriteLine("==============================================");
         }
         string action = "null";
         bool argav = false;
@@ -115,8 +119,10 @@ public class SharpPackageManager
 
         if (!System.IO.File.Exists(InstallDir + "currentversions.txt"))
         {
+            Console.WriteLine("==============================================");
             Console.WriteLine("ERROR: Can't find currentversions.txt, please create it and set it up!");
             Console.WriteLine("Opening instructions in your default browser...");
+            Console.WriteLine("==============================================");
             Process.Start("explorer", "https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/blob/ptb/README.md#syntax-of-config-files-and-appkits");
             Process.Start("explorer", @"C:\SPM\config");
             PressAnyKey("exit", true, 1);
@@ -136,11 +142,13 @@ public class SharpPackageManager
         //DataLoad(InstallDir + "apps.txt", "apps");
         if (args.Length == 0 && output)
         {
+            Console.WriteLine("================================================================================");
             Console.WriteLine("Sharp Package Manager by Bultek. " + appversion);
             Console.WriteLine("Sharp Package Manager API compatibility Version: " + currentapiversion);
             Console.WriteLine("Note: We recommend updating database!");
             Console.WriteLine("Note: We don't recommend using long commands in interactive mode!");
-            Console.WriteLine("Please choose your action! \n \n");
+            Console.WriteLine("Please choose your action!");
+            Console.WriteLine("================================================================================\n");
             Console.WriteLine("Install a package (Command: i, install)");
             Console.WriteLine("Install an AppKit (Command: ak, appkit)");
             Console.WriteLine("Update database (Command: up, update)");
@@ -152,6 +160,7 @@ public class SharpPackageManager
             Console.WriteLine("Add SPM to path (Command: pathadd)");
             Console.WriteLine("Clean up (Command: cleanup)");
             Console.WriteLine("List Packages (listall/listinstalled)");
+            Console.WriteLine("================================================================================ \n");
             action = Console.ReadLine();
         }
         else if (args.Length > 0)
@@ -164,18 +173,22 @@ public class SharpPackageManager
         {
             if (!argav)
             {
+                Console.WriteLine("================================================================================");
                 Console.WriteLine("Package to install (note: you can install only one package)");
                 string Package = Console.ReadLine();
                 if (Package != null)
                 {
                     InstallPkg(Package, false, false, true);
+                    Console.WriteLine("================================================================================");
                 }
+               
                 else { Console.WriteLine("ERROR: Package can't be null"); PressAnyKey("exit", true); }
             }
             else
             {
                 if (args.Length == 2)
                 {
+                    Console.WriteLine("================================================================================");
                     InstallPkg(args[1], false, false, true);
                 }
                 else
@@ -188,6 +201,7 @@ public class SharpPackageManager
                     argss.RemoveAt(0);
                     foreach (String arg in argss)
                     {
+                        Console.WriteLine("================================================================================");
                         InstallPkg(arg, true, false, true);
                     }
                 }
@@ -262,7 +276,7 @@ public class SharpPackageManager
         }
         else if (action == "help" || action == "h")
         {
-            Console.WriteLine("To get help just open the app without any options!");
+           if (output) Console.WriteLine("To get help just open the app without any options!");
         }
         else
         {
@@ -292,7 +306,9 @@ public class SharpPackageManager
         DataLoad(InstallDir + "currentversions.txt", "currentversions");
         if (!currentappnames.Contains("spmupdatemanager"))
         {
+            Console.WriteLine("================================================================================");
             Console.WriteLine("Installing SPM Update Manager...");
+            Console.WriteLine("================================================================================");
             InstallPkg("spmupdatemanager", false, false, false);
         }
             Process PackageStartInfo = new Process();
@@ -314,7 +330,9 @@ public class SharpPackageManager
             {
                 System.IO.File.Delete(file);
                 Debug.WriteLine("Deleted file " + file);
+                if (output) Console.WriteLine("================================================================================");
                 if (output) Console.WriteLine("Deleted file " + file);
+                if (output) Console.WriteLine("================================================================================");
             }
         }
     }
@@ -338,6 +356,7 @@ public class SharpPackageManager
                         int curver = currentappversions[curverindex];
                         Console.WriteLine(" Current Version: " + curver);
                     }
+                    Console.WriteLine("================================================================================");
                 }
                 break;
             case "installed":
@@ -347,6 +366,7 @@ public class SharpPackageManager
                     int curverindex = currentappnames.IndexOf(Package);
                     int curver = currentappversions[curverindex];
                     Console.WriteLine(" Current Version: " + curver);
+                    Console.WriteLine("================================================================================");
                 }
                 break;
         }
@@ -360,7 +380,9 @@ public class SharpPackageManager
             string[] temp;
             int i = 0;
             string ln2;
+            Console.WriteLine("================================================================================");
             Console.WriteLine("You will install: ");
+            Console.WriteLine("================================================================================");
             while ((ln2 = file.ReadLine()) != null)
             {
                 temp = ln2.Split("/n");
@@ -368,7 +390,9 @@ public class SharpPackageManager
                 kitappnames.Add(temp[i]);
             }
         }
+        Console.WriteLine("================================================================================");
         Console.WriteLine("Installing Packages...");
+        Console.WriteLine("================================================================================");
         int finappcount = 0;
         while (finappcount < kitappnames.Count) ;
         {
@@ -397,8 +421,9 @@ public class SharpPackageManager
                 }
                 int appverindex = updateappnames.IndexOf(package);
                 int ver = updateversions[appverindex];
-
+                Console.WriteLine("================================================================================");
                 Console.WriteLine("PKG: " + package + installedtext + " \n LATEST VERSION: " + ver + "\n INSTALLED VERSION: " + curver + "\n\n");
+                Console.WriteLine("================================================================================");
             }
         }
         PressAnyKey("exit", true);
@@ -414,7 +439,9 @@ public class SharpPackageManager
                 if (output) Console.WriteLine("ERROR: This Package is already installed. If you want to install it again remove it from the currentversions.txt file.");
                 PressAnyKey("exit", true, -1, output);
             }
-            Console.WriteLine("By installing any of the package you agree to the license agreement of the package.");
+            if (output) Console.WriteLine("================================================================================");
+            if (output) Console.WriteLine("By installing any of the package you agree to the license agreement of the package.");
+            if (output) Console.WriteLine("================================================================================");
             if (!upgrade && AreModulesLoaded)
             {
                 foreach (string module in modules)
@@ -424,7 +451,9 @@ public class SharpPackageManager
                         Process HookStartInfo = new Process();
                         HookStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\python310\\python.exe";
                         HookStartInfo.StartInfo.UseShellExecute = true;
-                        Console.WriteLine("Running pre-installation hook...");
+                        if (output) Console.WriteLine("================================================================================");
+                        if (output) Console.WriteLine("Running pre-installation hook...");
+                        if (output) Console.WriteLine("================================================================================");
                         HookStartInfo.StartInfo.Arguments = module + "\\preinstallationhooks.py " + Package;
                         HookStartInfo.Start();
                         HookStartInfo.WaitForExit();
@@ -438,10 +467,14 @@ public class SharpPackageManager
             if (!Directory.Exists("C:\\SPM\\Downloads\\")) Directory.CreateDirectory("C:\\SPM\\Downloads\\");
             if (appurls[pkgnumber].EndsWith(".exe"))
             {
-                Console.WriteLine("ERROR: You're downloading a legacy package! \nSPM v2.X.X DOES NOT SUPPORT legacy v1.X.X packages. \nIf your 'bultek' repo is http://bpmr.bultek.com.ua, change it to http://repo.bultek.com.ua/spm !");
+                if (output) Console.WriteLine("================================================================================");
+                if (output) Console.WriteLine("ERROR: You're downloading a legacy package! \nSPM v2.X.X DOES NOT SUPPORT legacy v1.X.X packages. \nIf your 'bultek' repo is http://bpmr.bultek.com.ua, change it to http://repo.bultek.com.ua/spm !");
+                if (output) Console.WriteLine("================================================================================");
                 PressAnyKey("exit", true);
             }
+            if (output) Console.WriteLine("================================================================================");
             Console.WriteLine("Downloading the package...");
+            if (output) Console.WriteLine("================================================================================");
             using (WebClient pkgdl = new WebClient())
             {
                 pkgdl.DownloadFile(appurls[pkgnumber], pkgdir);
@@ -462,7 +495,9 @@ public class SharpPackageManager
             }
             bool execerrors;
             bool success = true;
+            if (output) Console.WriteLine("================================================================================");
             Console.WriteLine("Extracting the package...");
+            if (output) Console.WriteLine("================================================================================");
             ZipFile.ExtractToDirectory(pkgdir, @"C:\SPM-APPS\" + Package);
             DataLoad(@"C:\SPM-APPS\" + Package + @"\AppData.spmdata", "AppData");
             if (type[0] == "exe")
@@ -485,9 +520,9 @@ public class SharpPackageManager
                         string answer = "Yes";
                         answer = Console.ReadLine();
                         answer = answer.ToLower();
-                        if (answer != "yes" || answer != "y")
+                        if (answer.ToLower().StartsWith("n"))
                         {
-                            success = false;
+                            success = true;
                             PressAnyKey("exit", true, 1);
                         }
                     }
@@ -502,9 +537,11 @@ public class SharpPackageManager
                 {
                     if (!currentappnames.Contains(dependency))
                     {
+                        if (output) Console.WriteLine("================================================================================");
                         Debug.WriteLine("Installing dependency " + dependency);
                         InstallPkg(dependency, true, false, output);
-                        Debug.WriteLine("Dependency " + dependency + "has been installed");
+                        if (output) Console.WriteLine("================================================================================");
+                        if (output) Debug.WriteLine("Dependency " + dependency + "has been installed");
                     }
                 }
             }
@@ -689,7 +726,9 @@ public class SharpPackageManager
                 int i = 0;
                 while (i < reponames.Count)
                 {
+                    if (output) Console.WriteLine("==============================================");
                     if (output) Console.WriteLine("Updating " + reponames[i]); // Show which repo is being updated now.
+                    if (output) Console.WriteLine("==============================================");
                     // Download latest versions info
                     string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
                     // set download url to current repourls
@@ -701,7 +740,12 @@ public class SharpPackageManager
             }
         }
 
-        if (output) Console.WriteLine("Checking For Updates...");
+        if (output)
+        {
+            Console.WriteLine("==============================================");
+            Console.WriteLine("Checking For Updates...");
+            Console.WriteLine("==============================================");
+        }
         if (autoUpdate)
         {
             CheckForAppUpdates(false, true, false);
@@ -710,7 +754,12 @@ public class SharpPackageManager
                 int i = 0;
                 while (i < reponames.Count)
                 {
-                    if (output) Console.WriteLine("Updating " + reponames[i]); // Show which repo is being updated now.
+                    if (output)
+                    {
+                        Console.WriteLine("==============================================");
+                        Console.WriteLine("Updating " + reponames[i]); // Show which repo is being updated now.
+                        Console.WriteLine("==============================================");
+                    }
                     // Download latest versions info
                     string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
                     // Load latest versions info
@@ -783,6 +832,7 @@ public class SharpPackageManager
     {
         if (output)
         {
+            Console.WriteLine("==============================================");
             Console.WriteLine("Press Any key to " + what + "...");
             Console.ReadKey();
             // exit the app
@@ -809,7 +859,12 @@ public class SharpPackageManager
                 if (System.IO.File.Exists(currepopath)) System.IO.File.Delete(currepopath);
 
                 //Console.WriteLine(repourls[i]);
-                if (Out == true) Console.WriteLine("Updating " + reponames[i]);
+                if (Out == true)
+                {
+                    Console.WriteLine("==================================");
+                    Console.WriteLine("Updating " + reponames[i]);
+                    Console.WriteLine("==================================");
+                }
                 srcdl.DownloadFile(repourls[i] + "/apps.txt", currepopath);
 
                 i++;
