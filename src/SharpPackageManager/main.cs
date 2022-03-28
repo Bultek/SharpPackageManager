@@ -31,8 +31,8 @@ public static class SharpPackageManager
     public static List<int> updateversions = new List<int>();
     public static List<String> currentappnames = new List<String>();
     public static List<int> currentappversions = new List<int>();
-    public static string InstallDir = "C:\\SPM\\config\\";
-    public static string InstallPath = "C:\\SPM\\";
+    public const string InstallDir = "C:\\SPM\\config\\";
+    public const string InstallPath = "C:\\SPM\\";
     private static List<String> dependencies = new List<String>();
     private static List<String> exectuable = new List<String>();
 
