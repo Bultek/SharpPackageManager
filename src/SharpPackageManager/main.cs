@@ -9,19 +9,18 @@ using System.IO.Compression;
 using System.Net;
 #pragma warning disable SYSLIB0014,CS4014,CS8618 // I don't care about this warnings.
 
-public class SharpPackageManager
+public static class SharpPackageManager
 {
-    public static string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
+    public const string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
-    public static int latestversion;
-    public static int currentversion = 29;
-    public static string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
-    public static string appversion = "v2.4.0 - Testing build ID " + currentversion;
-    public static string codename = "RickRoll";
-    public static string curbranch = "ptb";
+    public static readonly int currentversion = 29;
+    public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
+    public static readonly string appversion = "v2.4.0 - Testing build ID " + currentversion;
+    public static readonly string codename = "RickRoll";
+    public static readonly string curbranch = "ptb";
     
     // basically major version
-    public static int currentapiversion = 2;
+    public const int currentapiversion = 2;
 
     
     public static List<String> reponames = new List<String>();
@@ -60,7 +59,7 @@ public class SharpPackageManager
         // If the app was upgraded with old SPM versions (if it's possible ofc)
         if (System.IO.File.Exists(@"C:\\SPM\\futureversion\\")) {
             DataUpdate(true);
-            CheckForAppUpdates(true, true, true);
+            CheckForAppUpdates(true, true, output);
             DataLoad(InstallDir + "currentversions.txt", "currentversions");
             if (!currentappnames.Contains("spmupdatemanager"))
             {
