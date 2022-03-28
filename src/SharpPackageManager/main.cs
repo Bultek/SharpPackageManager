@@ -233,10 +233,7 @@ public static class SharpPackageManager
             {
                 Console.WriteLine("Which Package you want to remove?");
                 string packageName = Console.ReadLine();
-#pragma warning disable CS8604 // Possible null reference argument.
-                RemovePKG(packageName, output);
-#pragma warning restore CS8604 // Possible null reference argument.
-            }
+                RemovePKG(packageName, output);            }
         }
         else if (action == "up" || action == "update") DataUpdate();
         else if (action == "upg" || action == "upgrade") CheckForAppUpdates(true, true, true);
