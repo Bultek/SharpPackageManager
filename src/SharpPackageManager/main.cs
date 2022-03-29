@@ -13,7 +13,7 @@ public static class SharpPackageManager
 {
     public const string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
-    public static readonly int currentversion = 29;
+    public static readonly int currentversion = 30;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
     public static readonly string appversion = "v2.4.0 - Testing build ID " + currentversion;
     public static readonly string codename = "RickRoll";
@@ -155,7 +155,6 @@ public static class SharpPackageManager
             Console.WriteLine("Check for SPM updates (Command: spmup)");
             Console.WriteLine("Check for app updates and upgrade packages (Command: upg, upgrade)");
             Console.WriteLine("Search for packages (Command: se, search)");
-            Console.WriteLine("Switch branch (this is kinda risky! Command: swbr, switchbranch)");
             Console.WriteLine("Remove a package (Works only with .zip type packages. Command: remove)");
             Console.WriteLine("Add SPM to path (Command: pathadd)");
             Console.WriteLine("Clean up (Command: cleanup)");
@@ -265,14 +264,6 @@ public static class SharpPackageManager
                 }
             }
         }
-        else if (action == "swbr" || action == "switchbranch")
-        {
-            if (curbranch == "ptb")
-            {
-                SwitchBranch("master", args);
-            }
-            else SwitchBranch("ptb", args);
-        }
         else if (action == "help" || action == "h")
         {
             if (output) Console.WriteLine("To get help just open the app without any options!");
@@ -293,10 +284,6 @@ public static class SharpPackageManager
         }
         Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
         Debug.WriteLine("New path is: " + path);
-    }
-    public static void SwitchBranch(string Branch, string[] args)
-    {
-        VersionUpdate(Branch, true);
     }
     public static void VersionUpdate(string ubranch, bool IsSwitch = false)
     {
