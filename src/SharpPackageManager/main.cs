@@ -582,7 +582,7 @@ public static class SharpPackageManager
                     if (output && exectuable.Count > 0) Console.WriteLine("Do you want to create a start menu shortcut for the package (recommended for GUI apps) (y/N)? ");
                     string answer = "no";
                     if (output) answer = Console.ReadLine();
-                    if (answer.ToLower().StartsWith('y') && exectuable.Count > 0)
+                    if (answer.ToLower().StartsWith('y') && exectuable.Count > 0 && !upgrade)
                     {
                         string icon = string.Empty;
                         if (System.IO.File.Exists(@"C:\SPM-APPS\" + Package + @"\icon.ico")) icon = @"C:\SPM-APPS\" + Package + @"\icon.ico";
