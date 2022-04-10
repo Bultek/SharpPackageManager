@@ -581,7 +581,7 @@ public static class SharpPackageManager
                     foreach (string exe in exectuable)
                     {
                         string targetfilename = InstallDir + Path.GetFileName(exe);
-                        if (System.IO.File.Exists(targetfilename))
+                        if (System.IO.File.Exists(targetfilename) && !upgrade)
                         {
                             if (output) Console.WriteLine("WARNING: File " + targetfilename + " exists, what do you want to do with it?");
                             string ans = "no";
@@ -597,8 +597,13 @@ public static class SharpPackageManager
                                 isCfgInstalled=false;
                             }
                         }
-                        else
+                        else if (!System.IO.File.Exists(targetfilename) && !upgrade)
                         {
+                            System.IO.File.Copy(exe, targetfilename);
+                        }
+                        else if (upgrade)
+                        {
+                            System.IO.File.Delete(targetfilename);
                             System.IO.File.Copy(exe, targetfilename);
                         }
                     }
@@ -728,12 +733,13 @@ public static class SharpPackageManager
                     }
                 }
                 Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
-                Console.WriteLine("Removing from Start menu...");
-                if (System.IO.File.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\" + package + ".lnk"))
-                {
-                    System.IO.File.Delete(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\" + package + ".lnk");
-                }
             }
+            Console.WriteLine("Removing from Start menu...");
+            if (System.IO.File.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\" + package + ".lnk"))
+            {
+                System.IO.File.Delete(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\" + package + ".lnk");
+            }
+            Console.WriteLine("If this is a config/mirrorlist file, you will have to remove from C:\\SPM\\config yourself!");
         }
     }
     public static void CheckForAppUpdates(bool autoUpdate = true, bool download = true, bool output = true)
@@ -870,7 +876,6 @@ public static class SharpPackageManager
     }
     public static void DataUpdate(bool Out = true)
     {
-
         appnames.Clear();
         appurls.Clear();
         using (WebClient srcdl = new WebClient())
@@ -895,11 +900,12 @@ public static class SharpPackageManager
                     // Random integer between 0 and mirrorcount
                     Random rnd = new Random();
                     int rndmirror = rnd.Next(0, mirrorcount-1);
-                    while (rndmirror == mirrors.Count)
-                    {
-                        rndmirror = rnd.Next(0, mirrorcount-1);
-                    }
                     // Download the current repo
+                    while (string.IsNullOrEmpty(mirrors[rndmirror]))
+                    {
+                        Debug.WriteLine(rndmirror);
+                        rndmirror = rnd.Next(0, mirrorcount - 1);
+                    }
                     try
                     {
                         srcdl.DownloadFile(mirrors[rndmirror] + "/apps.txt", currepopath);
@@ -999,6 +1005,13 @@ public static class SharpPackageManager
                                 string mirrorlistfile = keyValue.Value.Replace("!MIRRORLIST=", "");
                                 // Read mirrorlist file
                                 string mirrors = System.IO.File.ReadAllText(mirrorlistfile);
+                                foreach (char c in mirrors)
+                                {
+                                    if (c==' ')
+                                    {
+                                        mirrors.Remove(c);
+                                    }
+                                }
                                 repourls.Add(mirrors);
                             }
                             else
