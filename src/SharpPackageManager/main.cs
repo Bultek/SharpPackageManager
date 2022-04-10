@@ -504,7 +504,7 @@ public static class SharpPackageManager
                         answer = answer.ToLower();
                         if (answer.ToLower().StartsWith("n"))
                         {
-                            success = true;
+                            success = false;
                             PressAnyKey("exit", true, 1);
                         }
                     }
@@ -534,14 +534,7 @@ public static class SharpPackageManager
 
             if (!upgrade && success)
             {
-                // "Register" the package
-                int ver = updateappnames.IndexOf(Package);
-                int appverindex = updateversions[ver];
-                currentappnames.Add(Package);
-                currentappversions.Add(appverindex);
-                string wrdata = "\n" + Package + ", " + appverindex;
-                Debug.WriteLine(wrdata);
-                WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
+                bool isCfgInstalled = true;
                 if (AreModulesLoaded)
                 {
                     foreach (string module in modules)
@@ -579,6 +572,47 @@ public static class SharpPackageManager
                         }
                         else CreateShortcut(exectuable[0], Package);
                     }
+                }
+                else if (type[0] == "configfile")
+                {
+                    if (output) Console.WriteLine("================================================================================");
+                    if (output) Console.WriteLine("Installing config files that have been provided by " + Package);
+                    if (output) Console.WriteLine("================================================================================");
+                    foreach (string exe in exectuable)
+                    {
+                        string targetfilename = InstallDir + Path.GetFileName(exe);
+                        if (System.IO.File.Exists(targetfilename))
+                        {
+                            if (output) Console.WriteLine("WARNING: File " + targetfilename + " exists, what do you want to do with it?");
+                            string ans = "no";
+                            if (output) Console.WriteLine("Overwrite file? (y/N)");
+                            if (output) ans = Console.ReadLine();
+                            if (ans.StartsWith("y") || upgrade)
+                            {
+                                System.IO.File.Delete(targetfilename);
+                                System.IO.File.Copy(exe, targetfilename);
+                            }
+                            else
+                            {
+                                isCfgInstalled=false;
+                            }
+                        }
+                        else
+                        {
+                            System.IO.File.Copy(exe, targetfilename);
+                        }
+                    }
+                }
+                if (isCfgInstalled)
+                {
+                    // "Register" the package
+                    int ver = updateappnames.IndexOf(Package);
+                    int appverindex = updateversions[ver];
+                    currentappnames.Add(Package);
+                    currentappversions.Add(appverindex);
+                    string wrdata = "\n" + Package + ", " + appverindex;
+                    Debug.WriteLine(wrdata);
+                    WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
                 }
             }
             // Clear cache
@@ -844,7 +878,6 @@ public static class SharpPackageManager
             int i = 0;
             do
             {
-
                 string currepopath = InstallDir + "apps" + reponames[i] + ".txt";
                 if (System.IO.File.Exists(currepopath)) System.IO.File.Delete(currepopath);
 
@@ -854,7 +887,42 @@ public static class SharpPackageManager
                     Console.WriteLine("Updating " + reponames[i]);
                     Console.WriteLine("==================================");
                 }
-                srcdl.DownloadFile(repourls[i] + "/apps.txt", currepopath);
+                if (repourls[i].Contains("\n"))
+                {
+                    Console.WriteLine("Downloading from a random mirror");
+                    List<string> mirrors = repourls[i].Split('\n').ToList();
+                    int mirrorcount = mirrors.Count;
+                    // Random integer between 0 and mirrorcount
+                    Random rnd = new Random();
+                    int rndmirror = rnd.Next(0, mirrorcount-1);
+                    while (rndmirror == mirrors.Count)
+                    {
+                        rndmirror = rnd.Next(0, mirrorcount-1);
+                    }
+                    // Download the current repo
+                    try
+                    {
+                        srcdl.DownloadFile(mirrors[rndmirror] + "/apps.txt", currepopath);
+                        Console.WriteLine("Downloaded from " + mirrors[rndmirror]);
+                    }
+                    catch
+                    {
+    
+                        int prevmirrorin = rndmirror;
+                        rndmirror = rnd.Next(0, mirrorcount-1);
+                        while (rndmirror == prevmirrorin);
+                        {
+                            rndmirror = rnd.Next(0, mirrorcount-1);
+                        }
+                        srcdl.DownloadFile(mirrors[rndmirror] + "/apps.txt", currepopath);
+                        Console.WriteLine("Downloaded from " + mirrors[rndmirror]);
+                    }
+                    
+                }
+                else
+                {
+                    srcdl.DownloadFile(repourls[i] + "/apps.txt", currepopath);
+                }
 
                 i++;
                 DataLoad(currepopath, "apps");
@@ -927,7 +995,16 @@ public static class SharpPackageManager
                             }
                             break;
                         case "repos":
-                            repourls.Add(keyValue.Value);
+                            if (keyValue.Value.StartsWith("!MIRRORLIST=")) {
+                                string mirrorlistfile = keyValue.Value.Replace("!MIRRORLIST=", "");
+                                // Read mirrorlist file
+                                string mirrors = System.IO.File.ReadAllText(mirrorlistfile);
+                                repourls.Add(mirrors);
+                            }
+                            else
+                            {
+                                repourls.Add(keyValue.Value);
+                            }
                             reponames.Add(keyValue.Key);
                             break;
                         case "updates":
