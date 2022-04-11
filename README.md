@@ -55,7 +55,7 @@ Package Manager written on C#
       4. apps.txt should be filled with ```app-name, download link.zip```
       5. The base of the syntax is ```name, value```
       6. If syntax is broken the app WILL have issues!
-      7. Since v2.4.0 - you can add !MIRRORLIST=*mirrorlist file.txt``` to sources.txt
+      7. Since v2.4.0 - you can add ```!MIRRORLIST=*mirrorlist file.txt*``` to sources.txt
       8. Since v2.4.0 - you can add !MIRRORURL</yourpackage.zip> to apps.txt file on your server. This will tell the SPM client that you have a mirror for this package.
    * AppKits and mirrorlists
       1. Just arrange the apps/mirrors in a txt file (e.g magic.txt)
