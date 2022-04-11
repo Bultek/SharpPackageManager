@@ -381,7 +381,7 @@ public static class SharpPackageManager
         int finappcount = 0;
         while (finappcount < kitappnames.Count)
         {
-            InstallPkg(kitappnames[finappcount], false, false, true);
+            InstallPkg(kitappnames[finappcount], true, false, true);
             finappcount++;
         }
         PressAnyKey("exit", true);
