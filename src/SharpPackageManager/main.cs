@@ -13,7 +13,7 @@ public static class SharpPackageManager
 {
     public const string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
-    public static readonly int currentversion = 31;
+    public static readonly int currentversion = 32;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
     public static readonly string appversion = "v2.4.0 - Testing build ID " + currentversion;
     public static readonly string codename = "berg";
@@ -66,7 +66,7 @@ public static class SharpPackageManager
                 Console.WriteLine("================================");
                 Console.WriteLine("Installing SPM Update Manager...");
                 Console.WriteLine("================================");
-                InstallPkg("spmupdatemanager", false, false, false);
+                InstallPkg("spmupdatemanager", true, false, false);
             }
             Process PackageStartInfo = new Process();
             PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
@@ -229,7 +229,7 @@ public static class SharpPackageManager
             }
             else
             {
-                Console.WriteLine("Which Package you want to remove?");
+                Console.WriteLine("Which package do you want to remove?");
                 string packageName = Console.ReadLine();
                 RemovePKG(packageName, output);            }
         }
@@ -381,7 +381,7 @@ public static class SharpPackageManager
         int finappcount = 0;
         while (finappcount < kitappnames.Count)
         {
-            InstallPkg(kitappnames[finappcount], false, false, true);
+            InstallPkg(kitappnames[finappcount], true, false, true);
             finappcount++;
         }
         PressAnyKey("exit", true);
@@ -670,7 +670,7 @@ public static class SharpPackageManager
                 if (shortcuts.Count > 0) shortcuts.Clear();
                 if (dependencies.Count > 0) dependencies.Clear();
                 if (type.Count > 0) type.Clear();
-                if (Multi || upgrade) PressAnyKey("continue");
+                if (Multi || upgrade) PressAnyKey("continue", false);
                 else PressAnyKey("exit", true);
             }
         }
