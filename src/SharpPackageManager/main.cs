@@ -13,7 +13,7 @@ public static class SharpPackageManager
 {
     public const string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
-    public static readonly int currentversion = 30;
+    public static readonly int currentversion = 31;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
     public static readonly string appversion = "v2.4.0 - Testing build ID " + currentversion;
     public static readonly string codename = "berg";
@@ -38,7 +38,6 @@ public static class SharpPackageManager
 
     private static List<String> shortcuts = new List<String>();
     private static List<String> type = new List<String>();
-
     private static Dictionary<string, string> repos = new Dictionary<string, string>();
 
     public static void Main(string[] args)
@@ -419,7 +418,6 @@ public static class SharpPackageManager
     {
         if (appnames.Contains(Package) || upgrade) // If package doesn't exist don't even try to install it
         {
-            if (!upgrade) CheckForAppUpdates(false, true, output);
             if (!upgrade) DataLoad(InstallDir + "currentversions.txt", "currentversions");
             if (currentappnames.Contains(Package) && !upgrade)
             {
@@ -427,7 +425,7 @@ public static class SharpPackageManager
                 PressAnyKey("exit", true, -1, output);
             }
             if (output) Console.WriteLine("================================================================================");
-            if (output) Console.WriteLine("By installing any of the package you agree to the license agreement of the package."); // Legal notice
+            if (output) Console.WriteLine("By installing any of the packages you agree to the license agreement of the package."); // Legal notice
             if (output) Console.WriteLine("================================================================================");
             if (!upgrade && AreModulesLoaded && localinstall)
             {
@@ -468,7 +466,50 @@ public static class SharpPackageManager
                 using (WebClient pkgdl = new WebClient())
                 {
                     // Download the package
-                    pkgdl.DownloadFile(appurls[pkgnumber], pkgdir);
+                    if (!appurls[pkgnumber].StartsWith("!MIRRORURL")) { 
+                        pkgdl.DownloadFile(appurls[pkgnumber], pkgdir);
+                    }
+                    else
+                    {
+                        string posturl = appurls[pkgnumber].Replace("!MIRRORURL", "");
+                        string repourl = string.Empty;
+                        bool br = false;
+                        foreach (string repo in reponames)
+                        {
+                            Dictionary<string, List<string>> repoapps = GetRepoApps(repo);
+                            foreach (KeyValuePair<string, List<string>> keyValue in repoapps)
+                            {
+                                if (keyValue.Value.Contains(Package))
+                                {
+                                    // Get the repo url
+                                    int repourlindex = reponames.IndexOf(repo);
+                                    repourl = repourls[repourlindex];
+                                    br = true;
+                                }
+                                if (br)
+                                {
+                                    break;
+                                }
+                            }
+                            if (br)
+                            {
+                                break;
+                            }
+                        }
+                        List<string> mirrors = repourl.Split('\n').ToList();
+                        int mirrorcount = mirrors.Count;
+                        // Random integer between 0 and mirrorcount
+                        Random rnd = new Random();
+                        int rndmirror = rnd.Next(0, mirrorcount);
+                        // Download the current repo
+                        while (string.IsNullOrEmpty(mirrors[rndmirror]))
+                        {
+                            Debug.WriteLine(rndmirror);
+                            rndmirror = rnd.Next(0, mirrorcount);
+                        }
+                        string mr = mirrors[rndmirror].Replace("/apps.txt", posturl);
+                        pkgdl.DownloadFile(mr, pkgdir);
+                    }
                     // Param1 = Link of file
                     // Param2 = Path to save
                 }
@@ -613,6 +654,7 @@ public static class SharpPackageManager
                     }
                     if (isCfgInstalled)
                     {
+                        if (!upgrade) CheckForAppUpdates(false, true, false);
                         // "Register" the package
                         int ver = updateappnames.IndexOf(Package);
                         int appverindex = updateversions[ver];
@@ -941,6 +983,33 @@ public static class SharpPackageManager
             } while (i != repourls.Count());
 
         }
+    }
+    public static Dictionary<string, List<string>> GetRepoApps(string repo)
+    {
+        string currepopath = InstallDir + "apps" + repo + ".txt";
+        List<String> apps = new List<string>();
+            using (StreamReader file = new StreamReader(@"C:\SPM\config\apps" + repo+".txt"))
+            {
+                string ln2;
+                string[] ln3;
+                while ((ln2 = file.ReadLine()) != null)
+                {
+                    ln3 = ln2.Split(", ");
+                    repos.Add(ln3[0], ln3[1]);
+                }
+                if (repos != null)
+                {
+                    foreach (KeyValuePair<string, string> keyValue in repos)
+                    {
+                        apps.Add(keyValue.Key);
+                    }
+                    repos.Clear();
+                    file.Close();
+                }
+            }
+        Dictionary<string, List<string>> r = new Dictionary<string, List<string>>();
+        r.Add(repo, apps);
+        return r;
     }
     public static void WriteData(string File, string data, string Type)
     {
