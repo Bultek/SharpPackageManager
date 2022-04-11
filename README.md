@@ -86,4 +86,4 @@ Package Manager written on C#
   * Install modules, it should look like this ```C:\SPM\modules\<module-name>``` 
  
 # Additional Notes
-  * The list of projects that are officialy supported by us or affilated with the SPM projects is [here](https://gitlab.com/bultekdev/spm-projects), the only exception is the [bultek-new](https://github.com/Bultek/bultek-new-spm-repo) SPM repository
+  * The list of projects that are officialy supported by us or affilated with SPM is [here](https://gitlab.com/bultekdev/spm-projects), the only exception is the [bultek-new](https://github.com/Bultek/bultek-new-spm-repo) SPM repository
