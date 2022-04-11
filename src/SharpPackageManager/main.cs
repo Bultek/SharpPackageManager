@@ -16,11 +16,11 @@ public static class SharpPackageManager
     public static readonly int currentversion = 30;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
     public static readonly string appversion = "v2.4.0 - Testing build ID " + currentversion;
-    public static readonly string codename = "RickRoll";
+    public static readonly string codename = "berg";
     public static readonly string curbranch = "ptb";
 
-    // basically major version
-    public const int currentapiversion = 240;
+    // If this is changed, please check the release notes in the releases tab
+    public const float currentapiversion = 2.4f;
 
 
     private static List<String> reponames = new List<String>();
@@ -160,7 +160,7 @@ public static class SharpPackageManager
             Console.WriteLine("Clean up (Command: cleanup)");
             Console.WriteLine("List Packages (listall/listinstalled)");
             Console.WriteLine("================================================================================ \n");
-            action = Console.ReadLine();
+            action = Console.ReadLine(); 
         }
         else if (args.Length > 0)
         {
@@ -770,8 +770,23 @@ public static class SharpPackageManager
                     // Download latest versions info
                     string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
                     // set download url to current repourls
-                    datadl.DownloadFile(repourls[i] + "/versions.txt", currepopath);
-                    // Load latest versions info
+                    if (repourls[i].Contains("\n")){
+                        List<string> mirrors = repourls[i].Split("\n").ToList();
+                        // Select a random mirror
+                        Random rnd = new Random();
+                        int rndmirror = rnd.Next(0, mirrors.Count);
+                        while (string.IsNullOrEmpty(mirrors[rndmirror]))
+                        {
+                            rndmirror = rnd.Next(0, mirrors.Count);
+                        }
+                        string mirror = mirrors[rndmirror].Replace("/apps.txt", "/versions.txt");
+                        datadl.DownloadFile(mirror, currepopath);
+                        Debug.WriteLine("Downloaded " + mirror);
+                    }
+                    else {
+                        datadl.DownloadFile(repourls[i].Replace("/apps.txt", "/versions.txt"), currepopath);
+                    }
+                        // Load latest versions info
                     DataLoad(currepopath, "updates");
                     i++;
                 }
@@ -917,7 +932,7 @@ public static class SharpPackageManager
                 }
                 else
                 {
-                    srcdl.DownloadFile(repourls[i] + "/apps.txt", currepopath);
+                    srcdl.DownloadFile(repourls[i], currepopath);
                 }
 
                 i++;
