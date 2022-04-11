@@ -534,12 +534,45 @@ public static class SharpPackageManager
                     }
                 }
                 else Debug.WriteLine("There are no dependencies");
-
-
+                bool isCfgInstalled = true;
+                if (type[0] == "configfile")
+                {
+                    if (output) Console.WriteLine("================================================================================");
+                    if (output) Console.WriteLine("Installing config files that have been provided by " + Package);
+                    if (output) Console.WriteLine("================================================================================");
+                    foreach (string exe in exectuable)
+                    {
+                        string targetfilename = InstallDir + Path.GetFileName(exe);
+                        if (System.IO.File.Exists(targetfilename) && !upgrade)
+                        {
+                            if (output) Console.WriteLine("WARNING: File " + targetfilename + " exists, what do you want to do with it?");
+                            string ans = "no";
+                            if (output) Console.WriteLine("Overwrite file? (y/N)");
+                            if (output) ans = Console.ReadLine();
+                            if (ans.StartsWith("y") || upgrade)
+                            {
+                                System.IO.File.Delete(targetfilename);
+                                System.IO.File.Copy(exe, targetfilename);
+                            }
+                            else
+                            {
+                                isCfgInstalled = false;
+                            }
+                        }
+                        else if (!System.IO.File.Exists(targetfilename) && !upgrade)
+                        {
+                            System.IO.File.Copy(exe, targetfilename);
+                        }
+                        else if (upgrade)
+                        {
+                            System.IO.File.Delete(targetfilename);
+                            System.IO.File.Copy(exe, targetfilename);
+                        }
+                    }
+                }
 
                 if (!upgrade && success)
                 {
-                    bool isCfgInstalled = true;
                     if (AreModulesLoaded)
                     {
                         foreach (string module in modules)
@@ -576,41 +609,6 @@ public static class SharpPackageManager
                                 CreateShortcut(exectuable[0], Package, icon);
                             }
                             else CreateShortcut(exectuable[0], Package);
-                        }
-                    }
-                    else if (type[0] == "configfile")
-                    {
-                        if (output) Console.WriteLine("================================================================================");
-                        if (output) Console.WriteLine("Installing config files that have been provided by " + Package);
-                        if (output) Console.WriteLine("================================================================================");
-                        foreach (string exe in exectuable)
-                        {
-                            string targetfilename = InstallDir + Path.GetFileName(exe);
-                            if (System.IO.File.Exists(targetfilename) && !upgrade)
-                            {
-                                if (output) Console.WriteLine("WARNING: File " + targetfilename + " exists, what do you want to do with it?");
-                                string ans = "no";
-                                if (output) Console.WriteLine("Overwrite file? (y/N)");
-                                if (output) ans = Console.ReadLine();
-                                if (ans.StartsWith("y") || upgrade)
-                                {
-                                    System.IO.File.Delete(targetfilename);
-                                    System.IO.File.Copy(exe, targetfilename);
-                                }
-                                else
-                                {
-                                    isCfgInstalled = false;
-                                }
-                            }
-                            else if (!System.IO.File.Exists(targetfilename) && !upgrade)
-                            {
-                                System.IO.File.Copy(exe, targetfilename);
-                            }
-                            else if (upgrade)
-                            {
-                                System.IO.File.Delete(targetfilename);
-                                System.IO.File.Copy(exe, targetfilename);
-                            }
                         }
                     }
                     if (isCfgInstalled)
