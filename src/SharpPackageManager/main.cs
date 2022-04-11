@@ -66,7 +66,7 @@ public static class SharpPackageManager
                 Console.WriteLine("================================");
                 Console.WriteLine("Installing SPM Update Manager...");
                 Console.WriteLine("================================");
-                InstallPkg("spmupdatemanager", false, false, false);
+                InstallPkg("spmupdatemanager", true, false, false);
             }
             Process PackageStartInfo = new Process();
             PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
@@ -229,7 +229,7 @@ public static class SharpPackageManager
             }
             else
             {
-                Console.WriteLine("Which Package you want to remove?");
+                Console.WriteLine("Which package do you want to remove?");
                 string packageName = Console.ReadLine();
                 RemovePKG(packageName, output);            }
         }
@@ -670,7 +670,7 @@ public static class SharpPackageManager
                 if (shortcuts.Count > 0) shortcuts.Clear();
                 if (dependencies.Count > 0) dependencies.Clear();
                 if (type.Count > 0) type.Clear();
-                if (Multi || upgrade) PressAnyKey("continue");
+                if (Multi || upgrade) PressAnyKey("continue", false);
                 else PressAnyKey("exit", true);
             }
         }
