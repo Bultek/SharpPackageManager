@@ -8,6 +8,11 @@ Package Manager written on C#
 ## Installation
   * Download Installer from the [releases tab (recommended)](https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/releases) or download it from [here](https://gitlab.com/bultekdev/spm-projects/SPMinstaller/-/releases)
   * Or you can build it by yourself!
+## Update SPM
+  * Install ```spmupdatemanager``` package
+  1. (option 1) Run ```spmup``` command
+  2. (option 2) Run ```SharpPackageManagerUpdateUtility *your branch* *current build id (you can just use 1 if you are not sure or if the app is not working properly)*
+
 ## How to build
   1. Install Visual Studio 2022 Community with .NET Desktop Development Pack
   2. Install .NET 6 SDK
