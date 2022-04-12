@@ -160,6 +160,7 @@ public static class SharpPackageManager
             Console.WriteLine("Add SPM to path (Command: pathadd)");
             Console.WriteLine("Clean up (Command: cleanup)");
             Console.WriteLine("List Packages (listall/listinstalled)");
+            Console.WriteLine("Add a repo (Command: addrepo)");
             Console.WriteLine("================================================================================ \n");
             action = Console.ReadLine(); 
         }
@@ -204,6 +205,38 @@ public static class SharpPackageManager
                         Console.WriteLine("================================================================================");
                         InstallPkg(arg, true, false, true);
                     }
+                }
+            
+            }
+        }
+        else if (action == "addrepo")
+        {
+            if (!argav)
+            {
+                Console.WriteLine("================================================================================");
+                Console.WriteLine("Repo to add (note: you can add only one repo) \n Name: ");
+                string repo = Console.ReadLine();
+                Console.WriteLine("URL: ");
+                string url = Console.ReadLine();
+                if (repo != null && url!=null)
+                {
+                    AddRepo(repo, url);
+                    Console.WriteLine("================================================================================");
+                }
+
+                else { Console.WriteLine("ERROR: Repo can't be null"); PressAnyKey("exit", true); }
+            }
+            else
+            {
+                if (args.Length == 2)
+                {
+                    Console.WriteLine("================================================================================");
+                    AddRepo(args[1], args[2]);
+                }
+                else
+                {
+                    Console.WriteLine("Too many arguments!");
+                    PressAnyKey();
                 }
             }
         }
@@ -273,8 +306,32 @@ public static class SharpPackageManager
         {
             if (output) Console.WriteLine("Launch the app without any options to get help!");
         }
-        PressAnyKey("exit", true, 0, output);
+        PressAnyKey("exit", true, 0, output);   
     }
+
+    public static void AddRepo(string name, string url)
+    {
+        if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(url))
+        {
+            if (!repos.ContainsKey(name))
+            {
+                repos.Add(name, url);
+                reponames.Add(name);
+                WriteData(InstallDir + "sources.txt","\n" + name + ", " + url, "AppendToFile");
+            }
+            else
+            {
+                Console.WriteLine("Repo with this name already exists!");
+                PressAnyKey("exit", true);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Repo name and/or url can't be null!");
+            PressAnyKey("exit", true);
+        }
+    }
+
     public static void AddToPath(string newentry = @"C:\SPM")
     {
         string path = Environment.GetEnvironmentVariable("Path");
