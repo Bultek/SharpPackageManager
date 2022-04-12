@@ -38,11 +38,10 @@ Package Manager written on C#
  * Create a folder with needed files
  * Create ```AppData.spmdata``` file
  * Fill it using ``config files syntax``
- * There are 4 things that can be modified!
-    1. Type (```.exe```, ```.zip``` and ```configfile```) (e.g ```type, zip```, ```type, exe```)
-    2. Dependencies (e.g ```dep, funnimonkeyframework```)
-    3. Executables/Config files (Optional in zip type as shortcut paths (Only one shortcut can be created for now, we will improve this in new versions), required in exe type, used as installer) (e.g ```exe, C:\SPM-APPS\funnimonkeyframework\funnimonkeyframeworkinstaller.exe``` or ```C:\SPM-APPS\funnimonkey-mirrorlist\funnimonkeymirrorlist.txt```)
-    4. Even though ```exe``` option exists in ```configfile``` type, it's being used as the config file which will be copied to ```C:\SPM\config\``` folder.
+ * There are 3 things that can be modified!
+    1. Type (```exe```, ```zip``` and ```configfile```) (e.g ```type, zip```, ```type, exe```)
+    2. Executables/Config files (Optional in zip type as shortcut paths (Only one shortcut can be created for now, we will improve this in new versions), required in exe type, used as installer) (e.g ```exe, C:\SPM-APPS\funnimonkeyframework\funnimonkeyframeworkinstaller.exe``` or ```C:\SPM-APPS\funnimonkey-mirrorlist\funnimonkeymirrorlist.txt```)
+    3. Even though ```exe``` option exists in ```configfile``` type, it's being used as the config file which will be copied to ```C:\SPM\config\``` folder.
  * ```exe``` type just launches the specified executable (kinda reminds v1.x.x versions)
  * ```zip``` type extracts contents of the archive to ```C:\SPM-APPS\<Package-Name>```
  * ```configfile``` type copies speciefied files to ```C:\SPM\config\```
@@ -75,7 +74,7 @@ Package Manager written on C#
  ## How to create a module
     SPM module is a collection of python scripts
   * Note: we recommend using ```libspm.py``` for os modules
-  * Note: Scripts will run under "libspm Python runtime", it means WE DON'T RECOMMEND TO USE ANY CUSTOM MODULES THAT ARE NOT INCLUDED IN PYTHON 3.10.2!
+  * Note: Scripts will run under "libspm Python runtime", it means WE DON'T RECOMMEND TO USE ANY CUSTOM MODULES THAT ARE NOT INCLUDED IN PYTHON 3.10.X!
   * We recommend using this [example](https://github.com/mrquantumoff/supersimplebackups-spm-module)
   * Note: Just ```init.py``` file is essential!
  ## How to enable and use modules
@@ -85,4 +84,4 @@ Package Manager written on C#
   * Install modules, it should look like this ```C:\SPM\modules\<module-name>``` 
  
 # Additional Notes
-  * The list of projects that are officialy supported by us or affilated with SPM is [here](https://gitlab.com/bultekdev/spm-projects), the only exception is the [bultek-new](https://github.com/Bultek/bultek-new-spm-repo) SPM repository
+  * The list of projects that are officialy supported by us or affilated with SPM is [here](https://gitlab.com/bultekdev/spm-projects)
