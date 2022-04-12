@@ -13,9 +13,9 @@ public static class SharpPackageManager
 {
     public const string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
-    public static readonly int currentversion = 34;
+    public static readonly int currentversion = 35;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
-    public static readonly string appversion = "v2.4.1 - Testing build ID " + currentversion;
+    public static readonly string appversion = "v2.5.0 - Testing build ID " + currentversion;
     public static readonly string codename = "berg";
     public static readonly string curbranch = "ptb";
 
@@ -286,7 +286,7 @@ public static class SharpPackageManager
         Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
         Debug.WriteLine("New path is: " + path);
     }
-    public static void VersionUpdate(string ubranch, bool IsSwitch = false)
+    public static void VersionUpdate(string ubranch)
     {
         // Update databases and load current versions
         DataUpdate(false);
@@ -301,8 +301,7 @@ public static class SharpPackageManager
         }
         Process PackageStartInfo = new Process();
         PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
-        if (IsSwitch) PackageStartInfo.StartInfo.Arguments = ubranch + " 1";
-        else PackageStartInfo.StartInfo.Arguments = ubranch + " " + currentversion;
+        PackageStartInfo.StartInfo.Arguments = ubranch + " " + currentversion;
         PackageStartInfo.StartInfo.UseShellExecute = true;
         PackageStartInfo.Start();
         System.Environment.Exit(0);
