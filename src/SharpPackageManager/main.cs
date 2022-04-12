@@ -17,7 +17,7 @@ public static class SharpPackageManager
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
     public static readonly string appversion = "v2.4.1";
     public static readonly string codename = "berg";
-    public static readonly string curbranch = "ptb";
+    public static readonly string curbranch = "master";
 
     // If this is changed, please check the release notes in the releases tab
     public const float currentapiversion = 2.4f;
