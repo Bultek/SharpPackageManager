@@ -16,7 +16,8 @@ Package Manager written on C#
   6. Copy the output (```bin``` folder)
   7. Now you should organise config files
   8. Create ```sources.txt``` file in ```C:\SPM\config```
-  9. (optional) Fill the default repo ```bultek-new, http://repo.bultek.com.ua/spm```
+  9. (optional) Fill the default repo ```bultek-new, http://repo.bultek.com.ua/spm/apps.txt```
+  9. (alternative) Download the ```mirrorlist-bultek``` package [from here]( http://repo.bultek.com.ua/spm/mirrorlist-bultek.zip ) and unzip mirrorlist-bultek.txt file from it and set the !MIRRORLIST file in the ```C:\SPM\config\sources.txt``` file
   10. Create ```currentversions.txt``` file in ```C:\SPM\config```
   11. Fill previously created file with ```placeholder, 1```
   12. You're good to go!
@@ -37,12 +38,14 @@ Package Manager written on C#
  * Create a folder with needed files
  * Create ```AppData.spmdata``` file
  * Fill it using ``config files syntax``
- * There are 3 things that can be modified!
-    1. Type (```.exe``` or ```.zip```) (e.g ```type, zip```, ```type, exe```)
+ * There are 4 things that can be modified!
+    1. Type (```.exe```, ```.zip``` and ```configfile```) (e.g ```type, zip```, ```type, exe```)
     2. Dependencies (e.g ```dep, funnimonkeyframework```)
-    3. Executables (Optional in zip type as shortcut paths (Only one shortcut can be created for now, we will improve this in new versions), required in exe type, used as installer) (e.g ```exe, funnimonkeyframeworkinstaller.exe```)
- * Exe type just launches the specified executable (kinda reminds v1.x.x versions)
- * Zip type extracts contents of the archive to ```C:\SPM-APPS\<Package-Name>```
+    3. Executables/Config files (Optional in zip type as shortcut paths (Only one shortcut can be created for now, we will improve this in new versions), required in exe type, used as installer) (e.g ```exe, C:\SPM-APPS\funnimonkeyframework\funnimonkeyframeworkinstaller.exe``` or ```C:\SPM-APPS\funnimonkey-mirrorlist\funnimonkeymirrorlist.txt```)
+    4. Even though ```exe``` option exists in ```configfile``` type, it's being used as the config file which will be copied to ```C:\SPM\config\``` folder.
+ * ```exe``` type just launches the specified executable (kinda reminds v1.x.x versions)
+ * ```zip``` type extracts contents of the archive to ```C:\SPM-APPS\<Package-Name>```
+ * ```configfile``` type copies speciefied files to ```C:\SPM\config\```
 ## Syntax of config files and appkits
    * Config files
       1. apps<reponame>.txt and versions<reponame>.txt are highly connected
@@ -51,8 +54,10 @@ Package Manager written on C#
       4. apps.txt should be filled with ```app-name, download link.zip```
       5. The base of the syntax is ```name, value```
       6. If syntax is broken the app WILL have issues!
-   * AppKits
-      1. Just arrange the apps in a txt file (e.g magic.txt)
+      7. Since v2.4.0 - you can add ```!MIRRORLIST=*mirrorlist file.txt*``` to sources.txt
+      8. Since v2.4.0 - you can add !MIRRORURL</yourpackage.zip> to apps.txt file on your server. This will tell the SPM client that you have a mirror for this package.
+   * AppKits and mirrorlists
+      1. Just arrange the apps/mirrors in a txt file (e.g magic.txt)
       2. All apps have to be in their own line
       
 ## How to setup a repo
@@ -61,7 +66,8 @@ Package Manager written on C#
  3. create a versions.txt file on your server
  4. Set up both files using the SPM config syntax
  5. Add the repo to ```C:\SPM\config\sources.txt``` file
- 6. You're done!
+ 6. The repo should end with ```/apps.txt``` in the ```sources.txt``` file
+ 7. You're done!
  
  # Modules
  
@@ -78,3 +84,5 @@ Package Manager written on C#
   * Create ```C:\SPM\modules``` folder
   * Install modules, it should look like this ```C:\SPM\modules\<module-name>``` 
  
+# Additional Notes
+  * The list of projects that are officialy supported by us or affilated with SPM is [here](https://gitlab.com/bultekdev/spm-projects), the only exception is the [bultek-new](https://github.com/Bultek/bultek-new-spm-repo) SPM repository
