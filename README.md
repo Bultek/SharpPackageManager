@@ -11,7 +11,7 @@ Package Manager written on C#
 ## Update SPM
   * Install ```spmupdatemanager``` package
   1. (option 1) Run ```spmup``` command
-  2. (option 2) Run ```SharpPackageManagerUpdateUtility *your branch* *current build id (you can just use 1 if you are not sure or if the app is not working properly)*
+  2. (option 2) Run ```SharpPackageManagerUpdateUtility *your branch* *current build id (you can just use 1 if you are not sure or if the app is not working properly)*```
 
 ## How to build
   1. Install Visual Studio 2022 Community with .NET Desktop Development Pack
