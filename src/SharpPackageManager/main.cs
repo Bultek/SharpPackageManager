@@ -13,11 +13,11 @@ public static class SharpPackageManager
 {
     public const string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
-    public static readonly int currentversion = 33;
+    public static readonly int currentversion = 34;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
     public static readonly string appversion = "v2.4.0";
     public static readonly string codename = "berg";
-    public static readonly string curbranch = "master";
+    public static readonly string curbranch = "ptb";
 
     // If this is changed, please check the release notes in the releases tab
     public const float currentapiversion = 2.4f;
