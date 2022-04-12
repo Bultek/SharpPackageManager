@@ -13,11 +13,11 @@ public static class SharpPackageManager
 {
     public const string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
-    public static readonly int currentversion = 33;
+    public static readonly int currentversion = 34;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
-    public static readonly string appversion = "v2.4.0";
+    public static readonly string appversion = "v2.4.1";
     public static readonly string codename = "berg";
-    public static readonly string curbranch = "master";
+    public static readonly string curbranch = "ptb";
 
     // If this is changed, please check the release notes in the releases tab
     public const float currentapiversion = 2.4f;
@@ -33,7 +33,6 @@ public static class SharpPackageManager
     public static List<int> currentappversions = new List<int>();
     public const string InstallDir = "C:\\SPM\\config\\";
     public const string InstallPath = "C:\\SPM\\";
-    private static List<String> dependencies = new List<String>();
     private static List<String> exectuable = new List<String>();
 
     private static List<String> shortcuts = new List<String>();
@@ -126,7 +125,10 @@ public static class SharpPackageManager
             Console.WriteLine("ERROR: Can't find currentversions.txt, please create it and set it up!");
             Console.WriteLine("Opening instructions in your default browser...");
             Console.WriteLine("==============================================");
-            Process.Start("explorer", "https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/blob/ptb/README.md#syntax-of-config-files-and-appkits");
+            string upbranch;
+            if (curbranch == "ptb") upbranch = "ptb";
+            else upbranch = "stable";
+            Process.Start("explorer", "https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/blob/"+upbranch+"/README.md#syntax-of-config-files-and-appkits");
             Process.Start("explorer", @"C:\SPM\config");
             PressAnyKey("exit", true, 1);
         }
@@ -559,23 +561,6 @@ public static class SharpPackageManager
                         System.IO.Directory.Delete(@"C:\SPM-APPS\" + Package, true);
                     }
                 }
-                List<string> deps = new List<string>();
-                deps = dependencies;
-                if (deps.Count > 0 && success)
-                {
-                    foreach (string dependency in dependencies)
-                    {
-                        if (!currentappnames.Contains(dependency))
-                        {
-                            // Install the dependencies
-                            if (output) Console.WriteLine("================================================================================");
-                            Debug.WriteLine("Installing dependency " + dependency);
-                            InstallPkg(dependency, true, false, output);
-                            if (output) Console.WriteLine("================================================================================");
-                            if (output) Debug.WriteLine("Dependency " + dependency + "has been installed");
-                        }
-                    }
-                }
                 else Debug.WriteLine("There are no dependencies");
                 bool isCfgInstalled = true;
                 if (type[0] == "configfile")
@@ -670,7 +655,6 @@ public static class SharpPackageManager
                 // Clear cache
                 if (exectuable.Count > 0) exectuable.Clear();
                 if (shortcuts.Count > 0) shortcuts.Clear();
-                if (dependencies.Count > 0) dependencies.Clear();
                 if (type.Count > 0) type.Clear();
                 if (Multi || upgrade) PressAnyKey("continue", false);
                 else PressAnyKey("exit", true);
@@ -1112,11 +1096,7 @@ public static class SharpPackageManager
                             }
                             break;
                         case "AppData":
-                            if (keyValue.Key == "dep")
-                            {
-                                dependencies.Add(keyValue.Value);
-                            }
-                            else if (keyValue.Key == "exe")
+                            if (keyValue.Key == "exe")
                             {
                                 exectuable.Add(keyValue.Value);
                             }
