@@ -15,7 +15,7 @@ public static class SharpPackageManager
     public static bool AreModulesLoaded = false;
     public static readonly int currentversion = 35;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
-    public static readonly string appversion = "v2.5.0 - Testing build ID " + currentversion;
+    public static readonly string appversion = "v2.5.0 - Testing build ID " + currentversion.ToString().Replace(',','"');
     public static readonly string codename = "berg";
     public static readonly string curbranch = "ptb";
 
