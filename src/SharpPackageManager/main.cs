@@ -7,7 +7,7 @@ using IWshRuntimeLibrary;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Net;
-#pragma warning disable SYSLIB0014,CS4014,CS8618 // I don't care about this warnings.
+#pragma warning disable SYSLIB0014,CS4014,CS8618,CS8600,CS8602,CS8604 // I don't care about this warnings.
 
 public static class SharpPackageManager
 {
