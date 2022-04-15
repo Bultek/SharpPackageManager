@@ -893,13 +893,20 @@ public static class SharpPackageManager
             {
                 if (app != "placeholder")
                 {
-                    int appindex = updateappnames.IndexOf(app);
-                    int currentappindex = currentappnames.IndexOf(app);
-                    if (currentappversions[currentappindex] < updateversions[appindex])
+                    try
                     {
-                        updatecount.Add(app);
-                        updates = true;
-                        Debug.WriteLine("App added to updatecount! (" + app + ")");
+                        int appindex = updateappnames.IndexOf(app);
+                        int currentappindex = currentappnames.IndexOf(app);
+                        if (currentappversions[currentappindex] < updateversions[appindex])
+                        {
+                            updatecount.Add(app);
+                            updates = true;
+                            Debug.WriteLine("App added to updatecount! (" + app + ")");
+                        }
+                    }
+                    catch
+                    {
+                        if (output) Console.WriteLine("ERROR: Something went wrong with " + app + ", maybe app is not in the repos");
                     }
                 }
             }
