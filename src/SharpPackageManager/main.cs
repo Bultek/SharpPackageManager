@@ -6,16 +6,17 @@
 using IWshRuntimeLibrary;
 using System.Diagnostics;
 using System.IO.Compression;
+using Microsoft.Win32;
 using System.Net;
-#pragma warning disable SYSLIB0014,CS4014,CS8618 // I don't care about this warnings.
+#pragma warning disable SYSLIB0014,CS4014,CS8618,CS8600,CS8602,CS8604 // I don't care about this warnings.
 
 public static class SharpPackageManager
 {
     public const string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
-    public static readonly int currentversion = 34;
+    public static readonly int currentversion = 35;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
-    public static readonly string appversion = "v2.4.1 - Testing build ID " + currentversion;
+    public static readonly string appversion = "v2.5.0 - Testing build ID " + currentversion.ToString().Replace(',','"');
     public static readonly string codename = "berg";
     public static readonly string curbranch = "master";
 
@@ -82,6 +83,24 @@ public static class SharpPackageManager
     }
     public static void MainApp(string[] args, bool output = true)
     {
+        RegisterProtocol();
+        List<string> argsss = new List<string>();
+        foreach (string arg in args)
+        {
+            int argindex = args.ToList().IndexOf(arg);
+            List<string> newargs = arg.Split("%20").ToList();
+
+            foreach (string narg in newargs)
+            {
+                string xarg=narg;
+                if (xarg.StartsWith("spm:"))
+                {
+                    xarg = narg.Replace("spm:", "");
+                }
+                argsss.Add(xarg);
+            }
+        }
+        args = argsss.ToArray();
         if (output && date == "01-04" || args.Contains("--rickrollme"))
         {
             Console.WriteLine("==============================================");
@@ -157,9 +176,9 @@ public static class SharpPackageManager
             Console.WriteLine("Check for app updates and upgrade packages (Command: upg, upgrade)");
             Console.WriteLine("Search for packages (Command: se, search)");
             Console.WriteLine("Remove a package (Works only with .zip type packages. Command: remove)");
-            Console.WriteLine("Add SPM to path (Command: pathadd)");
             Console.WriteLine("Clean up (Command: cleanup)");
             Console.WriteLine("List Packages (listall/listinstalled)");
+            Console.WriteLine("Add a repo (Command: addrepo)");
             Console.WriteLine("================================================================================ \n");
             action = Console.ReadLine(); 
         }
@@ -204,6 +223,38 @@ public static class SharpPackageManager
                         Console.WriteLine("================================================================================");
                         InstallPkg(arg, true, false, true);
                     }
+                }
+            
+            }
+        }
+        else if (action == "addrepo")
+        {
+            if (!argav)
+            {
+                Console.WriteLine("================================================================================");
+                Console.WriteLine("Repo to add (note: you can add only one repo) \n Name: ");
+                string repo = Console.ReadLine();
+                Console.WriteLine("URL: ");
+                string url = Console.ReadLine();
+                if (repo != null && url!=null)
+                {
+                    AddRepo(repo, url);
+                    Console.WriteLine("================================================================================");
+                }
+
+                else { Console.WriteLine("ERROR: Repo can't be null"); PressAnyKey("exit", true); }
+            }
+            else
+            {
+                if (args.Length == 2)
+                {
+                    Console.WriteLine("================================================================================");
+                    AddRepo(args[1], args[2]);
+                }
+                else
+                {
+                    Console.WriteLine("Too many arguments!");
+                    PressAnyKey();
                 }
             }
         }
@@ -273,8 +324,32 @@ public static class SharpPackageManager
         {
             if (output) Console.WriteLine("Launch the app without any options to get help!");
         }
-        PressAnyKey("exit", true, 0, output);
+        PressAnyKey("exit", true, 0, output);   
     }
+
+    public static void AddRepo(string name, string url)
+    {
+        if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(url))
+        {
+            if (!repos.ContainsKey(name))
+            {
+                repos.Add(name, url);
+                reponames.Add(name);
+                WriteData(InstallDir + "sources.txt","\n" + name + ", " + url, "AppendToFile");
+            }
+            else
+            {
+                Console.WriteLine("Repo with this name already exists!");
+                PressAnyKey("exit", true);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Repo name and/or url can't be null!");
+            PressAnyKey("exit", true);
+        }
+    }
+
     public static void AddToPath(string newentry = @"C:\SPM")
     {
         string path = Environment.GetEnvironmentVariable("Path");
@@ -286,7 +361,7 @@ public static class SharpPackageManager
         Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
         Debug.WriteLine("New path is: " + path);
     }
-    public static void VersionUpdate(string ubranch, bool IsSwitch = false)
+    public static void VersionUpdate(string ubranch)
     {
         // Update databases and load current versions
         DataUpdate(false);
@@ -301,12 +376,30 @@ public static class SharpPackageManager
         }
         Process PackageStartInfo = new Process();
         PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
-        if (IsSwitch) PackageStartInfo.StartInfo.Arguments = ubranch + " 1";
-        else PackageStartInfo.StartInfo.Arguments = ubranch + " " + currentversion;
+        PackageStartInfo.StartInfo.Arguments = ubranch + " " + currentversion;
         PackageStartInfo.StartInfo.UseShellExecute = true;
         PackageStartInfo.Start();
         System.Environment.Exit(0);
 
+    }
+
+
+    private static void RegisterProtocol()
+    {
+        RegistryKey key = Registry.ClassesRoot.OpenSubKey("spm");  //open myApp protocol's subkey
+
+        if (key == null)  //if the protocol is not registered yet...we register it
+        {
+            AddToPath();
+            key = Registry.ClassesRoot.CreateSubKey("spm");
+            key.SetValue(string.Empty, "URL: SharpPackageManager Protocol");
+            key.SetValue("URL Protocol", string.Empty);
+
+            key = key.CreateSubKey(@"shell\open\command");
+            key.SetValue(string.Empty, InstallPath + "SPM.exe \"%1\"");
+            //%1 represents the argument - this tells windows to open this program with an argument / parameter
+        }
+        key.Close();
     }
 
     public static void CleanUp(bool downloadcache, bool output = true)
@@ -474,43 +567,41 @@ public static class SharpPackageManager
                     }
                     else
                     {
-                        string posturl = appurls[pkgnumber].Replace("!MIRRORURL", "");
-                        string repourl = string.Empty;
-                        bool br = false;
+                        bool exists = false;
+                        
+                        int repositoryindex = 0;
                         foreach (string repo in reponames)
                         {
-                            Dictionary<string, List<string>> repoapps = GetRepoApps(repo);
-                            foreach (KeyValuePair<string, List<string>> keyValue in repoapps)
+                            Dictionary<string, List<string>> apps = new Dictionary<string, List<string>>();
+                            apps = GetRepoApps(repo);
+                            foreach (KeyValuePair <string, List<string>> keyValue in apps)
                             {
-                                if (keyValue.Value.Contains(Package))
+                                foreach(string app in keyValue.Value)
                                 {
-                                    // Get the repo url
-                                    int repourlindex = reponames.IndexOf(repo);
-                                    repourl = repourls[repourlindex];
-                                    br = true;
+                                    if (exists)
+                                    {
+                                        break;
+                                    }
+                                    if (app == Package)
+                                    {
+                                        exists = true;
+                                        repositoryindex = reponames.IndexOf(repo);
+                                    }
                                 }
-                                if (br)
+                                if (exists)
                                 {
                                     break;
                                 }
                             }
-                            if (br)
+                            if (exists)
                             {
                                 break;
                             }
                         }
-                        List<string> mirrors = repourl.Split('\n').ToList();
-                        int mirrorcount = mirrors.Count;
-                        // Random integer between 0 and mirrorcount
-                        Random rnd = new Random();
-                        int rndmirror = rnd.Next(0, mirrorcount);
-                        // Download the current repo
-                        while (string.IsNullOrEmpty(mirrors[rndmirror]))
-                        {
-                            Debug.WriteLine(rndmirror);
-                            rndmirror = rnd.Next(0, mirrorcount);
-                        }
-                        string mr = mirrors[rndmirror].Replace("/apps.txt", posturl);
+                        string repository = repourls[repositoryindex];
+                        string posturl = appurls[pkgnumber].Replace("!MIRRORURL", "");
+                        
+                        string mr = repository.Replace("/apps.txt", posturl);
                         pkgdl.DownloadFile(mr, pkgdir);
                     }
                     // Param1 = Link of file
@@ -795,23 +886,8 @@ public static class SharpPackageManager
                     // Download latest versions info
                     string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
                     // set download url to current repourls
-                    if (repourls[i].Contains("\n")){
-                        List<string> mirrors = repourls[i].Split("\n").ToList();
-                        // Select a random mirror
-                        Random rnd = new Random();
-                        int rndmirror = rnd.Next(0, mirrors.Count);
-                        while (string.IsNullOrEmpty(mirrors[rndmirror]))
-                        {
-                            rndmirror = rnd.Next(0, mirrors.Count);
-                        }
-                        string mirror = mirrors[rndmirror].Replace("/apps.txt", "/versions.txt");
-                        datadl.DownloadFile(mirror, currepopath);
-                        Debug.WriteLine("Downloaded " + mirror);
-                    }
-                    else {
-                        datadl.DownloadFile(repourls[i].Replace("/apps.txt", "/versions.txt"), currepopath);
-                    }
-                        // Load latest versions info
+                    datadl.DownloadFile(repourls[i].Replace("/apps.txt", "/versions.txt"), currepopath);    
+                    // Load latest versions info
                     DataLoad(currepopath, "updates");
                     i++;
                 }
@@ -854,13 +930,20 @@ public static class SharpPackageManager
             {
                 if (app != "placeholder")
                 {
-                    int appindex = updateappnames.IndexOf(app);
-                    int currentappindex = currentappnames.IndexOf(app);
-                    if (currentappversions[currentappindex] < updateversions[appindex])
+                    try
                     {
-                        updatecount.Add(app);
-                        updates = true;
-                        Debug.WriteLine("App added to updatecount! (" + app + ")");
+                        int appindex = updateappnames.IndexOf(app);
+                        int currentappindex = currentappnames.IndexOf(app);
+                        if (currentappversions[currentappindex] < updateversions[appindex])
+                        {
+                            updatecount.Add(app);
+                            updates = true;
+                            Debug.WriteLine("App added to updatecount! (" + app + ")");
+                        }
+                    }
+                    catch
+                    {
+                        if (output) Console.WriteLine("ERROR: Something went wrong with " + app + ", maybe app is not in the repos");
                     }
                 }
             }
@@ -938,28 +1021,7 @@ public static class SharpPackageManager
                     Console.WriteLine("Updating " + reponames[i]);
                     Console.WriteLine("==================================");
                 }
-                if (repourls[i].Contains("\n"))
-                {
-                    
-                    List<string> mirrors = repourls[i].Split('\n').ToList();
-                    int mirrorcount = mirrors.Count;
-                    // Random integer between 0 and mirrorcount
-                    Random rnd = new Random();
-                    int rndmirror = rnd.Next(0, mirrorcount);
-                    // Download the current repo
-                    while (string.IsNullOrEmpty(mirrors[rndmirror]))
-                    {
-                        Debug.WriteLine(rndmirror);
-                        rndmirror = rnd.Next(0, mirrorcount);
-                    } 
-                    string mr = mirrors[rndmirror];
-                    srcdl.DownloadFile(mr, currepopath);
-                }
-                else
-                {
-                    srcdl.DownloadFile(repourls[i], currepopath);
-                }
-
+                srcdl.DownloadFile(repourls[i], currepopath);
                 i++;
                 DataLoad(currepopath, "apps");
 
@@ -1062,14 +1124,19 @@ public static class SharpPackageManager
                                 string mirrorlistfile = keyValue.Value.Replace("!MIRRORLIST=", "");
                                 // Read mirrorlist file
                                 string mirrors = System.IO.File.ReadAllText(mirrorlistfile);
-                                foreach (char c in mirrors)
+                                List<string> mirrs =  mirrors.Split('\n').ToList();
+                                int mirrorcount = mirrs.Count;
+                                // Random integer between 0 and mirrorcount
+                                Random rnd = new Random();
+                                int rndmirror = rnd.Next(0, mirrorcount);
+                                // Download the current repo
+                                while (string.IsNullOrEmpty(mirrs[rndmirror]))
                                 {
-                                    if (c==' ')
-                                    {
-                                        mirrors.Remove(c);
-                                    }
+                                    Debug.WriteLine(rndmirror);
+                                    rndmirror = rnd.Next(0, mirrorcount);
                                 }
-                                repourls.Add(mirrors);
+                                string mr = mirrs[rndmirror];
+                                repourls.Add(mr);
                             }
                             else
                             {
