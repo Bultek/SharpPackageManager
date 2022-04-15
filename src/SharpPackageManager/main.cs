@@ -6,6 +6,7 @@
 using IWshRuntimeLibrary;
 using System.Diagnostics;
 using System.IO.Compression;
+using Microsoft.Win32;
 using System.Net;
 #pragma warning disable SYSLIB0014,CS4014,CS8618,CS8600,CS8602,CS8604 // I don't care about this warnings.
 
@@ -82,6 +83,24 @@ public static class SharpPackageManager
     }
     public static void MainApp(string[] args, bool output = true)
     {
+        RegisterProtocol();
+        List<string> argsss = new List<string>();
+        foreach (string arg in args)
+        {
+            int argindex = args.ToList().IndexOf(arg);
+            List<string> newargs = arg.Split("%20").ToList();
+
+            foreach (string narg in newargs)
+            {
+                string xarg=narg;
+                if (xarg.StartsWith("spm:"))
+                {
+                    xarg = narg.Replace("spm:", "");
+                }
+                argsss.Add(xarg);
+            }
+        }
+        args = argsss.ToArray();
         if (output && date == "01-04" || args.Contains("--rickrollme"))
         {
             Console.WriteLine("==============================================");
@@ -157,7 +176,6 @@ public static class SharpPackageManager
             Console.WriteLine("Check for app updates and upgrade packages (Command: upg, upgrade)");
             Console.WriteLine("Search for packages (Command: se, search)");
             Console.WriteLine("Remove a package (Works only with .zip type packages. Command: remove)");
-            Console.WriteLine("Add SPM to path (Command: pathadd)");
             Console.WriteLine("Clean up (Command: cleanup)");
             Console.WriteLine("List Packages (listall/listinstalled)");
             Console.WriteLine("Add a repo (Command: addrepo)");
@@ -363,6 +381,25 @@ public static class SharpPackageManager
         PackageStartInfo.Start();
         System.Environment.Exit(0);
 
+    }
+
+
+    private static void RegisterProtocol()
+    {
+        RegistryKey key = Registry.ClassesRoot.OpenSubKey("spm");  //open myApp protocol's subkey
+
+        if (key == null)  //if the protocol is not registered yet...we register it
+        {
+            AddToPath();
+            key = Registry.ClassesRoot.CreateSubKey("spm");
+            key.SetValue(string.Empty, "URL: SharpPackageManager Protocol");
+            key.SetValue("URL Protocol", string.Empty);
+
+            key = key.CreateSubKey(@"shell\open\command");
+            key.SetValue(string.Empty, InstallPath + "SPM.exe \"%1\"");
+            //%1 represents the argument - this tells windows to open this program with an argument / parameter
+        }
+        key.Close();
     }
 
     public static void CleanUp(bool downloadcache, bool output = true)
