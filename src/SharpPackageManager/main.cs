@@ -17,11 +17,11 @@ public static class SharpPackageManager
     public static readonly int currentversion = 35;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
     public static readonly string appversion = "v2.5.0 - Testing build ID " + currentversion.ToString().Replace(',','"');
-    public static readonly string codename = "berg";
-    public static readonly string curbranch = "master";
+    public static readonly string codename = "joemama";
+    public static readonly string curbranch = "ptb";
 
-    // If this is changed, please check the release notes in the releases tab
-    public const float currentapiversion = 2.4f;
+    // If first number is changed, please check the release notes in the releases tab
+    public const float currentapiversion = 2.5f;
 
 
     private static List<String> reponames = new List<String>();
@@ -35,9 +35,10 @@ public static class SharpPackageManager
     public const string InstallDir = "C:\\SPM\\config\\";
     public const string InstallPath = "C:\\SPM\\";
     private static List<String> exectuable = new List<String>();
-
+    
     private static List<String> shortcuts = new List<String>();
     private static List<String> type = new List<String>();
+    private static List<String> otherpaths = new List<String>();
     private static Dictionary<string, string> repos = new Dictionary<string, string>();
 
     public static void Main(string[] args)
@@ -603,6 +604,7 @@ public static class SharpPackageManager
                         
                         string mr = repository.Replace("/apps.txt", posturl);
                         pkgdl.DownloadFile(mr, pkgdir);
+                        
                     }
                     // Param1 = Link of file
                     // Param2 = Path to save
@@ -729,6 +731,16 @@ public static class SharpPackageManager
                             else CreateShortcut(exectuable[0], Package);
                         }
                     }
+                    foreach (string pth in otherpaths)
+                    {
+                        if (output)
+                        {
+                            Console.WriteLine("================================================================================");
+                            Console.WriteLine("Adding " + pth + " to your PATH");
+                            Console.WriteLine("================================================================================");
+                        }
+                        AddToPath(pth);
+                    }
                     if (isCfgInstalled)
                     {
                         if (!upgrade) CheckForAppUpdates(false, true, false);
@@ -746,12 +758,12 @@ public static class SharpPackageManager
                 if (exectuable.Count > 0) exectuable.Clear();
                 if (shortcuts.Count > 0) shortcuts.Clear();
                 if (type.Count > 0) type.Clear();
+                if (otherpaths.Count > 0) otherpaths.Clear();
                 if (Multi || upgrade) PressAnyKey("continue", false);
                 else PressAnyKey("exit", true);
             }
         }
         else Console.WriteLine("Please specify the package correctly!");
-
     }
 
     public static void CreateShortcut(string executable, string package, string icon = @"C:\SPM\icon.ico")
@@ -821,6 +833,7 @@ public static class SharpPackageManager
     {
         if (currentappnames.Contains(package))
         {
+            DataLoad(@"C:\SPM-APPS\" + package + "\\AppData.spmdata", "AppData");
             if (output) Console.WriteLine("================================================================================");
             DataLoad(InstallDir + "currentversions.txt", "currentversions");
             System.IO.File.WriteAllText(InstallDir + "currentversions.txt", string.Empty);
@@ -856,12 +869,33 @@ public static class SharpPackageManager
                 }
                 Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
             }
+            foreach (string pth in otherpaths)
+            {
+                if (path.Contains(pth))
+                {
+                    string[] pathdirs;
+                    pathdirs = path.Split(';');
+                    foreach (string pathdir in pathdirs)
+                    {
+                        if (pathdir.Contains(pth))
+                        {
+                            path = path.Replace(";" + pathdir, string.Empty);
+                        }
+                    }
+                    Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Machine);
+                }
+            }
             Console.WriteLine("Removing from Start menu...");
             if (System.IO.File.Exists(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\" + package + ".lnk"))
             {
                 System.IO.File.Delete(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\" + package + ".lnk");
             }
             Console.WriteLine("If this is a config/mirrorlist file, you will have to remove from C:\\SPM\\config yourself!");
+            // Clear cache
+            if (exectuable.Count > 0) exectuable.Clear();
+            if (shortcuts.Count > 0) shortcuts.Clear();
+            if (type.Count > 0) type.Clear();
+            if (otherpaths.Count > 0) otherpaths.Clear();
         }
     }
     public static void CheckForAppUpdates(bool autoUpdate = true, bool download = true, bool output = true)
@@ -1167,6 +1201,11 @@ public static class SharpPackageManager
                             {
                                 type.Add(keyValue.Value);
                             }
+                            else if (keyValue.Key == "altpath")
+                            {
+                                otherpaths.Add(keyValue.Value);
+                            }
+                            
                             break;
                     }
                 }
