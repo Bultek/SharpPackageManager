@@ -12,6 +12,8 @@ Package Manager written on C#
   1. (option 1) Run ```spmup``` command
   2. (option 2) Run ```SharpPackageManagerUpdateUtility *your branch (ptb/master)* *current build id (you can just use 1 if you are not sure or if the app is not working properly)*```
 
+## Help
+  * ### Before creating an issue, please check out the [wiki](https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/wikis/)
 
  # Additional Notes
   * The list of projects that are officialy supported by us or affilated with SPM is [here](https://gitlab.com/bultekdev/spm-projects)
