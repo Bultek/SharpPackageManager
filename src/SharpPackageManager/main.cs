@@ -145,10 +145,8 @@ public static class SharpPackageManager
             Console.WriteLine("ERROR: Can't find currentversions.txt, please create it and set it up!");
             Console.WriteLine("Opening instructions in your default browser...");
             Console.WriteLine("==============================================");
-            string upbranch;
-            if (curbranch == "ptb") upbranch = "ptb";
-            else upbranch = "stable";
-            Process.Start("explorer", "https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/blob/"+upbranch+"/README.md#syntax-of-config-files-and-appkits");
+            
+            Process.Start("explorer", "https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/wikis/currentversions.txt-setup-guide");
             Process.Start("explorer", @"C:\SPM\config");
             PressAnyKey("exit", true, 1);
         }
