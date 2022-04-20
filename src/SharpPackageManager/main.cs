@@ -14,14 +14,14 @@ public static class SharpPackageManager
 {
     public const string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
-    public static readonly int currentversion = 36;
+    public static readonly int currentversion = 37;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
-    public static readonly string appversion = "v2.5.0 - Testing build ID " + currentversion.ToString().Replace(',','"');
-    public static readonly string codename = "joemama";
+    public static readonly string appversion = "v3.0 - Testing build ID " + currentversion.ToString().Replace(',','"');
+    public static readonly string codename = "neon";
     public static readonly string curbranch = "ptb";
 
     // If first number is changed, please check the release notes in the releases tab
-    public const float currentapiversion = 2.5f;
+    public const float currentapiversion = 3.0f;
 
 
     private static List<String> reponames = new List<String>();
@@ -39,7 +39,8 @@ public static class SharpPackageManager
     private static List<String> shortcuts = new List<String>();
     private static List<String> type = new List<String>();
     private static List<String> otherpaths = new List<String>();
-    private static Dictionary<string, string> repos = new Dictionary<string, string>();
+    private static List<Dictionary<string, string>> repos = new List<Dictionary<string, string>>();
+    private static List<Dictionary<string, string>> types = new List<Dictionary<string, string>>();
 
     public static void Main(string[] args)
     {
@@ -61,7 +62,7 @@ public static class SharpPackageManager
         {
             DataUpdate(true);
             CheckForAppUpdates(true, true, output);
-            DataLoad(InstallDir + "currentversions.txt", "currentversions");
+            DataLoad(InstallDir + "currentversions.txt");
             if (!currentappnames.Contains("spmupdatemanager"))
             {
                 Console.WriteLine("================================");
@@ -151,13 +152,10 @@ public static class SharpPackageManager
             PressAnyKey("exit", true, 1);
         }
         // Load data
-        DataLoad(InstallDir + "sources.txt", "repos");
-        DataLoad(InstallDir + "currentversions.txt", "currentversions");
-        if (System.IO.File.Exists(InstallDir + "latestversions.txt")) DataLoad(InstallDir + "latestversions.txt", "updates");
-
+        DataLoad(InstallDir + "config.txt");
         foreach (string repo in reponames)
         {
-            if (System.IO.File.Exists(InstallDir + "apps" + repo + ".txt")) DataLoad(InstallDir + "apps" + repo + ".txt", "apps");
+            if (System.IO.File.Exists(InstallDir + "apps" + repo + ".txt")) DataLoad(InstallDir + "apps" + repo + ".txt");
         }
         if (args.Length == 0 && output)
         {
@@ -237,7 +235,7 @@ public static class SharpPackageManager
                 string url = Console.ReadLine();
                 if (repo != null && url!=null)
                 {
-                    AddRepo(repo, url);
+                    //AddRepo(repo, url);
                     Console.WriteLine("================================================================================");
                 }
 
@@ -248,7 +246,7 @@ public static class SharpPackageManager
                 if (args.Length == 2)
                 {
                     Console.WriteLine("================================================================================");
-                    AddRepo(args[1], args[2]);
+                    //AddRepo(args[1], args[2]);
                 }
                 else
                 {
@@ -325,7 +323,7 @@ public static class SharpPackageManager
         }
         PressAnyKey("exit", true, 0, output);   
     }
-
+    /*
     public static void AddRepo(string name, string url)
     {
         if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(url))
@@ -348,6 +346,7 @@ public static class SharpPackageManager
             PressAnyKey("exit", true);
         }
     }
+    */
 
     public static void AddToPath(string newentry = @"C:\SPM")
     {
@@ -365,7 +364,7 @@ public static class SharpPackageManager
         // Update databases and load current versions
         DataUpdate(false);
         CheckForAppUpdates(false, true, false);
-        DataLoad(InstallDir + "currentversions.txt", "currentversions");
+        DataLoad(InstallDir + "currentversions.txt");
         if (!currentappnames.Contains("spmupdatemanager"))
         {
             Console.WriteLine("================================================================================");
@@ -419,7 +418,7 @@ public static class SharpPackageManager
     }
     public static void ListPackages(string type = "all")
     {
-        DataLoad(InstallDir + "currentversions.txt", "currentversions");
+        DataLoad(InstallDir + "currentversions.txt");
         DataUpdate();
         CheckForAppUpdates(false, true, false);
         switch (type)
@@ -491,7 +490,7 @@ public static class SharpPackageManager
             if (package.Contains(keyword))
             {
                 string curver = "Not Installed";
-                DataLoad(InstallDir + "currentversions.txt", "currentversions");
+                DataLoad(InstallDir + "currentversions.txt");
                 if (currentappnames.Contains(package))
                 {
                     // Check inf installed and if the app is installed mark it as installed
@@ -513,7 +512,7 @@ public static class SharpPackageManager
     {
         if (appnames.Contains(Package) || upgrade) // If package doesn't exist don't even try to install it
         {
-            if (!upgrade) DataLoad(InstallDir + "currentversions.txt", "currentversions");
+            if (!upgrade) DataLoad(InstallDir + "currentversions.txt");
             if (currentappnames.Contains(Package) && !upgrade)
             {
                 if (output) Console.WriteLine("ERROR: This Package is already installed. If you want to install it again remove it from the currentversions.txt file.");
@@ -572,7 +571,7 @@ public static class SharpPackageManager
                         foreach (string repo in reponames)
                         {
                             Dictionary<string, List<string>> apps = new Dictionary<string, List<string>>();
-                            apps = GetRepoApps(repo);
+                            //apps = GetRepoApps(repo);
                             foreach (KeyValuePair <string, List<string>> keyValue in apps)
                             {
                                 foreach(string app in keyValue.Value)
@@ -620,7 +619,7 @@ public static class SharpPackageManager
                 Console.WriteLine("Extracting the package...");
                 if (output) Console.WriteLine("================================================================================");
                 ZipFile.ExtractToDirectory(pkgdir, @"C:\SPM-APPS\" + Package);
-                DataLoad(@"C:\SPM-APPS\" + Package + @"\AppData.spmdata", "AppData");
+                DataLoad(@"C:\SPM-APPS\" + Package + @"\AppData.spmdata");
                 if (type[0] == "exe")
                 {
                     foreach (string exe in exectuable)
@@ -831,9 +830,9 @@ public static class SharpPackageManager
     {
         if (currentappnames.Contains(package))
         {
-            DataLoad(@"C:\SPM-APPS\" + package + "\\AppData.spmdata", "AppData");
+            DataLoad(@"C:\SPM-APPS\" + package + "\\AppData.spmdata");
             if (output) Console.WriteLine("================================================================================");
-            DataLoad(InstallDir + "currentversions.txt", "currentversions");
+            DataLoad(InstallDir + "currentversions.txt");
             System.IO.File.WriteAllText(InstallDir + "currentversions.txt", string.Empty);
             WriteData(InstallDir + "currentversions.txt", "placeholder, 1", "AppendToFile");
             if (output) Console.WriteLine("Removing App Data...");
@@ -898,34 +897,7 @@ public static class SharpPackageManager
     }
     public static void CheckForAppUpdates(bool autoUpdate = true, bool download = true, bool output = true)
     {
-        // Clear updates cache
-        if (download && !autoUpdate)
-        {
-            if (updateversions != null && updateappnames != null)
-            {
-                updateversions.Clear();
-                updateappnames.Clear();
-            }
-            if (output) Console.WriteLine("Downloading the latest versions info");
-            using (WebClient datadl = new WebClient())
-            {
-                int i = 0;
-                while (i < reponames.Count)
-                {
-                    if (output) Console.WriteLine("==============================================");
-                    if (output) Console.WriteLine("Updating " + reponames[i]); // Show which repo is being updated now.
-                    if (output) Console.WriteLine("==============================================");
-                    // Download latest versions info
-                    string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
-                    // set download url to current repourls
-                    datadl.DownloadFile(repourls[i].Replace("/apps.txt", "/versions.txt"), currepopath);    
-                    // Load latest versions info
-                    DataLoad(currepopath, "updates");
-                    i++;
-                }
-            }
-        }
-
+        if (download) DataUpdate();
         if (output)
         {
             Console.WriteLine("==============================================");
@@ -949,12 +921,12 @@ public static class SharpPackageManager
                     // Download latest versions info
                     string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
                     // Load latest versions info
-                    DataLoad(currepopath, "updates");
+                    DataLoad(currepopath);
                     i++;
                 }
             }
             if (output) Console.WriteLine("Loading Data...");
-            DataLoad(InstallDir + "currentversions.txt", "currentversions");
+            DataLoad(InstallDir + "currentversions.txt");
             // Check if any packages are installed and if user has updates
             bool updates = false;
             List<String> updatecount = new List<String>();
@@ -999,7 +971,7 @@ public static class SharpPackageManager
                 }
                 CheckForAppUpdates(false, true, false);
                 // Clear currentversions.txt
-                DataLoad(InstallDir + "currentversions.txt", "currentversions");
+                DataLoad(InstallDir + "currentversions.txt");
                 System.IO.File.WriteAllText(InstallDir + "currentversions.txt", string.Empty);
                 WriteData(InstallDir + "currentversions.txt", "placeholder, 1", "AppendToFile");
                 foreach (string update in updatecount)
@@ -1041,10 +1013,11 @@ public static class SharpPackageManager
         appurls.Clear();
         using (WebClient srcdl = new WebClient())
         {
+            Console.WriteLine(repourls.Count);
             int i = 0;
             do
             {
-                string currepopath = InstallDir + "apps" + reponames[i] + ".txt";
+                string currepopath = InstallDir + "metadata-" + reponames[i] + ".txt";
                 if (System.IO.File.Exists(currepopath)) System.IO.File.Delete(currepopath);
 
                 if (Out == true)
@@ -1055,7 +1028,7 @@ public static class SharpPackageManager
                 }
                 srcdl.DownloadFile(repourls[i], currepopath);
                 i++;
-                DataLoad(currepopath, "apps");
+                DataLoad(currepopath);
 
                 // Param1 = Link of file
                 // Param2 = Path to save
@@ -1063,6 +1036,7 @@ public static class SharpPackageManager
 
         }
     }
+    /*
     public static Dictionary<string, List<string>> GetRepoApps(string repo)
     {
         string currepopath = InstallDir + "apps" + repo + ".txt";
@@ -1089,7 +1063,7 @@ public static class SharpPackageManager
         Dictionary<string, List<string>> r = new Dictionary<string, List<string>>();
         r.Add(repo, apps);
         return r;
-    }
+    }*/
     public static void WriteData(string File, string data, string Type)
     {
         if (Type == "AppendToFile")
@@ -1114,99 +1088,130 @@ public static class SharpPackageManager
 #pragma warning restore CS0162 // Unreachable code detected
         }
     }
-    public static void DataLoad(string File, string Type, bool loadapps = false)
+    public static void DataLoad(string File, bool loadapps = false)
     {
         using (StreamReader file = new StreamReader(File))
         {
             string ln2;
             string[] ln3;
+            
             while ((ln2 = file.ReadLine()) != null)
             {
                 ln3 = ln2.Split(", ");
-                repos.Add(ln3[0], ln3[1]);
+                Dictionary<string, string> y = new Dictionary<string, string>();
+                y.Add(ln3[0], ln3[1]);
+                repos.Add(y);
             }
+            
             if (repos != null)
             {
-                switch (Type)
+                foreach (Dictionary<string, string> kx in repos)
                 {
-                    case "repos":
-                        repourls.Clear();
-                        reponames.Clear();
-                        break;
-                    case "currentversions":
-                        currentappversions.Clear();
-                        currentappnames.Clear();
-                        break;
-
-                }
-                foreach (KeyValuePair<string, string> keyValue in repos)
-                {
-                    switch (Type)
+                    foreach (KeyValuePair<string, string> kv in kx)
                     {
-                        // Add the apps to responding lists
-                        case "apps":
-                            if (keyValue.Key != "placeholder" && !appnames.Contains(keyValue.Key))
+                        string typee = kv.Key;
+                        string[] namevalue = kv.Value.Split("|");
+                        int i = 0;
+                        Dictionary<string, string> q = new Dictionary<string, string>();
+                        q.Add(namevalue[0], namevalue[1]);
+                        types.Add(q);
+                        i++;
+                        foreach (Dictionary<string, string> xv in types)
+                        {
+                            foreach (KeyValuePair<string, string> keyValue in xv)
                             {
-                                appurls.Add(keyValue.Value);
-                                appnames.Add(keyValue.Key);
-                            }
-                            break;
-                        case "repos":
-                            if (keyValue.Value.StartsWith("!MIRRORLIST=")) {
-                                string mirrorlistfile = keyValue.Value.Replace("!MIRRORLIST=", "");
-                                // Read mirrorlist file
-                                string mirrors = System.IO.File.ReadAllText(mirrorlistfile);
-                                List<string> mirrs =  mirrors.Split('\n').ToList();
-                                int mirrorcount = mirrs.Count;
-                                // Random integer between 0 and mirrorcount
-                                Random rnd = new Random();
-                                int rndmirror = rnd.Next(0, mirrorcount);
-                                // Download the current repo
-                                while (string.IsNullOrEmpty(mirrs[rndmirror]))
+                                Console.WriteLine(typee);
+                                Console.WriteLine(keyValue.Key + "|" + keyValue.Value);
+                                switch (typee)
                                 {
-                                    Debug.WriteLine(rndmirror);
-                                    rndmirror = rnd.Next(0, mirrorcount);
+                                    case "repos":
+                                        repourls.Clear();
+                                        reponames.Clear();
+                                        break;
+                                    case "currentversions":
+                                        currentappversions.Clear();
+                                        currentappnames.Clear();
+                                        break;
+                                    case "updates":
+                                        updateappnames.Clear();
+                                        updateversions.Clear();
+                                        break;
+                                    case "AppData":
+                                        exectuable.Clear();
+                                        type.Clear();
+                                        otherpaths.Clear();
+                                        break;
                                 }
-                                string mr = mirrs[rndmirror];
-                                repourls.Add(mr);
+                                switch (typee)
+                                {
+                                    // Add the apps to responding lists
+                                    case "apps":
+                                        if (keyValue.Key != "placeholder" && !appnames.Contains(keyValue.Key))
+                                        {
+                                            appurls.Add(keyValue.Value);
+                                            appnames.Add(keyValue.Key);
+                                        }
+                                        break;
+                                    case "repos":
+                                        if (keyValue.Value.StartsWith("!MIRRORLIST="))
+                                        {
+                                            string mirrorlistfile = keyValue.Value.Replace("!MIRRORLIST=", "");
+                                            // Read mirrorlist file
+                                            string mirrors = System.IO.File.ReadAllText(mirrorlistfile);
+                                            List<string> mirrs = mirrors.Split('\n').ToList();
+                                            int mirrorcount = mirrs.Count;
+                                            // Random integer between 0 and mirrorcount
+                                            Random rnd = new Random();
+                                            int rndmirror = rnd.Next(0, mirrorcount);
+                                            // Download the current repo
+                                            while (string.IsNullOrEmpty(mirrs[rndmirror]))
+                                            {
+                                                Debug.WriteLine(rndmirror);
+                                                rndmirror = rnd.Next(0, mirrorcount);
+                                            }
+                                            string mr = mirrs[rndmirror];
+                                            repourls.Add(mr);
+                                        }
+                                        else
+                                        {
+                                            repourls.Add(keyValue.Value);
+                                        }
+                                        reponames.Add(keyValue.Key);
+                                        break;
+                                    case "updates":
+                                        if (keyValue.Key != "placeholder")
+                                        {
+                                            updateversions.Add(int.Parse(keyValue.Value));
+                                            updateappnames.Add(keyValue.Key);
+                                        }
+                                        break;
+                                    case "currentversions":
+                                        if (keyValue.Key != "placeholder")
+                                        {
+                                            currentappversions.Add(int.Parse(keyValue.Value));
+                                            currentappnames.Add(keyValue.Key);
+                                        }
+                                        break;
+                                    case "AppData":
+                                        if (keyValue.Key == "exe")
+                                        {
+                                            exectuable.Add(keyValue.Value);
+                                        }
+                                        else if (keyValue.Key == "type")
+                                        {
+                                            type.Add(keyValue.Value);
+                                        }
+                                        else if (keyValue.Key == "altpath")
+                                        {
+                                            otherpaths.Add(keyValue.Value);
+                                        }
+
+                                        break;
+                                }
                             }
-                            else
-                            {
-                                repourls.Add(keyValue.Value);
-                            }
-                            reponames.Add(keyValue.Key);
-                            break;
-                        case "updates":
-                            if (keyValue.Key != "placeholder")
-                            {
-                                updateversions.Add(int.Parse(keyValue.Value));
-                                updateappnames.Add(keyValue.Key);
-                            }
-                            break;
-                        case "currentversions":
-                            if (keyValue.Key != "placeholder")
-                            {
-                                currentappversions.Add(int.Parse(keyValue.Value));
-                                currentappnames.Add(keyValue.Key);
-                            }
-                            break;
-                        case "AppData":
-                            if (keyValue.Key == "exe")
-                            {
-                                exectuable.Add(keyValue.Value);
-                            }
-                            else if (keyValue.Key == "type")
-                            {
-                                type.Add(keyValue.Value);
-                            }
-                            else if (keyValue.Key == "altpath")
-                            {
-                                otherpaths.Add(keyValue.Value);
-                            }
-                            
-                            break;
+                        }
                     }
-                }
+                }    
             }
             repos.Clear();
             file.Close();
