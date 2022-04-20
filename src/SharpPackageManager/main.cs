@@ -638,8 +638,8 @@ public static class SharpPackageManager
                         {
                             Console.WriteLine("Error while starting " + exe);
                             Debug.WriteLine(ex.Message);
-                            if (output) Console.WriteLine("Is app installed correctly? (Y/n)");
-                            string answer = "Yes";
+                            if (output) Console.WriteLine("Is app installed correctly? (y/N)");
+                            string answer = "no";
                             if (output) answer = Console.ReadLine();
                             answer = answer.ToLower();
                             if (answer.ToLower().StartsWith("n"))
