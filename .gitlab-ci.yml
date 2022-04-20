@@ -25,6 +25,11 @@
 # running the following batch command: net use P: \\x.x.x.x\Projects /u:your_user your_pass /persistent:yes
 
 # place project specific paths in variables to make the rest of the script more generic
+.shared_windows_runners:
+  tags:
+    - shared-windows
+    - windows
+    - windows-1809
 default:
   image: cookiesan/visualstudio-dotnet48
 variables:
