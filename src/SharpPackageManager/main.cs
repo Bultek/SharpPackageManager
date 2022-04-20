@@ -1,4 +1,4 @@
-// Some parts of this code were made by GitHub Copilot. If any of this code violates license of other project, most probably it's written by Github Copilot. If you have any questions or concerns contact GitHub and Microsoft.
+// Some parts of this code were written by GitHub Copilot. If any of this code violates license of other project, most probably it's written by Github Copilot. If you have any questions or concerns contact GitHub and Microsoft.
 // This Code is licensed under the BSD 2 Clause License.
 // Copyright (c) 2022, BultekDev / SharpPackageManager
 // All rights reserved.
