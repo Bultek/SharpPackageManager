@@ -14,7 +14,7 @@ public static class SharpPackageManager
 {
     public const string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
-    public static readonly int currentversion = 35;
+    public static readonly int currentversion = 36;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
     public static readonly string appversion = "v2.5.0 - Testing build ID " + currentversion.ToString().Replace(',','"');
     public static readonly string codename = "joemama";
@@ -231,7 +231,7 @@ public static class SharpPackageManager
             if (!argav)
             {
                 Console.WriteLine("================================================================================");
-                Console.WriteLine("Repo to add (note: you can add only one repo) \n Name: ");
+                Console.WriteLine("Repo to add (note: you can add only one repo) \nName: ");
                 string repo = Console.ReadLine();
                 Console.WriteLine("URL: ");
                 string url = Console.ReadLine();
