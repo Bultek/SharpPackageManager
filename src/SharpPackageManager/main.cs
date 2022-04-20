@@ -179,7 +179,7 @@ public static class SharpPackageManager
             Console.WriteLine("List Packages (listall/listinstalled)");
             Console.WriteLine("Add a repo (Command: addrepo)");
             Console.WriteLine("================================================================================ \n");
-            action = Console.ReadLine(); 
+            action = Console.ReadLine();
         }
         else if (args.Length > 0)
         {
@@ -283,7 +283,8 @@ public static class SharpPackageManager
             {
                 Console.WriteLine("Which package do you want to remove?");
                 string packageName = Console.ReadLine();
-                RemovePKG(packageName, output);            }
+                RemovePKG(packageName, output);
+            }
         }
         else if (action == "up" || action == "update") DataUpdate();
         else if (action == "upg" || action == "upgrade") CheckForAppUpdates(true, true, true);
@@ -561,7 +562,8 @@ public static class SharpPackageManager
                 using (WebClient pkgdl = new WebClient())
                 {
                     // Download the package
-                    if (!appurls[pkgnumber].StartsWith("!MIRRORURL")) { 
+                    if (!appurls[pkgnumber].StartsWith("!MIRRORURL"))
+                    {
                         pkgdl.DownloadFile(appurls[pkgnumber], pkgdir);
                     }
                     else
@@ -1067,25 +1069,25 @@ public static class SharpPackageManager
     {
         string currepopath = InstallDir + "apps" + repo + ".txt";
         List<String> apps = new List<string>();
-            using (StreamReader file = new StreamReader(@"C:\SPM\config\apps" + repo+".txt"))
+        using (StreamReader file = new StreamReader(@"C:\SPM\config\apps" + repo + ".txt"))
+        {
+            string ln2;
+            string[] ln3;
+            while ((ln2 = file.ReadLine()) != null)
             {
-                string ln2;
-                string[] ln3;
-                while ((ln2 = file.ReadLine()) != null)
-                {
-                    ln3 = ln2.Split(", ");
-                    repos.Add(ln3[0], ln3[1]);
-                }
-                if (repos != null)
-                {
-                    foreach (KeyValuePair<string, string> keyValue in repos)
-                    {
-                        apps.Add(keyValue.Key);
-                    }
-                    repos.Clear();
-                    file.Close();
-                }
+                ln3 = ln2.Split(", ");
+                repos.Add(ln3[0], ln3[1]);
             }
+            if (repos != null)
+            {
+                foreach (KeyValuePair<string, string> keyValue in repos)
+                {
+                    apps.Add(keyValue.Key);
+                }
+                repos.Clear();
+                file.Close();
+            }
+        }
         Dictionary<string, List<string>> r = new Dictionary<string, List<string>>();
         r.Add(repo, apps);
         return r;
@@ -1152,7 +1154,8 @@ public static class SharpPackageManager
                             }
                             break;
                         case "repos":
-                            if (keyValue.Value.StartsWith("!MIRRORLIST=")) {
+                            if (keyValue.Value.StartsWith("!MIRRORLIST="))
+                            {
                                 string mirrorlistfile = keyValue.Value.Replace("!MIRRORLIST=", "");
                                 // Read mirrorlist file
                                 string mirrors = System.IO.File.ReadAllText(mirrorlistfile);
