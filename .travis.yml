@@ -1,0 +1,7 @@
+language: csharp
+os: windows
+mono: none
+dotnet: 6.0.3
+script:
+ - dotnet restore
+ - msbuild /p:Configuration=Release src/SharpPackageManager.sln
