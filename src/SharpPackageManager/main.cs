@@ -4,9 +4,9 @@
 // All rights reserved.
 
 using IWshRuntimeLibrary;
+using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO.Compression;
-using Microsoft.Win32;
 using System.Net;
 #pragma warning disable SYSLIB0014,CS4014,CS8618,CS8600,CS8602,CS8604 // I don't care about this warnings.
 
@@ -16,7 +16,8 @@ public static class SharpPackageManager
     public static bool AreModulesLoaded = false;
     public static readonly int currentversion = 37;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
-    public static readonly string appversion = "v3.0 - Testing build ID " + currentversion.ToString().Replace(',','"');
+    public static readonly string executionutctimedate = DateTime.UtcNow.Date.ToString();
+    public static readonly string appversion = "v3.0 - Testing build ID " + currentversion.ToString().Replace(',', '"');
     public static readonly string codename = "neon";
     public static readonly string curbranch = "ptb";
 
@@ -35,11 +36,11 @@ public static class SharpPackageManager
     public const string InstallDir = "C:\\SPM\\config\\";
     public const string InstallPath = "C:\\SPM\\";
     private static List<String> exectuable = new List<String>();
-    
+
     private static List<String> shortcuts = new List<String>();
     private static List<String> type = new List<String>();
     private static List<String> otherpaths = new List<String>();
-    private static List<Dictionary<string, string>> repos = new List<Dictionary<string, string>>();
+    private static Dictionary<string, string> repos = new();
     private static List<Dictionary<string, string>> types = new List<Dictionary<string, string>>();
 
     public static void Main(string[] args)
@@ -85,6 +86,9 @@ public static class SharpPackageManager
     }
     public static void MainApp(string[] args, bool output = true)
     {
+        //TextWriterTraceListener loglistener = new TextWriterTraceListener(System.Console.Out);
+        // Make System.Out listen to Debug.WriteLine
+
         RegisterProtocol();
         List<string> argsss = new List<string>();
         foreach (string arg in args)
@@ -94,7 +98,7 @@ public static class SharpPackageManager
 
             foreach (string narg in newargs)
             {
-                string xarg=narg;
+                string xarg = narg;
                 if (xarg.StartsWith("spm:"))
                 {
                     xarg = narg.Replace("spm:", "");
@@ -129,7 +133,7 @@ public static class SharpPackageManager
                 PackageStartInfo.StartInfo.UseShellExecute = true;
                 PackageStartInfo.Start();
                 Debug.WriteLine(module + " Should be loaded");
-                Console.Clear();
+                //Console.Clear();
                 AreModulesLoaded = true;
             }
             Debug.WriteLine("Are Modules Loaded: " + AreModulesLoaded);
@@ -146,7 +150,7 @@ public static class SharpPackageManager
             Console.WriteLine("ERROR: Can't find currentversions.txt, please create it and set it up!");
             Console.WriteLine("Opening instructions in your default browser...");
             Console.WriteLine("==============================================");
-            
+
             Process.Start("explorer", "https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/wikis/currentversions.txt-setup-guide");
             Process.Start("explorer", @"C:\SPM\config");
             PressAnyKey("exit", true, 1);
@@ -177,7 +181,7 @@ public static class SharpPackageManager
             Console.WriteLine("List Packages (listall/listinstalled)");
             Console.WriteLine("Add a repo (Command: addrepo)");
             Console.WriteLine("================================================================================ \n");
-            action = Console.ReadLine(); 
+            action = Console.ReadLine();
         }
         else if (args.Length > 0)
         {
@@ -221,7 +225,7 @@ public static class SharpPackageManager
                         InstallPkg(arg, true, false, true);
                     }
                 }
-            
+
             }
         }
         else if (action == "addrepo")
@@ -233,7 +237,7 @@ public static class SharpPackageManager
                 string repo = Console.ReadLine();
                 Console.WriteLine("URL: ");
                 string url = Console.ReadLine();
-                if (repo != null && url!=null)
+                if (repo != null && url != null)
                 {
                     //AddRepo(repo, url);
                     Console.WriteLine("================================================================================");
@@ -281,7 +285,8 @@ public static class SharpPackageManager
             {
                 Console.WriteLine("Which package do you want to remove?");
                 string packageName = Console.ReadLine();
-                RemovePKG(packageName, output);            }
+                RemovePKG(packageName, output);
+            }
         }
         else if (action == "up" || action == "update") DataUpdate();
         else if (action == "upg" || action == "upgrade") CheckForAppUpdates(true, true, true);
@@ -321,7 +326,7 @@ public static class SharpPackageManager
         {
             if (output) Console.WriteLine("Launch the app without any options to get help!");
         }
-        PressAnyKey("exit", true, 0, output);   
+        PressAnyKey("exit", true, 0, output);
     }
     /*
     public static void AddRepo(string name, string url)
@@ -508,7 +513,7 @@ public static class SharpPackageManager
         PressAnyKey("exit", true);
     }
 
-    public static void InstallPkg(string Package, bool Multi = false, bool upgrade = false, bool output = true, bool Download=true, bool localinstall=true)
+    public static void InstallPkg(string Package, bool Multi = false, bool upgrade = false, bool output = true, bool Download = true, bool localinstall = true)
     {
         if (appnames.Contains(Package) || upgrade) // If package doesn't exist don't even try to install it
         {
@@ -560,21 +565,22 @@ public static class SharpPackageManager
                 using (WebClient pkgdl = new WebClient())
                 {
                     // Download the package
-                    if (!appurls[pkgnumber].StartsWith("!MIRRORURL")) { 
+                    if (!appurls[pkgnumber].StartsWith("!MIRRORURL"))
+                    {
                         pkgdl.DownloadFile(appurls[pkgnumber], pkgdir);
                     }
                     else
                     {
                         bool exists = false;
-                        
+
                         int repositoryindex = 0;
                         foreach (string repo in reponames)
                         {
                             Dictionary<string, List<string>> apps = new Dictionary<string, List<string>>();
                             //apps = GetRepoApps(repo);
-                            foreach (KeyValuePair <string, List<string>> keyValue in apps)
+                            foreach (KeyValuePair<string, List<string>> keyValue in apps)
                             {
-                                foreach(string app in keyValue.Value)
+                                foreach (string app in keyValue.Value)
                                 {
                                     if (exists)
                                     {
@@ -598,10 +604,10 @@ public static class SharpPackageManager
                         }
                         string repository = repourls[repositoryindex];
                         string posturl = appurls[pkgnumber].Replace("!MIRRORURL", "");
-                        
+
                         string mr = repository.Replace("/apps.txt", posturl);
                         pkgdl.DownloadFile(mr, pkgdir);
-                        
+
                     }
                     // Param1 = Link of file
                     // Param2 = Path to save
@@ -1036,78 +1042,29 @@ public static class SharpPackageManager
 
         }
     }
-    /*
+
     public static Dictionary<string, List<string>> GetRepoApps(string repo)
     {
-        string currepopath = InstallDir + "apps" + repo + ".txt";
-        List<String> apps = new List<string>();
-            using (StreamReader file = new StreamReader(@"C:\SPM\config\apps" + repo+".txt"))
-            {
-                string ln2;
-                string[] ln3;
-                while ((ln2 = file.ReadLine()) != null)
-                {
-                    ln3 = ln2.Split(", ");
-                    repos.Add(ln3[0], ln3[1]);
-                }
-                if (repos != null)
-                {
-                    foreach (KeyValuePair<string, string> keyValue in repos)
-                    {
-                        apps.Add(keyValue.Key);
-                    }
-                    repos.Clear();
-                    file.Close();
-                }
-            }
-        Dictionary<string, List<string>> r = new Dictionary<string, List<string>>();
-        r.Add(repo, apps);
-        return r;
-    }*/
-    public static void WriteData(string File, string data, string Type)
-    {
-        if (Type == "AppendToFile")
-        {
-#pragma warning disable CS0162 // Unreachable code detected
-            for (int i = 1; i <= 3; ++i)
-            {
-                try
-                {
-                    System.IO.File.AppendAllText(File, data);
-                    break; // When done we can break loop
-                }
-                catch (IOException) when (i <= 3)
-                {
-                    // You may check error code to filter some exceptions, not every error
-                    // can be recovered.
-                    Thread.Sleep(1000);
-                    Console.WriteLine("Error writing file");
-                }
-                break;
-            }
-#pragma warning restore CS0162 // Unreachable code detected
-        }
-    }
-    public static void DataLoad(string File, bool loadapps = false)
-    {
-        using (StreamReader file = new StreamReader(File))
+        List<string> apps = new List<string>();
+        using (StreamReader file = new StreamReader(@"C\SPM\config\metadata-" + repo))
         {
             string ln2;
             string[] ln3;
-            
+
             while ((ln2 = file.ReadLine()) != null)
             {
+
                 ln3 = ln2.Split(", ");
                 Dictionary<string, string> y = new Dictionary<string, string>();
                 y.Add(ln3[0], ln3[1]);
-                repos.Add(y);
+                repos.Add(ln3[0], ln3[1]);
             }
-            
+
             if (repos != null)
             {
-                foreach (Dictionary<string, string> kx in repos)
+                try
                 {
-                    foreach (KeyValuePair<string, string> kv in kx)
+                    foreach (KeyValuePair<string, string> kv in repos)
                     {
                         string typee = kv.Key;
                         string[] namevalue = kv.Value.Split("|");
@@ -1115,13 +1072,13 @@ public static class SharpPackageManager
                         Dictionary<string, string> q = new Dictionary<string, string>();
                         q.Add(namevalue[0], namevalue[1]);
                         types.Add(q);
+
                         i++;
                         foreach (Dictionary<string, string> xv in types)
                         {
                             foreach (KeyValuePair<string, string> keyValue in xv)
                             {
-                                Console.WriteLine(typee);
-                                Console.WriteLine(keyValue.Key + "|" + keyValue.Value);
+
                                 switch (typee)
                                 {
                                     case "repos":
@@ -1148,13 +1105,202 @@ public static class SharpPackageManager
                                     case "apps":
                                         if (keyValue.Key != "placeholder" && !appnames.Contains(keyValue.Key))
                                         {
+                                            apps.Add(keyValue.Key);
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+            }
+            repos.Clear();
+            file.Close();
+        }
+        Dictionary<string, List<string>> r = new Dictionary<string, List<string>>();
+        r.Add(repo, apps);
+        return r;
+    }
+
+    public static void WriteData(string File, string data, string Type)
+    {
+        if (Type == "AppendToFile")
+        {
+#pragma warning disable CS0162 // Unreachable code detected
+            for (int i = 1; i <= 3; ++i)
+            {
+                try
+                {
+                    System.IO.File.AppendAllText(File, data);
+                    break; // When done we can break loop
+                }
+                catch (IOException) when (i <= 3)
+                {
+                    // You may check error code to filter some exceptions, not every error
+                    // can be recovered.
+                    Thread.Sleep(1000);
+                    Console.WriteLine("Error writing file");
+                }
+                break;
+            }
+#pragma warning restore CS0162 // Unreachable code detected
+        }
+    }
+
+    public static void NeoDataLoad(string File)
+    {
+        using (StreamReader file = new StreamReader(File))
+        {
+            string content = file.ReadToEnd();
+            string[] lines = content.Split('\n');
+            
+            Dictionary<string, string> cont = new Dictionary<string, string>();
+            // Fill the content
+            int c = 0;
+            foreach (string line in lines)
+            {
+                string[] ln = line.Split(", ");
+                cont.Add(ln[0] + "!-!" + c, ln[1]);
+                c++;
+            }
+            
+            // Fill the lists
+            foreach (KeyValuePair<string, string> kv in cont)
+            {
+                string key = kv.Key.Split("!-!")[0];
+                string value = kv.Value;
+                // Split the value
+                string name = value.Split(" | ")[0];
+                string rv = value.Split(" | ")[1];
+                Console.WriteLine(name + " " + rv);
+                switch (key)
+                {
+                    case "apps":
+                        appnames.Add(name);
+                        appurls.Add(rv);
+                        break;
+                    case "currentversions":
+                        currentappnames.Add(name);
+                        currentappversions.Add(int.Parse(rv));
+                        break;
+                    case "updates":
+                        updateappnames.Add(name);
+                        updateversions.Add(int.Parse(rv));
+                        break;
+                    case "AppData":
+                        break;
+                    case "repos":
+                        reponames.Add(name);
+                        repourls.Add(rv);
+                        break;
+                }
+            }
+
+        }
+    }
+    public static void DataLoad(string File)
+    {
+        Console.WriteLine("\"DataLoad(string File);\" is deprecated, use \"NeoDataLoad(string File);\" instead (redirecting)");
+        NeoDataLoad(File);
+        /*
+        int c = 0;
+        using (StreamReader file = new StreamReader(File))
+        {
+            string ln2;
+            string[] ln3;
+            string typee = string.Empty;
+            while ((ln2 = file.ReadLine()) != null)
+            {
+                c++;
+                ln3 = ln2.Split(", ");
+                //Console.WriteLine(ln3[0] + " A " + ln3[1]);
+                repos.Add(ln3[0] + "-" + c, ln3[1]);
+
+                if (repos != null)
+                {
+
+
+                    foreach (KeyValuePair<string, string> kv in repos)
+                    {
+                        string typ = string.Empty;
+                        //Console.WriteLine(kv.Key);
+                        if (kv.Key.StartsWith("currentversions"))
+                        {
+                            typ = "currentversions";
+
+                        }
+                        else if (kv.Key.StartsWith("repos"))
+                        {
+                            typ = "repos";
+
+                        }
+                        else if (kv.Key.StartsWith("apps"))
+                        {
+                            typ = "apps";
+
+                        }
+                        else if (kv.Key.StartsWith("updates"))
+                        {
+                            typ = "updates";
+
+                        }
+                        else if (kv.Key.StartsWith("AppData"))
+                        {
+                            typ = "AppData";
+
+                        }
+                        string[] namevalue = kv.Value.Split(" | ");
+                        int i = 0;
+                        Dictionary<string, string> q = new Dictionary<string, string>();
+                        q.Add(namevalue[0], namevalue[1]);
+                        types.Add(q);
+                        i++;
+                        foreach (Dictionary<string, string> xv in types)
+                        {
+                            foreach (KeyValuePair<string, string> keyValue in xv)
+                            {
+
+                                switch (typ)
+                                {
+                                    case "repos":
+                                        repourls.Clear();
+                                        reponames.Clear();
+                                        break;
+                                    case "currentversions":
+                                        currentappversions.Clear();
+                                        currentappnames.Clear();
+                                        break;
+                                    case "updates":
+                                        updateappnames.Clear();
+                                        updateversions.Clear();
+                                        break;
+                                    case "AppData":
+                                        exectuable.Clear();
+                                        type.Clear();
+                                        otherpaths.Clear();
+                                        break;
+                                }
+                                Console.WriteLine(typ);
+                                switch (typ)
+                                {
+
+                                    // Add the apps to responding lists
+                                    case "apps":
+                                        if (keyValue.Key != "placeholder" && !appnames.Contains(keyValue.Key))
+                                        {
                                             appurls.Add(keyValue.Value);
                                             appnames.Add(keyValue.Key);
+                                            Debug.WriteLine("Adding " + keyValue.Key + "|" + keyValue.Value + " To type" + typee);
                                         }
                                         break;
                                     case "repos":
                                         if (keyValue.Value.StartsWith("!MIRRORLIST="))
                                         {
+                                            Console.WriteLine("LOADING REPO MIRRORLIST");
                                             string mirrorlistfile = keyValue.Value.Replace("!MIRRORLIST=", "");
                                             // Read mirrorlist file
                                             string mirrors = System.IO.File.ReadAllText(mirrorlistfile);
@@ -1171,10 +1317,14 @@ public static class SharpPackageManager
                                             }
                                             string mr = mirrs[rndmirror];
                                             repourls.Add(mr);
+                                            Debug.WriteLine("Adding " + keyValue.Key + "|" + keyValue.Value + " To type" + typee);
+
                                         }
                                         else
                                         {
                                             repourls.Add(keyValue.Value);
+                                            Debug.WriteLine("Adding " + keyValue.Key + "|" + keyValue.Value + " To type" + typee);
+
                                         }
                                         reponames.Add(keyValue.Key);
                                         break;
@@ -1183,6 +1333,8 @@ public static class SharpPackageManager
                                         {
                                             updateversions.Add(int.Parse(keyValue.Value));
                                             updateappnames.Add(keyValue.Key);
+                                            Debug.WriteLine("Adding " + keyValue.Key + "|" + keyValue.Value + " To type" + typee);
+
                                         }
                                         break;
                                     case "currentversions":
@@ -1190,20 +1342,27 @@ public static class SharpPackageManager
                                         {
                                             currentappversions.Add(int.Parse(keyValue.Value));
                                             currentappnames.Add(keyValue.Key);
+                                            Debug.WriteLine("Adding " + keyValue.Key + "|" + keyValue.Value + " To type" + typee);
+
                                         }
                                         break;
                                     case "AppData":
                                         if (keyValue.Key == "exe")
                                         {
                                             exectuable.Add(keyValue.Value);
+                                            Debug.WriteLine("Adding " + keyValue.Key + "|" + keyValue.Value + " To type" + typee);
                                         }
                                         else if (keyValue.Key == "type")
                                         {
                                             type.Add(keyValue.Value);
+                                            Debug.WriteLine("Adding " + keyValue.Key + "|" + keyValue.Value + " To type" + typee);
+
                                         }
                                         else if (keyValue.Key == "altpath")
                                         {
                                             otherpaths.Add(keyValue.Value);
+                                            Debug.WriteLine("Adding " + keyValue.Key + "|" + keyValue.Value + " To type" + typee);
+
                                         }
 
                                         break;
@@ -1211,11 +1370,16 @@ public static class SharpPackageManager
                             }
                         }
                     }
-                }    
+                    foreach (string app in reponames)
+                    {
+                        Console.WriteLine(app);
+                    }
+                    typee = string.Empty;
+                }
             }
-            repos.Clear();
-            file.Close();
         }
+        repos.Clear();
+        */
     }
 
     public static string[] modules;
