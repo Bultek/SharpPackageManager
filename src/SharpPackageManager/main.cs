@@ -33,14 +33,12 @@ public static class SharpPackageManager
     public static List<String> currentappnames = new List<String>();
     public static List<int> currentappversions = new List<int>();
     public const string InstallDir = "C:\\SPM\\config\\";
-    public const string RepoDir = "C:\\SPM\\repos\\";
     public const string InstallPath = "C:\\SPM\\";
     private static List<String> exectuable = new List<String>();
-
+    
     private static List<String> shortcuts = new List<String>();
     private static List<String> type = new List<String>();
     private static List<String> otherpaths = new List<String>();
-    public static string[] modules;
     private static Dictionary<string, string> repos = new Dictionary<string, string>();
 
     public static void Main(string[] args)
@@ -63,7 +61,7 @@ public static class SharpPackageManager
         {
             DataUpdate(true);
             CheckForAppUpdates(true, true, output);
-            DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
+            DataLoad(InstallDir + "currentversions.txt", "currentversions");
             if (!currentappnames.Contains("spmupdatemanager"))
             {
                 Console.WriteLine("================================");
@@ -84,33 +82,9 @@ public static class SharpPackageManager
         }
 
     }
-
-    public static void CreateConfigArchive()
-    {
-        try
-        {
-            // Create archive with all the config files
-            if (System.IO.File.Exists(InstallDir + "config.zip"))
-            {
-                System.IO.File.Delete(InstallDir + "config.zip");
-            }
-            ZipFile.CreateFromDirectory(InstallDir, InstallDir + "config.zip");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Error while creating config archive");
-            PressAnyKey("exit", true, 1);
-        }
-    }
-
     public static void MainApp(string[] args, bool output = true)
     {
-        //CreateConfigArchive();
         RegisterProtocol();
-        if (!System.IO.Directory.Exists(RepoDir))
-        {
-            System.IO.Directory.CreateDirectory(RepoDir);
-        }
         List<string> argsss = new List<string>();
         foreach (string arg in args)
         {
@@ -119,7 +93,7 @@ public static class SharpPackageManager
 
             foreach (string narg in newargs)
             {
-                string xarg = narg;
+                string xarg=narg;
                 if (xarg.StartsWith("spm:"))
                 {
                     xarg = narg.Replace("spm:", "");
@@ -171,18 +145,19 @@ public static class SharpPackageManager
             Console.WriteLine("ERROR: Can't find currentversions.txt, please create it and set it up!");
             Console.WriteLine("Opening instructions in your default browser...");
             Console.WriteLine("==============================================");
-
-            Process.Start("explorer", "https://gitlab.com/bultekdev/spm-projects/SharpPackageManager/-/wikis/currentversions.txt-setup-guide");
+            
+            Process.Start("explorer", "https://github.com/Bultek/SharpPackageManager/wiki/currentversions.txt-setup-guide");
             Process.Start("explorer", @"C:\SPM\config");
             PressAnyKey("exit", true, 1);
         }
         // Load data
-        DataLoad(InstallDir + "config.zip", "repos", "sources.txt");
-        DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
+        DataLoad(InstallDir + "sources.txt", "repos");
+        DataLoad(InstallDir + "currentversions.txt", "currentversions");
+        if (System.IO.File.Exists(InstallDir + "latestversions.txt")) DataLoad(InstallDir + "latestversions.txt", "updates");
 
         foreach (string repo in reponames)
         {
-            if (System.IO.File.Exists(InstallDir + repo + ".zip")) DataLoad(InstallDir + repo + ".zip", "apps", "a");
+            if (System.IO.File.Exists(InstallDir + "apps" + repo + ".txt")) DataLoad(InstallDir + "apps" + repo + ".txt", "apps");
         }
         if (args.Length == 0 && output)
         {
@@ -248,7 +223,7 @@ public static class SharpPackageManager
                         InstallPkg(arg, true, false, true);
                     }
                 }
-
+            
             }
         }
         else if (action == "addrepo")
@@ -260,7 +235,7 @@ public static class SharpPackageManager
                 string repo = Console.ReadLine();
                 Console.WriteLine("URL: ");
                 string url = Console.ReadLine();
-                if (repo != null && url != null)
+                if (repo != null && url!=null)
                 {
                     AddRepo(repo, url);
                     Console.WriteLine("================================================================================");
@@ -349,7 +324,7 @@ public static class SharpPackageManager
         {
             if (output) Console.WriteLine("Launch the app without any options to get help!");
         }
-        PressAnyKey("exit", true, 0, output);
+        PressAnyKey("exit", true, 0, output);   
     }
 
     public static void AddRepo(string name, string url)
@@ -360,7 +335,7 @@ public static class SharpPackageManager
             {
                 repos.Add(name, url);
                 reponames.Add(name);
-                WriteData(InstallDir + "sources.txt", "\n" + name + ", " + url, "AppendToFile");
+                WriteData(InstallDir + "sources.txt","\n" + name + ", " + url, "AppendToFile");
             }
             else
             {
@@ -391,7 +366,7 @@ public static class SharpPackageManager
         // Update databases and load current versions
         DataUpdate(false);
         CheckForAppUpdates(false, true, false);
-        DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
+        DataLoad(InstallDir + "currentversions.txt", "currentversions");
         if (!currentappnames.Contains("spmupdatemanager"))
         {
             Console.WriteLine("================================================================================");
@@ -399,8 +374,13 @@ public static class SharpPackageManager
             Console.WriteLine("================================================================================");
             InstallPkg("spmupdatemanager", false, false, false);
         }
-        Console.WriteLine("Run this command in a cmd/powershell as admin and close all spm windows before updating");
-        Console.WriteLine("SharpPackageManagerUpdateUtility " + curbranch + " " + currentversion);
+        Process PackageStartInfo = new Process();
+        PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
+        PackageStartInfo.StartInfo.Arguments = ubranch + " " + currentversion;
+        PackageStartInfo.StartInfo.UseShellExecute = true;
+        PackageStartInfo.Start();
+        System.Environment.Exit(0);
+
     }
 
 
@@ -440,7 +420,7 @@ public static class SharpPackageManager
     }
     public static void ListPackages(string type = "all")
     {
-        DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
+        DataLoad(InstallDir + "currentversions.txt", "currentversions");
         DataUpdate();
         CheckForAppUpdates(false, true, false);
         switch (type)
@@ -512,7 +492,7 @@ public static class SharpPackageManager
             if (package.Contains(keyword))
             {
                 string curver = "Not Installed";
-                DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
+                DataLoad(InstallDir + "currentversions.txt", "currentversions");
                 if (currentappnames.Contains(package))
                 {
                     // Check inf installed and if the app is installed mark it as installed
@@ -530,11 +510,11 @@ public static class SharpPackageManager
         PressAnyKey("exit", true);
     }
 
-    public static void InstallPkg(string Package, bool Multi = false, bool upgrade = false, bool output = true, bool Download = true, bool localinstall = true)
+    public static void InstallPkg(string Package, bool Multi = false, bool upgrade = false, bool output = true, bool Download=true, bool localinstall=true)
     {
         if (appnames.Contains(Package) || upgrade) // If package doesn't exist don't even try to install it
         {
-            if (!upgrade) DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
+            if (!upgrade) DataLoad(InstallDir + "currentversions.txt", "currentversions");
             if (currentappnames.Contains(Package) && !upgrade)
             {
                 if (output) Console.WriteLine("ERROR: This Package is already installed. If you want to install it again remove it from the currentversions.txt file.");
@@ -589,15 +569,15 @@ public static class SharpPackageManager
                     else
                     {
                         bool exists = false;
-
+                        
                         int repositoryindex = 0;
                         foreach (string repo in reponames)
                         {
                             Dictionary<string, List<string>> apps = new Dictionary<string, List<string>>();
                             apps = GetRepoApps(repo);
-                            foreach (KeyValuePair<string, List<string>> keyValue in apps)
+                            foreach (KeyValuePair <string, List<string>> keyValue in apps)
                             {
-                                foreach (string app in keyValue.Value)
+                                foreach(string app in keyValue.Value)
                                 {
                                     if (exists)
                                     {
@@ -621,10 +601,10 @@ public static class SharpPackageManager
                         }
                         string repository = repourls[repositoryindex];
                         string posturl = appurls[pkgnumber].Replace("!MIRRORURL", "");
-
+                        
                         string mr = repository.Replace("/apps.txt", posturl);
                         pkgdl.DownloadFile(mr, pkgdir);
-
+                        
                     }
                     // Param1 = Link of file
                     // Param2 = Path to save
@@ -642,7 +622,7 @@ public static class SharpPackageManager
                 Console.WriteLine("Extracting the package...");
                 if (output) Console.WriteLine("================================================================================");
                 ZipFile.ExtractToDirectory(pkgdir, @"C:\SPM-APPS\" + Package);
-                NormalDataLoad(@"C:\SPM-APPS\" + Package + @"\AppData.spmdata", "AppData");
+                DataLoad(@"C:\SPM-APPS\" + Package + @"\AppData.spmdata", "AppData");
                 if (type[0] == "exe")
                 {
                     foreach (string exe in exectuable)
@@ -853,9 +833,9 @@ public static class SharpPackageManager
     {
         if (currentappnames.Contains(package))
         {
-            NormalDataLoad(@"C:\SPM-APPS\" + package + "\\AppData.spmdata", "AppData");
+            DataLoad(@"C:\SPM-APPS\" + package + "\\AppData.spmdata", "AppData");
             if (output) Console.WriteLine("================================================================================");
-            DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
+            DataLoad(InstallDir + "currentversions.txt", "currentversions");
             System.IO.File.WriteAllText(InstallDir + "currentversions.txt", string.Empty);
             WriteData(InstallDir + "currentversions.txt", "placeholder, 1", "AppendToFile");
             if (output) Console.WriteLine("Removing App Data...");
@@ -940,8 +920,9 @@ public static class SharpPackageManager
                     // Download latest versions info
                     string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
                     // set download url to current repourls
+                    datadl.DownloadFile(repourls[i].Replace("/apps.txt", "/versions.txt"), currepopath);    
                     // Load latest versions info
-                    DataLoad(currepopath, "updates", "updates.txt");
+                    DataLoad(currepopath, "updates");
                     i++;
                 }
             }
@@ -970,12 +951,12 @@ public static class SharpPackageManager
                     // Download latest versions info
                     string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
                     // Load latest versions info
-                    DataLoad(currepopath, "updates", "updates.txt");
+                    DataLoad(currepopath, "updates");
                     i++;
                 }
             }
             if (output) Console.WriteLine("Loading Data...");
-            DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
+            DataLoad(InstallDir + "currentversions.txt", "currentversions");
             // Check if any packages are installed and if user has updates
             bool updates = false;
             List<String> updatecount = new List<String>();
@@ -1020,7 +1001,7 @@ public static class SharpPackageManager
                 }
                 CheckForAppUpdates(false, true, false);
                 // Clear currentversions.txt
-                DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
+                DataLoad(InstallDir + "currentversions.txt", "currentversions");
                 System.IO.File.WriteAllText(InstallDir + "currentversions.txt", string.Empty);
                 WriteData(InstallDir + "currentversions.txt", "placeholder, 1", "AppendToFile");
                 foreach (string update in updatecount)
@@ -1065,7 +1046,7 @@ public static class SharpPackageManager
             int i = 0;
             do
             {
-                string currepopath = RepoDir + "metadata-" + reponames[i] + ".zip";
+                string currepopath = InstallDir + "apps" + reponames[i] + ".txt";
                 if (System.IO.File.Exists(currepopath)) System.IO.File.Delete(currepopath);
 
                 if (Out == true)
@@ -1076,7 +1057,7 @@ public static class SharpPackageManager
                 }
                 srcdl.DownloadFile(repourls[i], currepopath);
                 i++;
-                DataLoad(currepopath, "apps", "apps.txt");
+                DataLoad(currepopath, "apps");
 
                 // Param1 = Link of file
                 // Param2 = Path to save
@@ -1135,20 +1116,7 @@ public static class SharpPackageManager
 #pragma warning restore CS0162 // Unreachable code detected
         }
     }
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-
-    public static async Task DataLoad(string Archive, string Type, string ReadFile)
-    {
-        // Unpack the file 
-        if (System.IO.Directory.Exists(@"C:\temp\unpacked"))
-        {
-            System.IO.Directory.Delete(@"C:\temp\unpacked", true);
-        }
-        ZipFile.ExtractToDirectory(Archive, @"C:\temp\unpacked");
-        NormalDataLoad(@"C:\temp\unpacked\"+ReadFile, Type);
-    }
-
-    public static async Task NormalDataLoad(string File, string Type)
+    public static void DataLoad(string File, string Type, bool loadapps = false)
     {
         using (StreamReader file = new StreamReader(File))
         {
@@ -1191,7 +1159,7 @@ public static class SharpPackageManager
                                 string mirrorlistfile = keyValue.Value.Replace("!MIRRORLIST=", "");
                                 // Read mirrorlist file
                                 string mirrors = System.IO.File.ReadAllText(mirrorlistfile);
-                                List<string> mirrs = mirrors.Split('\n').ToList();
+                                List<string> mirrs =  mirrors.Split('\n').ToList();
                                 int mirrorcount = mirrs.Count;
                                 // Random integer between 0 and mirrorcount
                                 Random rnd = new Random();
@@ -1238,7 +1206,7 @@ public static class SharpPackageManager
                             {
                                 otherpaths.Add(keyValue.Value);
                             }
-
+                            
                             break;
                     }
                 }
@@ -1248,5 +1216,5 @@ public static class SharpPackageManager
         }
     }
 
-    
+    public static string[] modules;
 }
