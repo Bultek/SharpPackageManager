@@ -1,7 +1,9 @@
 # SharpPackageManager
 Package Manager written on C#
+#### Warning: do not download spm from the releases tab. Those are not the packages you are looking for, they're old versions.
 
-#### Status: ![Downloads](https://img.shields.io/github/downloads/bultek/SharpPackageManager/total?style=for-the-badge) ![Latest tag](https://img.shields.io/github/v/tag/bultek/SharpPackageManager?style=for-the-badge)
+
+![Downloads](https://img.shields.io/github/downloads/bultek/SharpPackageManager/total?style=for-the-badge) ![Latest tag](https://img.shields.io/github/v/tag/bultek/SharpPackageManager?style=for-the-badge)
 
 # Installation and updating
 ## Installation
