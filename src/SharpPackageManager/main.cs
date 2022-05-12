@@ -4,22 +4,20 @@
 // All rights reserved.
 
 using IWshRuntimeLibrary;
-using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO.Compression;
+using Microsoft.Win32;
 using System.Net;
 #pragma warning disable SYSLIB0014,CS4014,CS8618,CS8600,CS8602,CS8604 // I don't care about this warnings.
 
 public static class SharpPackageManager
 {
-    public static string[] modules;
     public const string StartMenuDirectory = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\SPM-APPS";
     public static bool AreModulesLoaded = false;
     public static readonly int currentversion = 37;
     public static readonly string date = DateTime.Now.ToString("dd-MM"); // needed for an easter egg
-    public static readonly string executionutctimedate = DateTime.UtcNow.Date.ToString();
-    public static readonly string appversion = "v3.0 - Testing build ID " + currentversion.ToString().Replace(',', '"');
-    public static readonly string codename = "neon";
+    public static readonly string appversion = "v3.0.0";
+    public static readonly string codename = "ua";
     public static readonly string curbranch = "ptb";
 
     // If first number is changed, please check the release notes in the releases tab
@@ -34,16 +32,16 @@ public static class SharpPackageManager
     public static List<int> updateversions = new List<int>();
     public static List<String> currentappnames = new List<String>();
     public static List<int> currentappversions = new List<int>();
-    public static List<string> grapps = new List<string>();
     public const string InstallDir = "C:\\SPM\\config\\";
+    public const string RepoDir = "C:\\SPM\\repos\\";
     public const string InstallPath = "C:\\SPM\\";
     private static List<String> exectuable = new List<String>();
 
     private static List<String> shortcuts = new List<String>();
     private static List<String> type = new List<String>();
     private static List<String> otherpaths = new List<String>();
-    private static Dictionary<string, string> repos = new();
-    private static List<Dictionary<string, string>> types = new List<Dictionary<string, string>>();
+    public static string[] modules;
+    private static Dictionary<string, string> repos = new Dictionary<string, string>();
 
     public static void Main(string[] args)
     {
@@ -65,7 +63,7 @@ public static class SharpPackageManager
         {
             DataUpdate(true);
             CheckForAppUpdates(true, true, output);
-            NeoDataLoad(InstallDir + "config.txt", "config");
+            DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
             if (!currentappnames.Contains("spmupdatemanager"))
             {
                 Console.WriteLine("================================");
@@ -86,12 +84,33 @@ public static class SharpPackageManager
         }
 
     }
+
+    public static void CreateConfigArchive()
+    {
+        try
+        {
+            // Create archive with all the config files
+            if (System.IO.File.Exists(InstallDir + "config.zip"))
+            {
+                System.IO.File.Delete(InstallDir + "config.zip");
+            }
+            ZipFile.CreateFromDirectory(InstallDir, InstallDir + "config.zip");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error while creating config archive");
+            PressAnyKey("exit", true, 1);
+        }
+    }
+
     public static void MainApp(string[] args, bool output = true)
     {
-        //TextWriterTraceListener loglistener = new TextWriterTraceListener(System.Console.Out);
-        // Make System.Out listen to Debug.WriteLine
-
+        //CreateConfigArchive();
         RegisterProtocol();
+        if (!System.IO.Directory.Exists(RepoDir))
+        {
+            System.IO.Directory.CreateDirectory(RepoDir);
+        }
         List<string> argsss = new List<string>();
         foreach (string arg in args)
         {
@@ -135,7 +154,7 @@ public static class SharpPackageManager
                 PackageStartInfo.StartInfo.UseShellExecute = true;
                 PackageStartInfo.Start();
                 Debug.WriteLine(module + " Should be loaded");
-                //Console.Clear();
+                Console.Clear();
                 AreModulesLoaded = true;
             }
             Debug.WriteLine("Are Modules Loaded: " + AreModulesLoaded);
@@ -146,10 +165,10 @@ public static class SharpPackageManager
         if (!System.IO.Directory.Exists("C:\\SPM\\Downloads")) System.IO.Directory.CreateDirectory("C:\\SPM\\Downloads");
         if (!System.IO.Directory.Exists("C:\\SPM\\config")) System.IO.Directory.CreateDirectory("C:\\SPM\\config");
         // you can't proceed without currentversions.txt
-        if (!System.IO.File.Exists(InstallDir + "config.txt"))
+        if (!System.IO.File.Exists(InstallDir + "currentversions.txt"))
         {
             Console.WriteLine("==============================================");
-            Console.WriteLine("ERROR: Can't find config.txt, please create it and set it up!");
+            Console.WriteLine("ERROR: Can't find currentversions.txt, please create it and set it up!");
             Console.WriteLine("Opening instructions in your default browser...");
             Console.WriteLine("==============================================");
 
@@ -158,10 +177,12 @@ public static class SharpPackageManager
             PressAnyKey("exit", true, 1);
         }
         // Load data
-        NeoDataLoad(InstallDir + "config.txt", "config");
+        DataLoad(InstallDir + "config.zip", "repos", "sources.txt");
+        DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
+
         foreach (string repo in reponames)
         {
-            if (System.IO.File.Exists(InstallDir + "metadata-" + repo + ".txt")) NeoDataLoad(InstallDir + "metadata-" + repo + ".txt", "metadata");
+            if (System.IO.File.Exists(InstallDir + repo + ".zip")) DataLoad(InstallDir + repo + ".zip", "apps", "a");
         }
         if (args.Length == 0 && output)
         {
@@ -241,7 +262,7 @@ public static class SharpPackageManager
                 string url = Console.ReadLine();
                 if (repo != null && url != null)
                 {
-                    //AddRepo(repo, url);
+                    AddRepo(repo, url);
                     Console.WriteLine("================================================================================");
                 }
 
@@ -252,7 +273,7 @@ public static class SharpPackageManager
                 if (args.Length == 2)
                 {
                     Console.WriteLine("================================================================================");
-                    //AddRepo(args[1], args[2]);
+                    AddRepo(args[1], args[2]);
                 }
                 else
                 {
@@ -330,7 +351,7 @@ public static class SharpPackageManager
         }
         PressAnyKey("exit", true, 0, output);
     }
-    /*
+
     public static void AddRepo(string name, string url)
     {
         if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(url))
@@ -339,7 +360,7 @@ public static class SharpPackageManager
             {
                 repos.Add(name, url);
                 reponames.Add(name);
-                WriteData(InstallDir + "sources.txt","\n" + name + ", " + url, "AppendToFile");
+                WriteData(InstallDir + "sources.txt", "\n" + name + ", " + url, "AppendToFile");
             }
             else
             {
@@ -353,7 +374,6 @@ public static class SharpPackageManager
             PressAnyKey("exit", true);
         }
     }
-    */
 
     public static void AddToPath(string newentry = @"C:\SPM")
     {
@@ -371,7 +391,7 @@ public static class SharpPackageManager
         // Update databases and load current versions
         DataUpdate(false);
         CheckForAppUpdates(false, true, false);
-        NeoDataLoad(InstallDir + "config.txt", "config");
+        DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
         if (!currentappnames.Contains("spmupdatemanager"))
         {
             Console.WriteLine("================================================================================");
@@ -379,13 +399,8 @@ public static class SharpPackageManager
             Console.WriteLine("================================================================================");
             InstallPkg("spmupdatemanager", false, false, false);
         }
-        Process PackageStartInfo = new Process();
-        PackageStartInfo.StartInfo.FileName = "C:\\SPM-APPS\\spmupdatemanager\\SharpPackageManagerUpdateUtility.exe";
-        PackageStartInfo.StartInfo.Arguments = ubranch + " " + currentversion;
-        PackageStartInfo.StartInfo.UseShellExecute = true;
-        PackageStartInfo.Start();
-        System.Environment.Exit(0);
-
+        Console.WriteLine("Run this command in a cmd/powershell as admin and close all spm windows before updating");
+        Console.WriteLine("SharpPackageManagerUpdateUtility " + curbranch + " " + currentversion);
     }
 
 
@@ -425,7 +440,7 @@ public static class SharpPackageManager
     }
     public static void ListPackages(string type = "all")
     {
-        NeoDataLoad(InstallDir + "config.txt", "config");
+        DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
         DataUpdate();
         CheckForAppUpdates(false, true, false);
         switch (type)
@@ -497,7 +512,7 @@ public static class SharpPackageManager
             if (package.Contains(keyword))
             {
                 string curver = "Not Installed";
-                NeoDataLoad(InstallDir + "config.txt", "config");
+                DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
                 if (currentappnames.Contains(package))
                 {
                     // Check inf installed and if the app is installed mark it as installed
@@ -519,11 +534,11 @@ public static class SharpPackageManager
     {
         if (appnames.Contains(Package) || upgrade) // If package doesn't exist don't even try to install it
         {
-            if (!upgrade) NeoDataLoad(InstallDir + "config.txt", "config");
+            if (!upgrade) DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
             if (currentappnames.Contains(Package) && !upgrade)
             {
-                if (output) Console.WriteLine("ERROR: This Package is already installed. If you want to install it again remove it from the config.txt file.");
-                PressAnyKey("exit", true, 4, output);
+                if (output) Console.WriteLine("ERROR: This Package is already installed. If you want to install it again remove it from the currentversions.txt file.");
+                PressAnyKey("exit", true, -1, output);
             }
             if (output) Console.WriteLine("================================================================================");
             if (output) Console.WriteLine("By installing any of the packages you agree to the license agreement of the package."); // Legal notice
@@ -555,7 +570,7 @@ public static class SharpPackageManager
             if (appurls[pkgnumber].EndsWith(".exe"))
             {
                 if (output) Console.WriteLine("================================================================================");
-                if (output) Console.WriteLine("ERROR: You're downloading/installing a legacy package! \nSPM v2.X.X+ DOES NOT SUPPORT legacy v1.X.X packages.");
+                if (output) Console.WriteLine("ERROR: You're downloading/installing a legacy package! \nSPM v2.X.X DOES NOT SUPPORT legacy v1.X.X packages. \nIf your 'bultek' repo is http://bpmr.bultek.com.ua, change it to http://repo.bultek.com.ua/spm !");
                 if (output) Console.WriteLine("================================================================================");
                 PressAnyKey("exit", true, 1, output);
             }
@@ -579,7 +594,7 @@ public static class SharpPackageManager
                         foreach (string repo in reponames)
                         {
                             Dictionary<string, List<string>> apps = new Dictionary<string, List<string>>();
-                            //apps = GetRepoApps(repo);
+                            apps = GetRepoApps(repo);
                             foreach (KeyValuePair<string, List<string>> keyValue in apps)
                             {
                                 foreach (string app in keyValue.Value)
@@ -627,7 +642,7 @@ public static class SharpPackageManager
                 Console.WriteLine("Extracting the package...");
                 if (output) Console.WriteLine("================================================================================");
                 ZipFile.ExtractToDirectory(pkgdir, @"C:\SPM-APPS\" + Package);
-                LoadAppData(@"C:\SPM-APPS\" + Package + @"\AppData.spmdata", "AppData");
+                NormalDataLoad(@"C:\SPM-APPS\" + Package + @"\AppData.spmdata", "AppData");
                 if (type[0] == "exe")
                 {
                     foreach (string exe in exectuable)
@@ -838,11 +853,11 @@ public static class SharpPackageManager
     {
         if (currentappnames.Contains(package))
         {
-            LoadAppData(@"C:\SPM-APPS\" + package + "\\AppData.spmdata", "AppData");
+            NormalDataLoad(@"C:\SPM-APPS\" + package + "\\AppData.spmdata", "AppData");
             if (output) Console.WriteLine("================================================================================");
-            NeoDataLoad(InstallDir + "config.txt", "config");
-            System.IO.File.WriteAllText(InstallDir + "config.txt", string.Empty);
-            //WriteData(InstallDir + "config.txt", "placeholder, 1", "AppendToFile");
+            DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
+            System.IO.File.WriteAllText(InstallDir + "currentversions.txt", string.Empty);
+            WriteData(InstallDir + "currentversions.txt", "placeholder, 1", "AppendToFile");
             if (output) Console.WriteLine("Removing App Data...");
             if (output) Console.WriteLine("================================================================================");
             System.IO.Directory.Delete(@"C:\SPM-APPS\" + package, true);
@@ -854,16 +869,8 @@ public static class SharpPackageManager
                 // Write current versions to currentappversions.txt
                 int writeappverindex = currentappnames.IndexOf(pack);
                 int writeappver = currentappversions[writeappverindex];
-                string wrdata = "\ncurrentversions, " + pack + " | " + writeappver;
-                WriteData(InstallDir + "config.txt", wrdata, "AppendToFile");
-            }
-            foreach (string repo in reponames)
-            {
-                // Write repos
-                int writerepoindex = reponames.IndexOf(repo);
-                string writerepourl = repourls[writerepoindex];
-                string wrdata = "\repos, " + writerepourl + " | " + writerepourl;
-                WriteData(InstallDir + "config.txt", wrdata, "AppendToFile");
+                string wrdata = "\n" + pack + ", " + writeappver;
+                WriteData(InstallDir + "currentversions.txt", wrdata, "AppendToFile");
             }
             if (output) Console.WriteLine("================================================================================");
             Console.WriteLine("Removing From PATH...");
@@ -913,16 +920,42 @@ public static class SharpPackageManager
     }
     public static void CheckForAppUpdates(bool autoUpdate = true, bool download = true, bool output = true)
     {
+        // Clear updates cache
+        if (download && !autoUpdate)
+        {
+            if (updateversions != null && updateappnames != null)
+            {
+                updateversions.Clear();
+                updateappnames.Clear();
+            }
+            if (output) Console.WriteLine("Downloading the latest versions info");
+            using (WebClient datadl = new WebClient())
+            {
+                int i = 0;
+                while (i < reponames.Count)
+                {
+                    if (output) Console.WriteLine("==============================================");
+                    if (output) Console.WriteLine("Updating " + reponames[i]); // Show which repo is being updated now.
+                    if (output) Console.WriteLine("==============================================");
+                    // Download latest versions info
+                    string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
+                    // set download url to current repourls
+                    // Load latest versions info
+                    DataLoad(currepopath, "updates", "updates.txt");
+                    i++;
+                }
+            }
+        }
+
         if (output)
         {
             Console.WriteLine("==============================================");
             Console.WriteLine("Checking For Updates...");
             Console.WriteLine("==============================================");
         }
-        if (download) DataUpdate();
         if (autoUpdate)
         {
-            DataUpdate(false);
+            CheckForAppUpdates(false, true, false);
             using (WebClient datadl = new WebClient())
             {
                 int i = 0;
@@ -937,12 +970,12 @@ public static class SharpPackageManager
                     // Download latest versions info
                     string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
                     // Load latest versions info
-                    NeoDataLoad(currepopath, "metadata");
+                    DataLoad(currepopath, "updates", "updates.txt");
                     i++;
                 }
             }
             if (output) Console.WriteLine("Loading Data...");
-            NeoDataLoad(InstallDir + "config.txt", "config");
+            DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
             // Check if any packages are installed and if user has updates
             bool updates = false;
             List<String> updatecount = new List<String>();
@@ -987,9 +1020,9 @@ public static class SharpPackageManager
                 }
                 CheckForAppUpdates(false, true, false);
                 // Clear currentversions.txt
-                NeoDataLoad(InstallDir + "config.txt", "config");
+                DataLoad(InstallDir + "config.zip", "currentversions", "currentversions.txt");
                 System.IO.File.WriteAllText(InstallDir + "currentversions.txt", string.Empty);
-                WriteData(InstallDir + "config.txt", "currentversions, placeholder | 1", "AppendToFile");
+                WriteData(InstallDir + "currentversions.txt", "placeholder, 1", "AppendToFile");
                 foreach (string update in updatecount)
                 {
                     UpgradePKG(update, multiple, output);
@@ -1027,14 +1060,12 @@ public static class SharpPackageManager
     {
         appnames.Clear();
         appurls.Clear();
-        updateappnames.Clear();
-        updateversions.Clear();
         using (WebClient srcdl = new WebClient())
         {
             int i = 0;
             do
             {
-                string currepopath = InstallDir + "metadata-" + reponames[i] + ".txt";
+                string currepopath = RepoDir + "metadata-" + reponames[i] + ".zip";
                 if (System.IO.File.Exists(currepopath)) System.IO.File.Delete(currepopath);
 
                 if (Out == true)
@@ -1045,7 +1076,7 @@ public static class SharpPackageManager
                 }
                 srcdl.DownloadFile(repourls[i], currepopath);
                 i++;
-                NeoDataLoad(currepopath, "metadata");
+                DataLoad(currepopath, "apps", "apps.txt");
 
                 // Param1 = Link of file
                 // Param2 = Path to save
@@ -1053,13 +1084,33 @@ public static class SharpPackageManager
 
         }
     }
-
-    public static List<string> GetRepoApps(string repo)
+    public static Dictionary<string, List<string>> GetRepoApps(string repo)
     {
-        NeoDataLoad(InstallDir + "metadata-" + repo + ".txt", "grapps");
-        return grapps;
+        string currepopath = InstallDir + "apps" + repo + ".txt";
+        List<String> apps = new List<string>();
+        using (StreamReader file = new StreamReader(@"C:\SPM\config\apps" + repo + ".txt"))
+        {
+            string ln2;
+            string[] ln3;
+            while ((ln2 = file.ReadLine()) != null)
+            {
+                ln3 = ln2.Split(", ");
+                repos.Add(ln3[0], ln3[1]);
+            }
+            if (repos != null)
+            {
+                foreach (KeyValuePair<string, string> keyValue in repos)
+                {
+                    apps.Add(keyValue.Key);
+                }
+                repos.Clear();
+                file.Close();
+            }
+        }
+        Dictionary<string, List<string>> r = new Dictionary<string, List<string>>();
+        r.Add(repo, apps);
+        return r;
     }
-
     public static void WriteData(string File, string data, string Type)
     {
         if (Type == "AppendToFile")
@@ -1084,200 +1135,118 @@ public static class SharpPackageManager
 #pragma warning restore CS0162 // Unreachable code detected
         }
     }
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
-    public static void NeoDataLoad(string File, string TOCLEAR)
+    public static async Task DataLoad(string Archive, string Type, string ReadFile)
     {
-        try
+        // Unpack the file 
+        if (System.IO.Directory.Exists(@"C:\temp\unpacked"))
         {
-            using (StreamReader file = new StreamReader(File))
+            System.IO.Directory.Delete(@"C:\temp\unpacked", true);
+        }
+        ZipFile.ExtractToDirectory(Archive, @"C:\temp\unpacked");
+        NormalDataLoad(@"C:\temp\unpacked\"+ReadFile, Type);
+    }
+
+    public static async Task NormalDataLoad(string File, string Type)
+    {
+        using (StreamReader file = new StreamReader(File))
+        {
+            string ln2;
+            string[] ln3;
+            while ((ln2 = file.ReadLine()) != null)
             {
-                string content = file.ReadToEnd();
-                string[] lines = content.Split('\n');
-
-                Dictionary<string, string> cont = new Dictionary<string, string>();
-                // Fill the content
-                int c = 0;
-                foreach (string line in lines)
+                ln3 = ln2.Split(", ");
+                repos.Add(ln3[0], ln3[1]);
+            }
+            if (repos != null)
+            {
+                switch (Type)
                 {
-                    string[] ln = line.Split(", ");
-                    cont.Add(ln[0] + "!-!" + c, ln[1]);
-                    c++;
-                }
-                // Clear the lists
-
-                switch (TOCLEAR)
-                {
-                    case "metadata":
-                        appnames.Clear();
-                        appurls.Clear();
-                        updateappnames.Clear();
-                        updateversions.Clear();
-                        break;
-                    case "config":
-                        currentappnames.Clear();
-                        currentappversions.Clear();
-                        reponames.Clear();
+                    case "repos":
                         repourls.Clear();
-                        //Console.WriteLine("Config cleared");
+                        reponames.Clear();
                         break;
-                    case "AppData":
+                    case "currentversions":
+                        currentappversions.Clear();
+                        currentappnames.Clear();
                         break;
-                    case "grapps":
-                        grapps.Clear();
-                        break;
+
                 }
-                //Console.WriteLine(TOCLEAR);
-                // Fill the lists
-
-                foreach (KeyValuePair<string, string> kv in cont)
+                foreach (KeyValuePair<string, string> keyValue in repos)
                 {
-                    bool eg = false;
-
-                    string key = kv.Key.Split("!-!")[0];
-                    string value = kv.Value;
-                    // Split the value
-                    string name = value.Split(" | ")[0];
-                    string rv = value.Split(" | ")[1];
-                    //Console.WriteLine(key + " " + name + " " + rv);
-                    //Console.WriteLine(key + " " + name + " " + rv);
-                    if (TOCLEAR != "grapps" && !eg)
+                    switch (Type)
                     {
-                        switch (key)
-                        {
-                            case "apps":
-                                if (!appnames.Contains(name) && TOCLEAR != "grapps")
+                        // Add the apps to responding lists
+                        case "apps":
+                            if (keyValue.Key != "placeholder" && !appnames.Contains(keyValue.Key))
+                            {
+                                appurls.Add(keyValue.Value);
+                                appnames.Add(keyValue.Key);
+                            }
+                            break;
+                        case "repos":
+                            if (keyValue.Value.StartsWith("!MIRRORLIST="))
+                            {
+                                string mirrorlistfile = keyValue.Value.Replace("!MIRRORLIST=", "");
+                                // Read mirrorlist file
+                                string mirrors = System.IO.File.ReadAllText(mirrorlistfile);
+                                List<string> mirrs = mirrors.Split('\n').ToList();
+                                int mirrorcount = mirrs.Count;
+                                // Random integer between 0 and mirrorcount
+                                Random rnd = new Random();
+                                int rndmirror = rnd.Next(0, mirrorcount);
+                                // Download the current repo
+                                while (string.IsNullOrEmpty(mirrs[rndmirror]))
                                 {
-                                    appnames.Add(name);
-                                    appurls.Add(rv);
+                                    Debug.WriteLine(rndmirror);
+                                    rndmirror = rnd.Next(0, mirrorcount);
                                 }
-                                else if (TOCLEAR == "grapps")
-                                {
-                                    grapps.Add(name);
+                                string mr = mirrs[rndmirror];
+                                repourls.Add(mr);
+                            }
+                            else
+                            {
+                                repourls.Add(keyValue.Value);
+                            }
+                            reponames.Add(keyValue.Key);
+                            break;
+                        case "updates":
+                            if (keyValue.Key != "placeholder")
+                            {
+                                updateversions.Add(int.Parse(keyValue.Value));
+                                updateappnames.Add(keyValue.Key);
+                            }
+                            break;
+                        case "currentversions":
+                            if (keyValue.Key != "placeholder")
+                            {
+                                currentappversions.Add(int.Parse(keyValue.Value));
+                                currentappnames.Add(keyValue.Key);
+                            }
+                            break;
+                        case "AppData":
+                            if (keyValue.Key == "exe")
+                            {
+                                exectuable.Add(keyValue.Value);
+                            }
+                            else if (keyValue.Key == "type")
+                            {
+                                type.Add(keyValue.Value);
+                            }
+                            else if (keyValue.Key == "altpath")
+                            {
+                                otherpaths.Add(keyValue.Value);
+                            }
 
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Duplicate app: " + name);
-                                    appnames.Add(name + "-duplicate");
-                                    appurls.Add(rv);
-                                }
-                                break;
-                            case "currentversions":
-                                currentappnames.Add(name);
-                                currentappversions.Add(int.Parse(rv));
-                                break;
-                            case "updates":
-                                if (!updateappnames.Contains(name))
-                                {
-                                    updateappnames.Add(name);
-                                    updateversions.Add(int.Parse(rv));
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Duplicate update: " + name);
-                                    updateappnames.Add(name + "-duplicate");
-                                    updateversions.Add(int.Parse(rv));
-                                }
-                                break;
-                            case "AppData":
-                                break;
-                            case "repos":
-                                reponames.Add(name);
-                                if (rv.StartsWith("!MIRRORLIST="))
-                                {
-                                    //Console.WriteLine("LOADING REPO MIRRORLIST");
-                                    string mirrorlistfile = rv.Replace("!MIRRORLIST=", "");
-                                    //Console.WriteLine(mirrorlistfile);
-                                    // Read mirrorlist file
-                                    string mirrors = System.IO.File.ReadAllText(mirrorlistfile);
-                                    //Console.WriteLine(mirrors);
-                                    List<string> mirrs = mirrors.Split('\n').ToList();
-                                    int mirrorcount = mirrs.Count;
-                                    // Random integer between 0 and mirrorcount
-                                    Random rnd = new Random();
-                                    int rndmirror = rnd.Next(0, mirrorcount);
-                                    // Choose the current repo
-                                    while (string.IsNullOrEmpty(mirrs[rndmirror]))
-                                    {
-                                        Debug.WriteLine(rndmirror);
-                                        rndmirror = rnd.Next(0, mirrorcount);
-                                    }
-                                    string mr = mirrs[rndmirror];
-                                    repourls.Add(mr);
-                                    //Console.WriteLine(mr);
-                                }
-                                else
-                                {
-                                    repourls.Add(rv);
-                                }
-                                break;
-                        }
+                            break;
                     }
-                    else if (TOCLEAR == "grapps")
-                    {
-                        if (key == "apps")
-                        {
-                            grapps.Add(name);
-                        }
-                    }
-
                 }
             }
-
-
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.Message); // This is not a serious crash, as everything is loaded properly
+            repos.Clear();
+            file.Close();
         }
     }
-    public static void LoadAppData(string File, string Type)
-    {
-        if (Type != "AppData")
-        {
-            Console.WriteLine("\"DataLoad(string File);\" is deprecated, use \"NeoDataLoad(string File);\" instead (aborting...)");
-            System.Environment.Exit(3);
-        }
-        else
-        {
-            using (StreamReader file = new StreamReader(File))
-            {
-                string ln2;
-                string[] ln3;
-                while ((ln2 = file.ReadLine()) != null)
-                {
-                    ln3 = ln2.Split(", ");
-                    repos.Add(ln3[0], ln3[1]);
-                }
-                if (repos != null)
-                {
-                    foreach (KeyValuePair<string, string> keyValue in repos)
-                    {
-                        switch (Type)
-                        {
-                            case "AppData":
-                                if (keyValue.Key == "exe")
-                                {
-                                    exectuable.Add(keyValue.Value);
-                                }
-                                else if (keyValue.Key == "type")
-                                {
-                                    type.Add(keyValue.Value);
-                                }
-                                else if (keyValue.Key == "altpath")
-                                {
-                                    otherpaths.Add(keyValue.Value);
-                                }
 
-                                break;
-                        }
-                    }
-                }
-                repos.Clear();
-                file.Close();
-            }
-        }
-    }
     
 }
-
