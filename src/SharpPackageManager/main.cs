@@ -3,7 +3,7 @@
 // Copyright (c) 2022, BultekDev / SharpPackageManager
 // All rights reserved.
 
-using IWshRuntimeLibrary;
+
 using System.Diagnostics;
 using System.IO.Compression;
 using Microsoft.Win32;
@@ -768,17 +768,16 @@ public static class SharpPackageManager
 
     public static void CreateShortcut(string executable, string package, string icon = @"C:\SPM\icon.ico")
     {
-        // Create a shortcut to Start Menu
-        string shortcutPath = @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\" + package + ".lnk";
-        WshShell shell = new WshShell();
-        IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
-        shortcut.TargetPath = executable;
-        shortcut.WorkingDirectory = @"C:\SPM-APPS\" + package;
-        shortcut.IconLocation = icon;
-
-        shortcut.Save();
-        Debug.WriteLine("Shortcut created!");
-        // Thanks Copilot
+        Process startInfo = new Process();
+        startInfo.StartInfo.FileName = @"C:\SPM\tools\spmtools.exe";
+        startInfo.StartInfo.Arguments = "shortcut "+exectuable+" "+package+" "+icon;
+        startInfo.StartInfo.UseShellExecute = true;
+        startInfo.Start();
+        startInfo.WaitForExit();
+        if (startInfo.ExitCode!=0){
+            Console.WriteLine("Failed to create shortcut!");
+            PressAnyKey("exit", true, 1);
+        }
     }
     public static void UpgradePKG(string pkg, bool multiple, bool output)
     {
