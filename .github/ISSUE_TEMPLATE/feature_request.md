@@ -2,6 +2,7 @@
 name: Feature request
 about: Suggest an idea for SPM
 title: New Feature Request
+projects: 'SharpPackageManager'
 labels: enhancement
 assignees: ''
 

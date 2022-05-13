@@ -2,6 +2,7 @@
 name: Bug report
 about: Something that is not working as expected
 title: A new bug
+projects: 'SharpPackageManager'
 labels: bug
 assignees: ''
 

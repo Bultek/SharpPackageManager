@@ -3,6 +3,7 @@ name: Merge request
 about: A ready improvement to the codebase
 title: New Merge Request
 labels: enhancement
+projects: 'SharpPackageManager'
 assignees: ''
 
 ---
