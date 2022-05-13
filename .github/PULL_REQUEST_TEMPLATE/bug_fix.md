@@ -7,6 +7,8 @@ projects: 'SharpPackageManager'
 assignees: ''
 
 ---
-**What does this request add/improve?**
+**What does this request fix**
 
-**Why is it useful?**
+**How it was before**
+
+**How it is now**
