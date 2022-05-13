@@ -2,9 +2,9 @@ name: .NET
 
 on:
   push:
-    branches: [ dev ptb stable ]
+    branches: [ dev, ptb, stable ]
   pull_request:
-    branches: [ dev ptb stable ]
+    branches: [ dev, ptb, stable ]
 
 jobs:
   build:
