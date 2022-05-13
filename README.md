@@ -2,7 +2,7 @@
 Package Manager written on C#
 #### Warning: do not download spm from the releases tab. Those are not the packages you are looking for, they're old versions of the project.
 
-![Downloads](https://img.shields.io/github/downloads/bultek/SharpPackageManager/total?style=for-the-badge) ![Latest tag](https://img.shields.io/github/v/tag/bultek/SharpPackageManager?style=for-the-badge)
+![Downloads](https://img.shields.io/github/downloads/bultek/SharpPackageManager/total?style=for-the-badge) ![Latest tag](https://img.shields.io/github/v/tag/bultek/SharpPackageManager?style=for-the-badge) [![Build](https://github.com/Bultek/SharpPackageManager/actions/workflows/dotnet.yml/badge.svg?branch=dev)](https://github.com/Bultek/SharpPackageManager/actions/workflows/dotnet.yml)
 
 
 # Installation and updating
