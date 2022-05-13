@@ -18,8 +18,7 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Change directory to the needed one
-    - run: cd src
-    - run: cd SharpPackageManager
+      run: cd src\SharpPackageManager
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
