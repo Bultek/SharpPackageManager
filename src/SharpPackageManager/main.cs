@@ -35,7 +35,7 @@ public static class SharpPackageManager
     public const string InstallDir = "C:\\SPM\\config\\";
     public const string InstallPath = "C:\\SPM\\";
     private static List<String> exectuable = new List<String>();
-    
+
     private static List<String> shortcuts = new List<String>();
     private static List<String> type = new List<String>();
     private static List<String> otherpaths = new List<String>();
@@ -93,7 +93,7 @@ public static class SharpPackageManager
 
             foreach (string narg in newargs)
             {
-                string xarg=narg;
+                string xarg = narg;
                 if (xarg.StartsWith("spm:"))
                 {
                     xarg = narg.Replace("spm:", "");
@@ -145,7 +145,7 @@ public static class SharpPackageManager
             Console.WriteLine("ERROR: Can't find currentversions.txt, please create it and set it up!");
             Console.WriteLine("Opening instructions in your default browser...");
             Console.WriteLine("==============================================");
-            
+
             Process.Start("explorer", "https://github.com/Bultek/SharpPackageManager/wiki/currentversions.txt-setup-guide");
             Process.Start("explorer", @"C:\SPM\config");
             PressAnyKey("exit", true, 1);
@@ -223,7 +223,7 @@ public static class SharpPackageManager
                         InstallPkg(arg, true, false, true);
                     }
                 }
-            
+
             }
         }
         else if (action == "addrepo")
@@ -235,7 +235,7 @@ public static class SharpPackageManager
                 string repo = Console.ReadLine();
                 Console.WriteLine("URL: ");
                 string url = Console.ReadLine();
-                if (repo != null && url!=null)
+                if (repo != null && url != null)
                 {
                     AddRepo(repo, url);
                     Console.WriteLine("================================================================================");
@@ -324,7 +324,7 @@ public static class SharpPackageManager
         {
             if (output) Console.WriteLine("Launch the app without any options to get help!");
         }
-        PressAnyKey("exit", true, 0, output);   
+        PressAnyKey("exit", true, 0, output);
     }
 
     public static void AddRepo(string name, string url)
@@ -335,7 +335,7 @@ public static class SharpPackageManager
             {
                 repos.Add(name, url);
                 reponames.Add(name);
-                WriteData(InstallDir + "sources.txt","\n" + name + ", " + url, "AppendToFile");
+                WriteData(InstallDir + "sources.txt", "\n" + name + ", " + url, "AppendToFile");
             }
             else
             {
@@ -510,7 +510,7 @@ public static class SharpPackageManager
         PressAnyKey("exit", true);
     }
 
-    public static void InstallPkg(string Package, bool Multi = false, bool upgrade = false, bool output = true, bool Download=true, bool localinstall=true)
+    public static void InstallPkg(string Package, bool Multi = false, bool upgrade = false, bool output = true, bool Download = true, bool localinstall = true)
     {
         if (appnames.Contains(Package) || upgrade) // If package doesn't exist don't even try to install it
         {
@@ -569,15 +569,15 @@ public static class SharpPackageManager
                     else
                     {
                         bool exists = false;
-                        
+
                         int repositoryindex = 0;
                         foreach (string repo in reponames)
                         {
                             Dictionary<string, List<string>> apps = new Dictionary<string, List<string>>();
                             apps = GetRepoApps(repo);
-                            foreach (KeyValuePair <string, List<string>> keyValue in apps)
+                            foreach (KeyValuePair<string, List<string>> keyValue in apps)
                             {
-                                foreach(string app in keyValue.Value)
+                                foreach (string app in keyValue.Value)
                                 {
                                     if (exists)
                                     {
@@ -601,10 +601,10 @@ public static class SharpPackageManager
                         }
                         string repository = repourls[repositoryindex];
                         string posturl = appurls[pkgnumber].Replace("!MIRRORURL", "");
-                        
+
                         string mr = repository.Replace("/apps.txt", posturl);
                         pkgdl.DownloadFile(mr, pkgdir);
-                        
+
                     }
                     // Param1 = Link of file
                     // Param2 = Path to save
@@ -770,11 +770,12 @@ public static class SharpPackageManager
     {
         Process startInfo = new Process();
         startInfo.StartInfo.FileName = @"C:\SPM\tools\spmtools.exe";
-        startInfo.StartInfo.Arguments = "shortcut "+exectuable+" "+package+" "+icon;
+        startInfo.StartInfo.Arguments = "shortcut " + exectuable + " " + package + " " + icon;
         startInfo.StartInfo.UseShellExecute = true;
         startInfo.Start();
         startInfo.WaitForExit();
-        if (startInfo.ExitCode!=0){
+        if (startInfo.ExitCode != 0)
+        {
             Console.WriteLine("Failed to create shortcut!");
             PressAnyKey("exit", true, 1);
         }
@@ -919,7 +920,7 @@ public static class SharpPackageManager
                     // Download latest versions info
                     string currepopath = InstallDir + "versions" + reponames[i] + ".txt";
                     // set download url to current repourls
-                    datadl.DownloadFile(repourls[i].Replace("/apps.txt", "/versions.txt"), currepopath);    
+                    datadl.DownloadFile(repourls[i].Replace("/apps.txt", "/versions.txt"), currepopath);
                     // Load latest versions info
                     DataLoad(currepopath, "updates");
                     i++;
@@ -1158,7 +1159,7 @@ public static class SharpPackageManager
                                 string mirrorlistfile = keyValue.Value.Replace("!MIRRORLIST=", "");
                                 // Read mirrorlist file
                                 string mirrors = System.IO.File.ReadAllText(mirrorlistfile);
-                                List<string> mirrs =  mirrors.Split('\n').ToList();
+                                List<string> mirrs = mirrors.Split('\n').ToList();
                                 int mirrorcount = mirrs.Count;
                                 // Random integer between 0 and mirrorcount
                                 Random rnd = new Random();
@@ -1205,7 +1206,7 @@ public static class SharpPackageManager
                             {
                                 otherpaths.Add(keyValue.Value);
                             }
-                            
+
                             break;
                     }
                 }
