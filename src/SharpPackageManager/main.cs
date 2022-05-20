@@ -715,7 +715,7 @@ public static class SharpPackageManager
                     if (type[0] == "zip")
                     {
                         // Add the app to machine path and maybe create shortcuts
-                        if (output) Console.WriteLine("To acsess the app you just installed search for binary in the C:\\SPM-APPS\\" + Package + " folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
+                        if (output) Console.WriteLine("To access the app you just installed search for binary in the C:\\SPM-APPS\\" + Package + " folder! \nAlso you can try to launch it using the terminal (It's added to your PATH)!");
                         AddToPath(@"C:\SPM-APPS\" + Package);
                         if (output && exectuable.Count > 0) Console.WriteLine("Do you want to create a start menu shortcut for the package (recommended for GUI apps) (y/N)? ");
                         string answer = "no";
