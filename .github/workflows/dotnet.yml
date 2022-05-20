@@ -25,6 +25,6 @@ jobs:
     - name: Add
       run: git add . && git config user.name "Bultek Formatter" && git config user.email "help@bultek.com.ua"
     - name: Commit
-      run: git commit -m -a "format"
+      run: git commit -m --dry-run "format"
     - name: Push
       run: git push
