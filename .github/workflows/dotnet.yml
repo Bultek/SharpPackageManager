@@ -23,7 +23,7 @@ jobs:
     - name: Build
       run: dotnet build .\src\SharpPackageManager\SharpPackageManager.csproj
     - name: Add
-      run: git add .
+      run: git add . && git config user.name "Bultek Formatter" && git config user.email "help@bultek.com.ua"
     - name: Commit
       run: git commit -m "format"
     - name: Push
