@@ -7,15 +7,24 @@ on:
     branches: [ dev, ptb, stable ]
 
 jobs:
-  build:
-
+  formatandbuild:
     runs-on: windows-latest
-
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
+    - name: Format
+      run: dotnet format .\src\SharpPackageManager\SharpPackageManager.csproj
     - name: Build
       run: dotnet build .\src\SharpPackageManager\SharpPackageManager.csproj
+    - name: Add
+      run: git add .
+    - name: Commit
+      run: git commit -m "format"
+    - name: Push
+      run: git push
